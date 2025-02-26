@@ -1,21 +1,24 @@
 "use client";
 
-import { useObjective } from "@/hooks/use-objectives";
-import { StatusBadge } from "@/components/objectives/status-badge";
-import { Progress } from "@/components/ui/progress";
-import { Button } from "@/components/ui/button";
-import { KeyResultFormModal } from "@/components/key-results/key-result-form-modal";
-import { KeyResultProgressUpdate } from "@/components/key-results/progress-update";
-// import { formatDate, getPercentageComplete } from "@/lib/utils";
-import { ArrowLeft, CalendarIcon, Clock } from "lucide-react";
+import {useObjective} from "@/hooks/use-objectives";
+import {StatusBadge} from "@/components/objectives/status-badge";
+import {Progress} from "@/components/ui/progress";
+import {Button} from "@/components/ui/button";
+import {
+  KeyResultFormModal
+} from "@/components/key-results/key-result-form-modal";
+import {
+  KeyResultProgressUpdate
+} from "@/components/key-results/progress-update";
+import {ArrowLeft} from "lucide-react";
 import Link from "next/link";
-import { CreateKeyResultRequest, UpdateProgressRequest } from "@/types";
+import {CreateKeyResultRequest, UpdateProgressRequest} from "@/types";
 
 interface ObjectiveDetailProps {
   objectiveId: string;
 }
 
-export function ObjectiveDetail({ objectiveId }: ObjectiveDetailProps) {
+export function ObjectiveDetail({objectiveId}: ObjectiveDetailProps) {
   const {
     objective,
     isLoading,
@@ -30,7 +33,8 @@ export function ObjectiveDetail({ objectiveId }: ObjectiveDetailProps) {
   if (isLoading) {
     return (
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-600"></div>
+          <div
+              className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-600"></div>
         </div>
     );
   }
@@ -39,7 +43,8 @@ export function ObjectiveDetail({ objectiveId }: ObjectiveDetailProps) {
     return (
         <div className="rounded-lg bg-red-50 p-4 text-red-800">
           <p>Error loading objective: {error?.message || "Unknown error"}</p>
-          <Button className="mt-2" variant="secondary" onClick={() => window.location.reload()}>
+          <Button className="mt-2" variant="secondary"
+                  onClick={() => window.location.reload()}>
             Try Again
           </Button>
         </div>
@@ -62,36 +67,25 @@ export function ObjectiveDetail({ objectiveId }: ObjectiveDetailProps) {
   };
 
   const handleUpdateProgress = (keyResultId: string, data: UpdateProgressRequest) => {
-    updateKeyResultProgress({ keyResultId, data });
+    updateKeyResultProgress({keyResultId, data});
   };
 
-  // const timePercentage = getPercentageComplete(objective.start_date, objective.end_date);
 
   return (
       <div>
         <div className="mb-8">
-          <Link href="/objectives" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 mb-4">
-            <ArrowLeft className="h-4 w-4 mr-1" />
+          <Link href="/objectives"
+                className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 mb-4">
+            <ArrowLeft className="h-4 w-4 mr-1"/>
             Back to all objectives
           </Link>
 
           <div className="flex items-start justify-between">
             <div>
               <h1 className="text-2xl font-semibold">{objective.title}</h1>
-              <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
-                <div className="flex items-center">
-                  <CalendarIcon className="h-4 w-4 mr-1" />
-                  <span>
-                  {/*{formatDate(objective.start_date)} - {formatDate(objective.end_date)}*/}
-                </span>
-                </div>
-                <div className="flex items-center">
-                  <Clock className="h-4 w-4 mr-1" />
-                  {/*<span>{timePercentage}% time elapsed</span>*/}
-                </div>
-              </div>
+
             </div>
-            <StatusBadge status={objective.status} />
+            <StatusBadge status={objective.status}/>
           </div>
 
           {objective.description && (
@@ -102,9 +96,10 @@ export function ObjectiveDetail({ objectiveId }: ObjectiveDetailProps) {
 
           <div className="mt-6">
             <div className="flex justify-between items-center mb-2">
-              <span className="font-medium">Overall Progress: {objective.progress}%</span>
+              <span
+                  className="font-medium">Overall Progress: {objective.progress}%</span>
             </div>
-            <Progress value={objective.progress} className="h-3" />
+            <Progress value={objective.progress} className="h-3"/>
           </div>
         </div>
 
@@ -122,7 +117,8 @@ export function ObjectiveDetail({ objectiveId }: ObjectiveDetailProps) {
           {objective.key_results && objective.key_results.length > 0 ? (
               <div className="grid gap-4">
                 {objective.key_results.map((keyResult) => (
-                    <div key={keyResult.id} className="border rounded-lg p-4 bg-white">
+                    <div key={keyResult.id}
+                         className="border rounded-lg p-4 bg-white">
                       <KeyResultProgressUpdate
                           keyResult={keyResult}
                           onUpdate={(keyResultId, data) => handleUpdateProgress(keyResultId, data)}

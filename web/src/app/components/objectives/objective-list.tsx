@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { useObjectives } from "@/hooks/use-objectives";
 import { ObjectiveCard } from "@/components/objectives/objective-card";
 import { ObjectiveFormModal } from "@/components/objectives/objective-form-modal";
 import { CreateObjectiveRequest, CreateKeyResultRequest, UpdateProgressRequest } from "@/types";
 import { Button } from "@/components/ui/button";
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 export function ObjectiveList() {
   const {
@@ -15,6 +17,8 @@ export function ObjectiveList() {
     createObjective,
     isCreating,
   } = useObjectives();
+
+  const [expandedObjectives, setExpandedObjectives] = useState<Set<string>>(new Set());
 
   const handleCreateObjective = (data: CreateObjectiveRequest) => {
     createObjective(data);
@@ -32,6 +36,28 @@ export function ObjectiveList() {
   ) => {
     // This will be implemented via the ObjectiveCard component
     console.debug({ objectiveId, keyResultId, data });
+  };
+
+  const toggleObjectiveExpanded = (objectiveId: string, expanded: boolean) => {
+    setExpandedObjectives(prev => {
+      const newSet = new Set(prev);
+      if (expanded) {
+        newSet.add(objectiveId);
+      } else {
+        newSet.delete(objectiveId);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleExpandAll = () => {
+    if (expandedObjectives.size === objectives.length) {
+      // If all are expanded, collapse all
+      setExpandedObjectives(new Set());
+    } else {
+      // Expand all
+      setExpandedObjectives(new Set(objectives.map(obj => obj.id)));
+    }
   };
 
   if (isLoading) {
@@ -53,14 +79,38 @@ export function ObjectiveList() {
     );
   }
 
+  const allExpanded = objectives.length > 0 && expandedObjectives.size === objectives.length;
+
   return (
       <div>
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold">Objectives</h1>
-          <ObjectiveFormModal
-              onSubmit={handleCreateObjective}
-              isSubmitting={isCreating}
-          />
+          <div className="flex gap-2">
+            {objectives.length > 0 && (
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={toggleExpandAll}
+                    className="flex items-center gap-1"
+                >
+                  {allExpanded ? (
+                      <>
+                        <ChevronRight className="h-4 w-4" />
+                        <span>Collapse All</span>
+                      </>
+                  ) : (
+                      <>
+                        <ChevronDown className="h-4 w-4" />
+                        <span>Expand All</span>
+                      </>
+                  )}
+                </Button>
+            )}
+            <ObjectiveFormModal
+                onSubmit={handleCreateObjective}
+                isSubmitting={isCreating}
+            />
+          </div>
         </div>
 
         {objectives.length === 0 ? (
@@ -82,6 +132,8 @@ export function ObjectiveList() {
                       onUpdateProgress={(keyResultId, data) =>
                           handleUpdateProgress(objective.id, keyResultId, data)
                       }
+                      isExpanded={expandedObjectives.has(objective.id)}
+                      onExpandToggle={(expanded) => toggleObjectiveExpanded(objective.id, expanded)}
                   />
               ))}
             </div>

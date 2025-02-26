@@ -1,10 +1,9 @@
 "use client";
 
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Link from "next/link";
 import {ChevronDown, ChevronRight, Plus} from "lucide-react";
-import {KeyResult, ObjectiveWithProgress} from "@/types";
-// import {formatDate} from "@/lib/utils";
+import {ObjectiveWithProgress, KeyResult} from "@/types";
 import {Progress} from "@/components/ui/progress";
 import {StatusBadge} from "@/components/objectives/status-badge";
 import {Button} from "@/components/ui/button";
@@ -17,9 +16,15 @@ import {
 
 interface ObjectiveCardProps {
   objective: ObjectiveWithProgress;
-  onAddKeyResult: (data: { title: string; target: number }) => void;
+  onAddKeyResult: (data: {
+    title: string;
+    target: number;
+    metrics: string
+  }) => void;
   onUpdateProgress: (keyResultId: string, data: { progress: number }) => void;
   isUpdatingProgress?: boolean;
+  isExpanded?: boolean;
+  onExpandToggle?: (expanded: boolean) => void;
 }
 
 export function ObjectiveCard({
@@ -27,8 +32,21 @@ export function ObjectiveCard({
                                 onAddKeyResult,
                                 onUpdateProgress,
                                 isUpdatingProgress = false,
+                                isExpanded = false,
+                                onExpandToggle,
                               }: ObjectiveCardProps) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(isExpanded);
+
+  // Sync with parent component's expanded state
+  useEffect(() => {
+    setExpanded(isExpanded);
+  }, [isExpanded]);
+
+  const toggleExpanded = () => {
+    const newExpandedState = !expanded;
+    setExpanded(newExpandedState);
+    onExpandToggle?.(newExpandedState);
+  };
 
   return (
       <div className="border rounded-lg overflow-hidden bg-white">
@@ -36,7 +54,7 @@ export function ObjectiveCard({
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2">
               <button
-                  onClick={() => setExpanded(!expanded)}
+                  onClick={toggleExpanded}
                   className="p-1 rounded-md hover:bg-gray-100"
               >
                 {expanded ? (
@@ -52,9 +70,6 @@ export function ObjectiveCard({
                 >
                   {objective.title}
                 </Link>
-                <p className="text-sm text-gray-500">
-                  {/*{formatDate(objective.start_date)} - {formatDate(objective.end_date)}*/}
-                </p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -80,6 +95,7 @@ export function ObjectiveCard({
             </div>
           </div>
         </div>
+
         {expanded && objective.key_results && objective.key_results.length > 0 && (
             <div className="border-t p-4 bg-gray-50">
               <h3 className="text-sm font-medium mb-3">Key Results</h3>

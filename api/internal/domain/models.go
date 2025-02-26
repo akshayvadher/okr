@@ -26,11 +26,9 @@ func (base *Base) BeforeCreate(tx *gorm.DB) error {
 // Objective represents a top-level OKR objective
 type Objective struct {
 	Base
-	Title       string `gorm:"type:varchar(255);not null" json:"title"`
-	Description string `gorm:"type:text" json:"description"`
-	//StartDate   time.Time   `json:"start_date"`
-	//EndDate     time.Time   `json:"end_date"`
-	KeyResults []KeyResult `gorm:"foreignKey:ObjectiveID" json:"key_results,omitempty"`
+	Title       string      `gorm:"type:varchar(255);not null" json:"title"`
+	Description string      `gorm:"type:text" json:"description"`
+	KeyResults  []KeyResult `gorm:"foreignKey:ObjectiveID" json:"key_results,omitempty"`
 }
 
 // TableName overrides the table name
@@ -45,6 +43,7 @@ type KeyResult struct {
 	Title       string    `gorm:"type:varchar(255);not null" json:"title"`
 	Target      float64   `gorm:"not null" json:"target"`
 	Current     float64   `gorm:"not null;default:0" json:"current"`
+	Metrics     string    `gorm:"not null;default:'%''" json:"metrics"`
 }
 
 // TableName overrides the table name

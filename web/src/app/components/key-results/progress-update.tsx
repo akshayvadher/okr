@@ -51,7 +51,7 @@ export function KeyResultProgressUpdate({
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm font-medium">{keyResult.title}</span>
           <div className="text-xs">
-            Target: {keyResult.target}
+            Target: {keyResult.target} {keyResult.metrics || '%'}
           </div>
         </div>
 

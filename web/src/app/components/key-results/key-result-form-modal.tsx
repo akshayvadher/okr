@@ -30,12 +30,22 @@ export function KeyResultFormModal({
                                      trigger,
                                    }: KeyResultFormModalProps) {
   const [open, setOpen] = useState(false);
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<CreateKeyResultRequest>();
+  const {
+    register,
+    handleSubmit,
+    formState: {errors},
+    reset
+  } = useForm<CreateKeyResultRequest>({
+    defaultValues: {
+      metrics: '%'
+    }
+  });
 
   const handleFormSubmit = (data: CreateKeyResultRequest) => {
     onSubmit({
       ...data,
-      target: parseFloat(data.target.toString())
+      target: parseFloat(data.target.toString()),
+      metrics: data.metrics || '%'
     });
     setOpen(false);
     reset();
@@ -44,7 +54,8 @@ export function KeyResultFormModal({
   return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          {trigger || <Button variant="secondary" size="sm">Add Key Result</Button>}
+          {trigger ||
+              <Button variant="secondary" size="sm">Add Key Result</Button>}
         </DialogTrigger>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
@@ -57,33 +68,47 @@ export function KeyResultFormModal({
                 <Input
                     id="title"
                     placeholder="Enter key result title"
-                    {...register("title", { required: "Title is required" })}
+                    {...register("title", {required: "Title is required"})}
                 />
                 {errors.title && (
                     <p className="text-xs text-red-500">{errors.title.message}</p>
                 )}
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="target">Target Value</Label>
-                <Input
-                    id="target"
-                    type="number"
-                    min="0"
-                    step="1"
-                    placeholder="Enter target value (e.g., 100)"
-                    {...register("target", {
-                      required: "Target is required",
-                      valueAsNumber: true,
-                      min: { value: 1, message: "Target must be greater than 0" }
-                    })}
-                />
-                {errors.target && (
-                    <p className="text-xs text-red-500">{errors.target.message}</p>
-                )}
+              <div className="grid grid-cols-3 gap-4">
+                <div className="col-span-2 grid gap-2">
+                  <Label htmlFor="target">Target Value</Label>
+                  <Input
+                      id="target"
+                      type="number"
+                      min="0"
+                      step="1"
+                      placeholder="Enter target value (e.g., 100)"
+                      {...register("target", {
+                        required: "Target is required",
+                        valueAsNumber: true,
+                        min: {
+                          value: 1,
+                          message: "Target must be greater than 0"
+                        }
+                      })}
+                  />
+                  {errors.target && (
+                      <p className="text-xs text-red-500">{errors.target.message}</p>
+                  )}
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="metrics">Metrics</Label>
+                  <Input
+                      id="metrics"
+                      placeholder="e.g., %, $, users"
+                      {...register("metrics")}
+                  />
+                </div>
               </div>
             </div>
             <DialogFooter>
-              <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
+              <Button type="button" variant="secondary"
+                      onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting}>

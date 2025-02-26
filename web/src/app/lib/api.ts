@@ -1,7 +1,7 @@
 import {
-  CreateKeyResultRequest,
-  CreateObjectiveRequest,
   Objective,
+  CreateObjectiveRequest,
+  CreateKeyResultRequest,
   UpdateProgressRequest
 } from '@/types';
 
@@ -70,23 +70,14 @@ export function calculateObjectiveStatus(objective: Objective): {
 
   const averageProgress = totalProgress / objective.key_results.length;
 
-  // Calculate days elapsed percentage
-  // const startDate = new Date(objective.start_date);
-  // const endDate = new Date(objective.end_date);
-  // const today = new Date();
+  // Determine status based on progress percentage
+  let status: 'on-track' | 'at-risk' | 'behind' = 'on-track';
 
-  // const totalDays = Math.max(1, (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-  // const elapsedDays = Math.max(0, (today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-  // const timeElapsedPercent = Math.min(100, (elapsedDays / totalDays) * 100);
-
-  // Determine status based on progress vs time elapsed
-  const status: 'on-track' | 'at-risk' | 'behind' = 'behind';
-
-  // if (averageProgress < timeElapsedPercent - 20) {
-  //   status_ = 'behind';
-  // } else if (averageProgress < timeElapsedPercent - 10) {
-  //   status_ = 'at-risk';
-  // }
+  if (averageProgress < 40) {
+    status = 'behind';
+  } else if (averageProgress < 70) {
+    status = 'at-risk';
+  }
 
   return {
     progress: Math.round(averageProgress * 10) / 10, // Round to 1 decimal place

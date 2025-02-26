@@ -67,30 +67,6 @@ export function ObjectiveFormModal({
                     {...register("description")}
                 />
               </div>
-              {/*<div className="grid grid-cols-2 gap-4">*/}
-              {/*  <div className="grid gap-2">*/}
-              {/*    <Label htmlFor="start_date">Start Date</Label>*/}
-              {/*    <Input*/}
-              {/*        id="start_date"*/}
-              {/*        type="date"*/}
-              {/*        {...register("start_date", { required: "Start date is required" })}*/}
-              {/*    />*/}
-              {/*    {errors.start_date && (*/}
-              {/*        <p className="text-xs text-red-500">{errors.start_date.message}</p>*/}
-              {/*    )}*/}
-              {/*  </div>*/}
-              {/*  <div className="grid gap-2">*/}
-              {/*    <Label htmlFor="end_date">End Date</Label>*/}
-              {/*    <Input*/}
-              {/*        id="end_date"*/}
-              {/*        type="date"*/}
-              {/*        {...register("end_date", { required: "End date is required" })}*/}
-              {/*    />*/}
-              {/*    {errors.end_date && (*/}
-              {/*        <p className="text-xs text-red-500">{errors.end_date.message}</p>*/}
-              {/*    )}*/}
-              {/*  </div>*/}
-              {/*</div>*/}
             </div>
             <DialogFooter>
               <Button type="button" variant="secondary" onClick={() => setOpen(false)}>

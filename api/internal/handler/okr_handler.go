@@ -19,13 +19,12 @@ func NewOKRHandler(service *service.OKRService) *OKRHandler {
 type createObjectiveRequest struct {
 	Title       string `json:"title" binding:"required"`
 	Description string `json:"description"`
-	//StartDate   time.Time `json:"start_date" binding:"required"`
-	//EndDate     time.Time `json:"end_date" binding:"required"`
 }
 
 type createKeyResultRequest struct {
-	Title  string  `json:"title" binding:"required"`
-	Target float64 `json:"target" binding:"required"`
+	Title   string  `json:"title" binding:"required"`
+	Target  float64 `json:"target" binding:"required"`
+	Metrics string  `json:"metrics" binding:"required"`
 }
 
 type updateProgressRequest struct {
@@ -42,8 +41,6 @@ func (h *OKRHandler) CreateObjective(c *gin.Context) {
 	obj := &domain.Objective{
 		Title:       req.Title,
 		Description: req.Description,
-		//StartDate:   req.StartDate,
-		//EndDate:     req.EndDate,
 	}
 
 	if err := h.service.CreateObjective(c.Request.Context(), obj); err != nil {
@@ -95,6 +92,7 @@ func (h *OKRHandler) CreateKeyResult(c *gin.Context) {
 		Title:       req.Title,
 		Target:      req.Target,
 		Current:     0,
+		Metrics:     req.Metrics,
 	}
 
 	if err := h.service.CreateKeyResult(c.Request.Context(), kr); err != nil {

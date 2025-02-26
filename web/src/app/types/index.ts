@@ -9,26 +9,24 @@ export interface KeyResult extends Base {
   title: string;
   target: number;
   current: number;
+  metrics: string;
 }
 
 export interface Objective extends Base {
   title: string;
   description: string;
-  // start_date: string;
-  // end_date: string;
   key_results?: KeyResult[];
 }
 
 export interface CreateObjectiveRequest {
   title: string;
   description: string;
-  // start_date: string;
-  // end_date: string;
 }
 
 export interface CreateKeyResultRequest {
   title: string;
   target: number;
+  metrics: string;
 }
 
 export interface UpdateProgressRequest {

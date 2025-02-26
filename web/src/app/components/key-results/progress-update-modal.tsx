@@ -53,7 +53,7 @@ export function ProgressUpdateModal({
               <div className="flex justify-between items-center mb-1">
                 <span className="text-sm font-medium">{keyResult.title}</span>
                 <span className="text-xs text-gray-500">
-                {keyResult.current} / {keyResult.target}
+                {keyResult.current} / {keyResult.target} {keyResult.metrics || '%'}
               </span>
               </div>
               <Progress value={(keyResult.current / keyResult.target) * 100} className="h-2" />
@@ -68,7 +68,7 @@ export function ProgressUpdateModal({
             <div className="grid gap-4 py-4">
               <div>
                 <h3 className="font-medium">{keyResult.title}</h3>
-                <p className="text-sm text-gray-500">Target: {keyResult.target}</p>
+                <p className="text-sm text-gray-500">Target: {keyResult.target} {keyResult.metrics || '%'}</p>
               </div>
 
               <div className="grid gap-2">
