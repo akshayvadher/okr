@@ -1,10 +1,10 @@
 import type {Metadata} from "next";
-import {Inter} from "next/font/google";
+import {Open_Sans} from "next/font/google";
 import "./globals.css";
 import {AppProviders} from "@/components/app-providers";
 import Link from "next/link";
 
-const inter = Inter({subsets: ["latin"]});
+const openSans = Open_Sans({subsets: ["latin"]});
 
 export const metadata: Metadata = {
   title: "OKR App",
@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
       <html lang="en">
-      <body className={inter.className}>
+      <body className={openSans.className}>
       <AppProviders>
         <div className="min-h-screen bg-gray-50">
           <header className="sticky top-0 bg-white border-b z-10">
