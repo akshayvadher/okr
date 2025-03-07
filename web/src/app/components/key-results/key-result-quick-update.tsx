@@ -1,0 +1,107 @@
+"use client";
+
+import {useState} from "react";
+import {KeyResult} from "@/types";
+import {Button} from "@/components/ui/button";
+import {Progress} from "@/components/ui/progress";
+import {Minus, Plus, Save} from "lucide-react";
+import {useObjective} from "@/hooks/use-objectives";
+
+interface KeyResultQuickUpdateProps {
+  keyResult: KeyResult;
+  onUpdateProgress: (keyResultId: string, data: { progress: number }) => void;
+  isUpdating?: boolean;
+}
+
+export function KeyResultQuickUpdate({
+                                       keyResult,
+                                       onUpdateProgress,
+                                       isUpdating = false,
+                                     }: KeyResultQuickUpdateProps) {
+  const [progress, setProgress] = useState<number>(keyResult.current);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const {updateKeyResultProgress} = useObjective(keyResult.objective_id);
+
+  const handleIncrement = () => {
+    const newValue = Math.min(keyResult.target, progress + 1);
+    setProgress(newValue);
+    setIsEditing(true);
+  };
+
+  const handleDecrement = () => {
+    const newValue = Math.max(0, progress - 1);
+    setProgress(newValue);
+    setIsEditing(true);
+  };
+
+  const handleSave = () => {
+    if (progress !== keyResult.current) {
+      onUpdateProgress(keyResult.id, {progress});
+      setIsEditing(false);
+      updateKeyResultProgress({keyResultId: keyResult.id, data: {progress}})
+    }
+  };
+
+  const progressPercentage = (progress / keyResult.target) * 100;
+
+  return (
+      <div
+          className="flex items-center gap-3 p-2 bg-white rounded-md border hover:border-gray-300 transition-colors">
+        <div className="flex-grow">
+          <div className="flex justify-between items-center mb-1">
+            <h4 className="text-sm font-medium truncate max-w-[200px]">{keyResult.title}</h4>
+            <div className="flex items-center gap-1 text-xs text-gray-500">
+            <span className={isEditing ? "text-indigo-600 font-medium" : ""}>
+              {progress}
+            </span>
+              <span>/</span>
+              <span>{keyResult.target}</span>
+              <span>{keyResult.metrics || '%'}</span>
+            </div>
+          </div>
+          <Progress
+              value={progressPercentage}
+              className="h-1.5"
+          />
+        </div>
+
+        <div className="flex items-center gap-1">
+          <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              className="h-6 w-6 p-0 rounded-full"
+              onClick={handleDecrement}
+              disabled={isUpdating || progress <= 0}
+          >
+            <Minus className="h-3 w-3"/>
+          </Button>
+
+          <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              className="h-6 w-6 p-0 rounded-full"
+              onClick={handleIncrement}
+              disabled={isUpdating || progress >= keyResult.target}
+          >
+            <Plus className="h-3 w-3"/>
+          </Button>
+
+          {isEditing && (
+              <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  className="h-6 w-6 p-0 rounded-full ml-1"
+                  onClick={handleSave}
+                  disabled={isUpdating}
+              >
+                <Save className="h-3 w-3"/>
+              </Button>
+          )}
+        </div>
+      </div>
+  );
+}

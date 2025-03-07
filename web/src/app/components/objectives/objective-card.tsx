@@ -3,7 +3,7 @@
 import {useEffect, useState} from "react";
 import Link from "next/link";
 import {ChevronDown, ChevronRight, Plus} from "lucide-react";
-import {ObjectiveWithProgress, KeyResult} from "@/types";
+import {KeyResult, ObjectiveWithProgress} from "@/types";
 import {Progress} from "@/components/ui/progress";
 import {StatusBadge} from "@/components/objectives/status-badge";
 import {Button} from "@/components/ui/button";
@@ -11,8 +11,8 @@ import {
   KeyResultFormModal
 } from "@/components/key-results/key-result-form-modal";
 import {
-  ProgressUpdateModal
-} from "@/components/key-results/progress-update-modal";
+  KeyResultQuickUpdate
+} from "@/components/key-results/key-result-quick-update";
 
 interface ObjectiveCardProps {
   objective: ObjectiveWithProgress;
@@ -91,14 +91,27 @@ export function ObjectiveCard({
 
         {expanded && objective.key_results && objective.key_results.length > 0 && (
             <div className="border-t p-4 bg-gray-50">
-              <h3 className="text-sm font-medium mb-3">Key Results</h3>
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-sm font-medium">Key Results</h3>
+                <KeyResultFormModal
+                    objectiveId={objective.id}
+                    objectiveTitle={objective.title}
+                    trigger={
+                      <Button size="sm" variant="outline"
+                              className="text-xs h-7 px-2">
+                        <Plus className="h-3 w-3 mr-1"/>
+                        Add Key Result
+                      </Button>
+                    }
+                />
+              </div>
               <div className="space-y-2">
                 {objective.key_results.map((keyResult: KeyResult) => (
-                    <ProgressUpdateModal
+                    <KeyResultQuickUpdate
                         key={keyResult.id}
                         keyResult={keyResult}
-                        onSubmit={onUpdateProgress}
-                        isSubmitting={isUpdatingProgress}
+                        onUpdateProgress={onUpdateProgress}
+                        isUpdating={isUpdatingProgress}
                     />
                 ))}
               </div>
