@@ -111,6 +111,11 @@ export function ObjectiveCard({
               </div>
             </div>
         )}
+        {expanded && (!objective.key_results || objective.key_results?.length === 0) && (
+            <div className="border-t p-4 bg-gray-50">
+              <small className="text-gray-500">No key results created</small>
+            </div>
+        )}
       </div>
   );
 }
