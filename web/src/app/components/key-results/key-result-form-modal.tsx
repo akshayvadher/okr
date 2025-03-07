@@ -44,24 +44,32 @@ export function KeyResultFormModal({
   const {createKeyResult} = useObjective(objectiveId)
 
   const handleFormSubmit = (data: CreateKeyResultRequest) => {
-    createKeyResult(parseInput(data.title));
+    const kr = parseInput(data.title);
+    if (!kr.metrics || !kr.target) {
+      return;
+    }
+    createKeyResult(kr);
     setOpen(false);
     reset();
   };
 
   function parseInput(input: string) {
-    const parts = input.split(' ');
-    const numberIndex = parts.findIndex(part => !isNaN(Number(part)));
+    try {
+      const parts = input.split(' ');
+      const numberIndex = parts.findIndex(part => !isNaN(Number(part)));
 
-    if (numberIndex === -1 || numberIndex === 0 || numberIndex === parts.length - 1) {
-      throw new Error("Invalid input format");
+      if (numberIndex === -1 || numberIndex === 0 || numberIndex === parts.length - 1) {
+        return {title: input, target: undefined, metrics: undefined}
+      }
+      return {
+        title: parts.slice(0, numberIndex).join(' '),
+        target: parseInt(parts[numberIndex], 10),
+        metrics: parts.slice(numberIndex + 1).join(' ')
+      };
+    } catch (e) {
+      console.log({e})
+      return {title: input, target: undefined, metrics: undefined}
     }
-
-    return {
-      title: parts.slice(0, numberIndex).join(' '),
-      target: parseInt(parts[numberIndex], 10),
-      metrics: parts.slice(numberIndex + 1).join(' ')
-    };
   }
 
   return (
