@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useObjectives } from "@/hooks/use-objectives";
 import { ObjectiveCard } from "@/components/objectives/objective-card";
 import { ObjectiveFormModal } from "@/components/objectives/objective-form-modal";
-import { CreateObjectiveRequest, CreateKeyResultRequest, UpdateProgressRequest } from "@/types";
+import { CreateObjectiveRequest, UpdateProgressRequest } from "@/types";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
@@ -22,11 +22,6 @@ export function ObjectiveList() {
 
   const handleCreateObjective = (data: CreateObjectiveRequest) => {
     createObjective(data);
-  };
-
-  const handleCreateKeyResult = (objectiveId: string, data: CreateKeyResultRequest) => {
-    // This will be implemented via the ObjectiveCard component
-    console.debug({ objectiveId, data });
   };
 
   const handleUpdateProgress = (
@@ -128,7 +123,6 @@ export function ObjectiveList() {
                   <ObjectiveCard
                       key={objective.id}
                       objective={objective}
-                      onAddKeyResult={(data) => handleCreateKeyResult(objective.id, data)}
                       onUpdateProgress={(keyResultId, data) =>
                           handleUpdateProgress(objective.id, keyResultId, data)
                       }

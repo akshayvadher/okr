@@ -16,11 +16,6 @@ import {
 
 interface ObjectiveCardProps {
   objective: ObjectiveWithProgress;
-  onAddKeyResult: (data: {
-    title: string;
-    target: number;
-    metrics: string
-  }) => void;
   onUpdateProgress: (keyResultId: string, data: { progress: number }) => void;
   isUpdatingProgress?: boolean;
   isExpanded?: boolean;
@@ -29,7 +24,6 @@ interface ObjectiveCardProps {
 
 export function ObjectiveCard({
                                 objective,
-                                onAddKeyResult,
                                 onUpdateProgress,
                                 isUpdatingProgress = false,
                                 isExpanded = false,
@@ -85,7 +79,6 @@ export function ObjectiveCard({
               <KeyResultFormModal
                   objectiveId={objective.id}
                   objectiveTitle={objective.title}
-                  onSubmit={onAddKeyResult}
                   trigger={
                     <Button size="sm" variant="ghost" className="rounded-full">
                       <Plus className="h-4 w-4"/>

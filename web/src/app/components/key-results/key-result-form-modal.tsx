@@ -14,18 +14,18 @@ import {
 } from "@/components/ui/dialog";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
+import {useObjective} from "@/hooks/use-objectives";
 
 interface KeyResultFormModalProps {
   objectiveId: string;
   objectiveTitle: string;
-  onSubmit: (data: CreateKeyResultRequest) => void;
   isSubmitting?: boolean;
   trigger?: React.ReactNode;
 }
 
 export function KeyResultFormModal({
+                                     objectiveId,
                                      objectiveTitle,
-                                     onSubmit,
                                      isSubmitting = false,
                                      trigger,
                                    }: KeyResultFormModalProps) {
@@ -41,8 +41,10 @@ export function KeyResultFormModal({
     }
   });
 
+  const {createKeyResult} = useObjective(objectiveId)
+
   const handleFormSubmit = (data: CreateKeyResultRequest) => {
-    onSubmit({
+    createKeyResult({
       ...data,
       target: parseFloat(data.target.toString()),
       metrics: data.metrics || '%'
@@ -59,7 +61,8 @@ export function KeyResultFormModal({
         </DialogTrigger>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Add Key Result to &#34;{objectiveTitle}&#34;</DialogTitle>
+            <DialogTitle>Add Key Result
+              to &#34;{objectiveTitle}&#34;</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit(handleFormSubmit)}>
             <div className="grid gap-4 py-4">
