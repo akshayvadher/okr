@@ -61,7 +61,7 @@ export function calculateObjectiveStatus(objective: Objective): {
   status: 'on-track' | 'at-risk' | 'behind';
 } {
   if (!objective.key_results || objective.key_results.length === 0) {
-    return { progress: 0, status: 'on-track' };
+    return { progress: 0, status: 'at-risk' };
   }
 
   const totalProgress = objective.key_results.reduce((sum, kr) => {

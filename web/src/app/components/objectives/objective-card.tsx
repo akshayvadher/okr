@@ -24,7 +24,6 @@ interface ObjectiveCardProps {
 
 export function ObjectiveCard({
                                 objective,
-                                onUpdateProgress,
                                 isUpdatingProgress = false,
                                 isExpanded = false,
                                 onExpandToggle,
@@ -110,7 +109,6 @@ export function ObjectiveCard({
                     <KeyResultQuickUpdate
                         key={keyResult.id}
                         keyResult={keyResult}
-                        onUpdateProgress={onUpdateProgress}
                         isUpdating={isUpdatingProgress}
                     />
                 ))}

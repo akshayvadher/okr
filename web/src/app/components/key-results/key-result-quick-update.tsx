@@ -5,7 +5,7 @@ import {KeyResult} from "@/types";
 import {Button} from "@/components/ui/button";
 import {Progress} from "@/components/ui/progress";
 import {Minus, Plus} from "lucide-react";
-import {useObjective} from "@/hooks/use-objectives";
+import {useQueueActions} from "@/sync/queue";
 
 interface KeyResultQuickUpdateProps {
   keyResult: KeyResult;
@@ -17,20 +17,32 @@ export function KeyResultQuickUpdate({
                                        isUpdating = false,
                                      }: KeyResultQuickUpdateProps) {
   const [progress, setProgress] = useState<number>(keyResult.current);
+  const {enqueue} = useQueueActions()
 
-  const {updateKeyResultProgress} = useObjective(keyResult.objective_id);
 
+  const update = (progress: number) => {
+    enqueue({
+      entity: "KEY_RESULT",
+      action: "UPDATE_PROGRESS",
+      payload: {
+        objective_id: keyResult.objective_id,
+        keyResultId: keyResult.id,
+        progress
+      }
+    });
+  }
   const handleIncrement = () => {
     const newValue = Math.min(keyResult.target, progress + 1);
     setProgress(newValue);
-    updateKeyResultProgress({keyResultId: keyResult.id, data: {progress}})
+    update(newValue);
   };
 
   const handleDecrement = () => {
     const newValue = Math.max(0, progress - 1);
     setProgress(newValue);
-    updateKeyResultProgress({keyResultId: keyResult.id, data: {progress}})
+    update(newValue);
   };
+
 
   const progressPercentage = (progress / keyResult.target) * 100;
 

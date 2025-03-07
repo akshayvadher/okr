@@ -12,7 +12,7 @@ import {
 } from "@/components/key-results/progress-update";
 import {ArrowLeft} from "lucide-react";
 import Link from "next/link";
-import {CreateKeyResultRequest, UpdateProgressRequest} from "@/types";
+import {UpdateProgressRequest} from "@/types";
 
 interface ObjectiveDetailProps {
   objectiveId: string;
@@ -24,7 +24,6 @@ export function ObjectiveDetail({objectiveId}: ObjectiveDetailProps) {
     isLoading,
     isError,
     error,
-    createKeyResult,
     isCreatingKeyResult,
     updateKeyResultProgress,
     isUpdatingProgress,
@@ -61,10 +60,6 @@ export function ObjectiveDetail({objectiveId}: ObjectiveDetailProps) {
         </div>
     );
   }
-
-  const handleAddKeyResult = (data: CreateKeyResultRequest) => {
-    createKeyResult(data);
-  };
 
   const handleUpdateProgress = (keyResultId: string, data: UpdateProgressRequest) => {
     updateKeyResultProgress({keyResultId, data});
@@ -109,7 +104,6 @@ export function ObjectiveDetail({objectiveId}: ObjectiveDetailProps) {
             <KeyResultFormModal
                 objectiveId={objective.id}
                 objectiveTitle={objective.title}
-                onSubmit={handleAddKeyResult}
                 isSubmitting={isCreatingKeyResult}
             />
           </div>
@@ -133,7 +127,6 @@ export function ObjectiveDetail({objectiveId}: ObjectiveDetailProps) {
                 <KeyResultFormModal
                     objectiveId={objective.id}
                     objectiveTitle={objective.title}
-                    onSubmit={handleAddKeyResult}
                     isSubmitting={isCreatingKeyResult}
                     trigger={<Button>Add Your First Key Result</Button>}
                 />

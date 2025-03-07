@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
-import {useObjective} from "@/hooks/use-objectives";
+import {useQueueActions} from "@/sync/queue";
 
 interface KeyResultFormModalProps {
   objectiveId: string;
@@ -41,14 +41,18 @@ export function KeyResultFormModal({
     }
   });
 
-  const {createKeyResult} = useObjective(objectiveId)
+  const {enqueue} = useQueueActions();
 
   const handleFormSubmit = (data: CreateKeyResultRequest) => {
     const kr = parseInput(data.title);
-    if (!kr.metrics || !kr.target) {
-      return;
-    }
-    createKeyResult(kr);
+    enqueue({
+      entity: "KEY_RESULT",
+      action: "CREATE",
+      payload: {
+        ...kr,
+        objective_id: objectiveId,
+      }
+    });
     setOpen(false);
     reset();
   };
@@ -59,7 +63,7 @@ export function KeyResultFormModal({
       const numberIndex = parts.findIndex(part => !isNaN(Number(part)));
 
       if (numberIndex === -1 || numberIndex === 0 || numberIndex === parts.length - 1) {
-        return {title: input, target: undefined, metrics: undefined}
+        return {title: input, target: 100, metrics: '%'}
       }
       return {
         title: parts.slice(0, numberIndex).join(' '),
@@ -68,7 +72,7 @@ export function KeyResultFormModal({
       };
     } catch (e) {
       console.log({e})
-      return {title: input, target: undefined, metrics: undefined}
+      return {title: input, target: 100, metrics: '%'}
     }
   }
 

@@ -1,27 +1,34 @@
 "use client";
 
-import { useState } from "react";
-import { useObjectives } from "@/hooks/use-objectives";
-import { ObjectiveCard } from "@/components/objectives/objective-card";
-import { ObjectiveFormModal } from "@/components/objectives/objective-form-modal";
-import { CreateObjectiveRequest, UpdateProgressRequest } from "@/types";
-import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import {useState} from "react";
+import {useObjectives} from "@/hooks/use-objectives";
+import {ObjectiveCard} from "@/components/objectives/objective-card";
+import {ObjectiveFormModal} from "@/components/objectives/objective-form-modal";
+import {CreateObjectiveRequest, UpdateProgressRequest} from "@/types";
+import {Button} from "@/components/ui/button";
+import {ChevronDown, ChevronRight} from "lucide-react";
+import {useQueueProducer} from "@/sync/queue";
+import {useObjectiveFromPool} from "@/sync/object-pool";
 
 export function ObjectiveList() {
   const {
-    objectives,
     isLoading,
     isError,
     error,
-    createObjective,
     isCreating,
   } = useObjectives();
+
+  const objectives = useObjectiveFromPool();
+  const {enqueue} = useQueueProducer();
 
   const [expandedObjectives, setExpandedObjectives] = useState<Set<string>>(new Set());
 
   const handleCreateObjective = (data: CreateObjectiveRequest) => {
-    createObjective(data);
+    enqueue({
+      entity: "OBJECTIVE",
+      action: "CREATE",
+      payload: data,
+    })
   };
 
   const handleUpdateProgress = (
@@ -30,7 +37,7 @@ export function ObjectiveList() {
       data: UpdateProgressRequest
   ) => {
     // This will be implemented via the ObjectiveCard component
-    console.debug({ objectiveId, keyResultId, data });
+    console.debug({objectiveId, keyResultId, data});
   };
 
   const toggleObjectiveExpanded = (objectiveId: string, expanded: boolean) => {
@@ -58,7 +65,8 @@ export function ObjectiveList() {
   if (isLoading) {
     return (
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-600"></div>
+          <div
+              className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-600"></div>
         </div>
     );
   }
@@ -67,7 +75,8 @@ export function ObjectiveList() {
     return (
         <div className="rounded-lg bg-red-50 p-4 text-red-800">
           <p>Error loading objectives: {error?.message || "Unknown error"}</p>
-          <Button className="mt-2" variant="secondary" onClick={() => window.location.reload()}>
+          <Button className="mt-2" variant="secondary"
+                  onClick={() => window.location.reload()}>
             Try Again
           </Button>
         </div>
@@ -90,12 +99,12 @@ export function ObjectiveList() {
                 >
                   {allExpanded ? (
                       <>
-                        <ChevronRight className="h-4 w-4" />
+                        <ChevronRight className="h-4 w-4"/>
                         <span>Collapse All</span>
                       </>
                   ) : (
                       <>
-                        <ChevronDown className="h-4 w-4" />
+                        <ChevronDown className="h-4 w-4"/>
                         <span>Expand All</span>
                       </>
                   )}

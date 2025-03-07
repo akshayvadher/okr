@@ -15,7 +15,7 @@ export interface KeyResult extends Base {
 export interface Objective extends Base {
   title: string;
   description: string;
-  key_results?: KeyResult[];
+  key_results: KeyResult[];
 }
 
 export interface CreateObjectiveRequest {
@@ -29,8 +29,17 @@ export interface CreateKeyResultRequest {
   metrics: string;
 }
 
+export interface CreateKeyResultRequestWithObjective extends CreateKeyResultRequest{
+  objective_id: string;
+}
+
 export interface UpdateProgressRequest {
   progress: number;
+}
+
+export interface UpdateProgressRequestWithKeyResult extends UpdateProgressRequest {
+  keyResultId: string;
+  objective_id: string;
 }
 
 export interface ObjectiveWithProgress extends Objective {
