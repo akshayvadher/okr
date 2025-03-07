@@ -44,14 +44,25 @@ export function KeyResultFormModal({
   const {createKeyResult} = useObjective(objectiveId)
 
   const handleFormSubmit = (data: CreateKeyResultRequest) => {
-    createKeyResult({
-      ...data,
-      target: parseFloat(data.target.toString()),
-      metrics: data.metrics || '%'
-    });
+    createKeyResult(parseInput(data.title));
     setOpen(false);
     reset();
   };
+
+  function parseInput(input: string) {
+    const parts = input.split(' ');
+    const numberIndex = parts.findIndex(part => !isNaN(Number(part)));
+
+    if (numberIndex === -1 || numberIndex === 0 || numberIndex === parts.length - 1) {
+      throw new Error("Invalid input format");
+    }
+
+    return {
+      title: parts.slice(0, numberIndex).join(' '),
+      target: parseInt(parts[numberIndex], 10),
+      metrics: parts.slice(numberIndex + 1).join(' ')
+    };
+  }
 
   return (
       <Dialog open={open} onOpenChange={setOpen}>
@@ -67,7 +78,7 @@ export function KeyResultFormModal({
           <form onSubmit={handleSubmit(handleFormSubmit)}>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title">Key Result</Label>
                 <Input
                     id="title"
                     placeholder="Enter key result title"
@@ -77,37 +88,37 @@ export function KeyResultFormModal({
                     <p className="text-xs text-red-500">{errors.title.message}</p>
                 )}
               </div>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="col-span-2 grid gap-2">
-                  <Label htmlFor="target">Target Value</Label>
-                  <Input
-                      id="target"
-                      type="number"
-                      min="0"
-                      step="1"
-                      placeholder="Enter target value (e.g., 100)"
-                      {...register("target", {
-                        required: "Target is required",
-                        valueAsNumber: true,
-                        min: {
-                          value: 1,
-                          message: "Target must be greater than 0"
-                        }
-                      })}
-                  />
-                  {errors.target && (
-                      <p className="text-xs text-red-500">{errors.target.message}</p>
-                  )}
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="metrics">Metrics</Label>
-                  <Input
-                      id="metrics"
-                      placeholder="e.g., %, $, users"
-                      {...register("metrics")}
-                  />
-                </div>
-              </div>
+              {/*<div className="grid grid-cols-3 gap-4">*/}
+              {/*  <div className="col-span-2 grid gap-2">*/}
+              {/*    <Label htmlFor="target">Target Value</Label>*/}
+              {/*    <Input*/}
+              {/*        id="target"*/}
+              {/*        type="number"*/}
+              {/*        min="0"*/}
+              {/*        step="1"*/}
+              {/*        placeholder="Enter target value (e.g., 100)"*/}
+              {/*        {...register("target", {*/}
+              {/*          required: "Target is required",*/}
+              {/*          valueAsNumber: true,*/}
+              {/*          min: {*/}
+              {/*            value: 1,*/}
+              {/*            message: "Target must be greater than 0"*/}
+              {/*          }*/}
+              {/*        })}*/}
+              {/*    />*/}
+              {/*    {errors.target && (*/}
+              {/*        <p className="text-xs text-red-500">{errors.target.message}</p>*/}
+              {/*    )}*/}
+              {/*  </div>*/}
+              {/*  <div className="grid gap-2">*/}
+              {/*    <Label htmlFor="metrics">Metrics</Label>*/}
+              {/*    <Input*/}
+              {/*        id="metrics"*/}
+              {/*        placeholder="e.g., %, $, users"*/}
+              {/*        {...register("metrics")}*/}
+              {/*    />*/}
+              {/*  </div>*/}
+              {/*</div>*/}
             </div>
             <DialogFooter>
               <Button type="button" variant="secondary"
