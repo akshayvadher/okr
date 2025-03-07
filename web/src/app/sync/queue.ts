@@ -1,10 +1,10 @@
 import {atom, useAtom} from 'jotai';
-import {Transaction} from "@/sync/transaction";
+import {Transaction, TransactionEnriched} from "@/sync/transaction";
 
 // Define the queue item type
 interface QueueItem {
   id: string;
-  transaction: Transaction;
+  transaction: TransactionEnriched;
   status: 'pending' | 'processing' | 'completed' | 'failed';
   createdAt: Date;
   processedAt?: Date;
@@ -27,7 +27,11 @@ export const useQueueActions = () => {
   const enqueue = (transaction: Transaction) => {
     const newItem: QueueItem = {
       id: crypto.randomUUID(),
-      transaction,
+      transaction: {
+        ...transaction,
+        id: crypto.randomUUID(),
+        created_at: new Date().toISOString()
+      },
       status: 'pending',
       createdAt: new Date(),
     };

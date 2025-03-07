@@ -92,17 +92,6 @@ export function ObjectiveCard({
             <div className="border-t p-4 bg-gray-50">
               <div className="flex justify-between items-center mb-3">
                 <h3 className="text-sm font-medium">Key Results</h3>
-                <KeyResultFormModal
-                    objectiveId={objective.id}
-                    objectiveTitle={objective.title}
-                    trigger={
-                      <Button size="sm" variant="outline"
-                              className="text-xs h-7 px-2">
-                        <Plus className="h-3 w-3 mr-1"/>
-                        Add Key Result
-                      </Button>
-                    }
-                />
               </div>
               <div className="space-y-2">
                 {objective.key_results.map((keyResult: KeyResult) => (

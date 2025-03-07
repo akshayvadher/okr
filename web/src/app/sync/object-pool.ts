@@ -1,13 +1,15 @@
 import {KeyResult, Objective, ObjectiveWithProgress} from "@/types";
 import {atom, useAtomValue, useSetAtom} from "jotai";
 import {calculateObjectiveStatus} from "@/lib/api";
+import {parseISO} from "date-fns";
 
-interface ObjectInPool {
+export interface ObjectInPool {
   object: Objective | KeyResult,
   type: "OBJECTIVE" | "KEY_RESULT",
 }
 
 export const objectPool = atom<ObjectInPool[]>([]);
+export const useGetAll = () => useAtomValue(objectPool);
 
 const objectives = atom<ObjectiveWithProgress[]>(
     get => get(objectPool)
@@ -16,8 +18,10 @@ const objectives = atom<ObjectiveWithProgress[]>(
     .map(o => ({
       ...o,
       key_results: get(objectPool)
-      .filter(o => o.type === 'KEY_RESULT')
+      .filter(k => k.type === 'KEY_RESULT')
+      .filter(k => (k.object as KeyResult).objective_id === o.id)
       .map(k => k.object as KeyResult)
+      .sort((a, b) => parseISO(a.created_at).getMilliseconds() - parseISO(b.created_at).getMilliseconds())
     }))
     .map(o => ({
       ...o,
@@ -38,11 +42,6 @@ export const useAddObjective = () => useSetAtom(addObjective)
 
 const addKeyResult = atom(null, (get, set, kr: KeyResult) => {
   const allObjects = get(objectPool)
-  const objective = allObjects.find(o => o.type === 'OBJECTIVE' && o.object.id === kr.objective_id)
-  if (!objective || !objective.object) {
-    throw new Error(`Objective with id ${kr.objective_id} not found`)
-  }
-  (objective.object as Objective).key_results.push(kr)
   set(objectPool, [...allObjects, {
     object: kr,
     type: 'KEY_RESULT',

@@ -2,11 +2,13 @@
 
 import React from 'react';
 import {useQueueMonitor} from './queue';
+import {usePgLocal} from './usePgLocal';
 
 
 // Queue Monitor Component - Displays queue status
 export const QueueMonitor = () => {
   const {queue, stats} = useQueueMonitor();
+
 
   return (
       <div className="monitor">
@@ -39,11 +41,20 @@ export const QueueMonitor = () => {
 
 // Main App Component
 export const QueueApp = () => {
+  const {db} = usePgLocal();
+
+  const cleanup = () => {
+    db.exec(`truncate table objectives`);
+    db.exec(`truncate table key_results`);
+  }
   return (
       <div className="queue-app">
         <h1>React Queue System Demo</h1>
         <div className="app-container">
           <QueueMonitor/>
+
+          <button type={"button"} className="btn" onClick={cleanup}>Cleanup
+          </button>
         </div>
       </div>
   );

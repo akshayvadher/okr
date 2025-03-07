@@ -1,7 +1,6 @@
 "use client";
 
 import {useState} from "react";
-import {useObjectives} from "@/hooks/use-objectives";
 import {ObjectiveCard} from "@/components/objectives/objective-card";
 import {ObjectiveFormModal} from "@/components/objectives/objective-form-modal";
 import {CreateObjectiveRequest, UpdateProgressRequest} from "@/types";
@@ -11,12 +10,11 @@ import {useQueueProducer} from "@/sync/queue";
 import {useObjectiveFromPool} from "@/sync/object-pool";
 
 export function ObjectiveList() {
-  const {
-    isLoading,
-    isError,
-    error,
-    isCreating,
-  } = useObjectives();
+  // const {
+  //   isError,
+  //   error,
+  //   isCreating,
+  // } = useObjectives();
 
   const objectives = useObjectiveFromPool();
   const {enqueue} = useQueueProducer();
@@ -62,26 +60,6 @@ export function ObjectiveList() {
     }
   };
 
-  if (isLoading) {
-    return (
-        <div className="flex justify-center items-center h-64">
-          <div
-              className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-600"></div>
-        </div>
-    );
-  }
-
-  if (isError) {
-    return (
-        <div className="rounded-lg bg-red-50 p-4 text-red-800">
-          <p>Error loading objectives: {error?.message || "Unknown error"}</p>
-          <Button className="mt-2" variant="secondary"
-                  onClick={() => window.location.reload()}>
-            Try Again
-          </Button>
-        </div>
-    );
-  }
 
   const allExpanded = objectives.length > 0 && expandedObjectives.size === objectives.length;
 
@@ -112,7 +90,6 @@ export function ObjectiveList() {
             )}
             <ObjectiveFormModal
                 onSubmit={handleCreateObjective}
-                isSubmitting={isCreating}
             />
           </div>
         </div>
@@ -122,7 +99,6 @@ export function ObjectiveList() {
               <p className="text-gray-500 mb-4">No objectives found</p>
               <ObjectiveFormModal
                   onSubmit={handleCreateObjective}
-                  isSubmitting={isCreating}
                   trigger={<Button>Create Your First Objective</Button>}
               />
             </div>

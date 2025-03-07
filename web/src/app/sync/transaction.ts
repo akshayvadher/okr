@@ -9,3 +9,8 @@ export interface Transaction {
   action: 'CREATE' | 'UPDATE_PROGRESS';
   payload: CreateObjectiveRequest | CreateKeyResultRequestWithObjective | UpdateProgressRequestWithKeyResult;
 }
+
+export interface TransactionEnriched extends Transaction {
+  id: string;
+  created_at: string;
+}
