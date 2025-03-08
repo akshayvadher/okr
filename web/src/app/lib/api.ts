@@ -4,6 +4,7 @@ import {
   CreateKeyResultRequest,
   UpdateProgressRequest
 } from '@/types';
+import {TransactionEnriched} from "@/sync/transaction";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
 
@@ -53,6 +54,13 @@ export const api = {
         method: 'PATCH',
         body: JSON.stringify(data),
       }),
+
+  // Transactions
+  addTransaction: (data: TransactionEnriched) =>
+      fetchWithError<TransactionEnriched>(`${API_BASE_URL}/transactions/`, {
+        method: 'POST',
+        body: JSON.stringify({...data, payload: JSON.stringify(data.payload)}),
+      }),
 };
 
 // Utility to calculate objective progress and status
@@ -61,7 +69,7 @@ export function calculateObjectiveStatus(objective: Objective): {
   status: 'on-track' | 'at-risk' | 'behind';
 } {
   if (!objective.key_results || objective.key_results.length === 0) {
-    return { progress: 0, status: 'at-risk' };
+    return {progress: 0, status: 'at-risk'};
   }
 
   const totalProgress = objective.key_results.reduce((sum, kr) => {

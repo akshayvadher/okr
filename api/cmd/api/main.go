@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"okr/config"
+	"okr/internal/broadcast"
 	"okr/internal/handler"
 	"okr/internal/repository/gorm"
 	"okr/internal/service"
@@ -25,7 +26,7 @@ func main() {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
-	// Get the underlying SQL DB and ensure it's closed
+	// GetClientManager the underlying SQL DB and ensure it's closed
 	sqlDB, err := db.DB()
 	if err != nil {
 		log.Fatalf("Failed to get SQL DB: %v", err)
@@ -35,7 +36,12 @@ func main() {
 	// Initialize repositories, services, and handlers
 	repo := gorm.NewGormOKRRepository(db)
 	okrService := service.NewOKRService(repo)
-	okrHandler := handler.NewOKRHandler(okrService)
+	clientManager := broadcast.NewClientManager()
+	okrHandler := handler.NewOKRHandler(okrService, clientManager)
+
+	clientManager.Start()
+
+	go broadcast.MonitorTransactions(db, repo, clientManager)
 
 	// Setup router
 	r := gin.Default()
@@ -56,6 +62,12 @@ func main() {
 		keyResults := v1.Group("/key-results")
 		{
 			keyResults.PATCH("/:id/progress", okrHandler.UpdateKeyResultProgress)
+		}
+
+		transactions := v1.Group("/transactions")
+		{
+			transactions.POST("/", okrHandler.AddTransaction)
+			transactions.GET("/events", okrHandler.ListenEvents)
 		}
 	}
 

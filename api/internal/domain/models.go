@@ -50,3 +50,16 @@ type KeyResult struct {
 func (KeyResult) TableName() string {
 	return "key_results"
 }
+
+type Transaction struct {
+	ID              string    `gorm:"type:uuid;primary_key" json:"id"`
+	CreatedAt       time.Time `json:"created_at"`
+	ServerCreatedAt time.Time `json:"server_created_at"`
+	Entity          string    `gorm:"type:string;not null" json:"entity"`
+	Action          string    `gorm:"type:string;not null" json:"action"`
+	Payload         string    `gorm:"type:json;not null" json:"payload"`
+}
+
+func (Transaction) TableName() string {
+	return "transactions"
+}

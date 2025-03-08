@@ -14,3 +14,12 @@ export interface TransactionEnriched extends Transaction {
   id: string;
   created_at: string;
 }
+
+export interface TransactionServer{
+  id: string;
+  created_at: string;
+  payload: string;
+  entity: 'OBJECTIVE' | 'KEY_RESULT';
+  action: 'CREATE' | 'UPDATE_PROGRESS';
+  server_created_at: string;
+}

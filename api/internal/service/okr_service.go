@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-
 	"okr/internal/domain"
 	"okr/internal/repository"
 )
@@ -20,10 +19,6 @@ func (s *OKRService) CreateObjective(ctx context.Context, obj *domain.Objective)
 	if obj.Title == "" {
 		return errors.New("objective title cannot be empty")
 	}
-
-	//if obj.StartDate.After(obj.EndDate) {
-	//	return errors.New("start date cannot be after end date")
-	//}
 
 	return s.repo.CreateObjective(ctx, obj)
 }
@@ -64,4 +59,12 @@ func (s *OKRService) UpdateKeyResultProgress(ctx context.Context, id string, pro
 
 func (s *OKRService) GetObjectiveWithKeyResults(ctx context.Context, id string) (*domain.Objective, error) {
 	return s.repo.GetObjectiveWithKeyResults(ctx, id)
+}
+
+func (s *OKRService) AddTransaction(ctx context.Context, t *domain.Transaction) error {
+	return s.repo.AddTransaction(ctx, t)
+}
+
+func (s *OKRService) GetTransactions(c context.Context, entity string, action string) ([]*domain.Transaction, error) {
+	return s.repo.GetTransactions(c, entity, action)
 }

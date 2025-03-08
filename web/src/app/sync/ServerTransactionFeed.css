@@ -1,0 +1,162 @@
+.transaction-feed-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.transaction-feed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.connection-status {
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.connection-status[data-status="connected"] {
+  background-color: #e6f7e6;
+  color: #2e7d32;
+}
+
+.connection-status[data-status="connecting..."] {
+  background-color: #fff8e1;
+  color: #f57f17;
+}
+
+.connection-status[data-status="disconnected"] {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.transaction-filters {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+}
+
+.filter-group label {
+  margin-bottom: 5px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.filter-group input {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.error-message {
+  padding: 12px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.loading, .no-transactions {
+  padding: 40px;
+  text-align: center;
+  color: #757575;
+  font-style: italic;
+}
+
+.transactions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.transaction-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.transaction-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.transaction-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.transaction-entity {
+  font-weight: 600;
+  margin-right: 12px;
+}
+
+.transaction-action {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-right: auto;
+}
+
+.transaction-date {
+  font-size: 12px;
+  color: #757575;
+}
+
+.transaction-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.transaction-details {
+  display: flex;
+  gap: 24px;
+  font-size: 14px;
+}
+
+.transaction-payload-container {
+  margin-top: 8px;
+}
+
+.transaction-payload {
+  background-color: #f5f5f5;
+  padding: 12px;
+  border-radius: 4px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 13px;
+  overflow-x: auto;
+  margin: 8px 0 0 0;
+}
+
+/* Animation for new transactions */
+@keyframes highlight {
+  0% {
+    background-color: rgba(255, 251, 230, 1);
+  }
+  100% {
+    background-color: rgba(255, 251, 230, 0);
+  }
+}
+
+.transaction-item.new {
+  animation: highlight 3s ease-out;
+}

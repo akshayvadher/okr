@@ -3,7 +3,6 @@ package gorm
 import (
 	"context"
 	"errors"
-
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 
@@ -88,4 +87,27 @@ func (r *OKRRepository) GetObjectiveWithKeyResults(ctx context.Context, id strin
 	}
 
 	return &objective, nil
+}
+
+func (r *OKRRepository) AddTransaction(ctx context.Context, t *domain.Transaction) error {
+	return r.db.WithContext(ctx).Create(t).Error
+}
+
+func (r *OKRRepository) GetTransactions(ctx context.Context, entity, action string) ([]*domain.Transaction, error) {
+	var transactions []*domain.Transaction
+	query := r.db.WithContext(ctx).Model(&domain.Transaction{}).Order("server_created_at ASC")
+
+	if entity != "" {
+		query = query.Where("entity = ?", entity)
+	}
+	if action != "" {
+		query = query.Where("action = ?", action)
+	}
+
+	result := query.Find(&transactions)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return transactions, nil
 }

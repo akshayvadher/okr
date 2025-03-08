@@ -18,18 +18,16 @@ func NewGormDB(cfg *config.DatabaseConfig) (*gorm.DB, error) {
 		cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.DBName, cfg.SSLMode,
 	)
 
-	// Configure custom logger
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
-			SlowThreshold:             time.Second, // Slow SQL threshold
-			LogLevel:                  logger.Info, // Log level
-			IgnoreRecordNotFoundError: true,        // Ignore ErrRecordNotFound error for logger
-			Colorful:                  true,        // Disable color
+			SlowThreshold:             time.Second,
+			LogLevel:                  logger.Warn,
+			IgnoreRecordNotFoundError: true,
+			Colorful:                  true,
 		},
 	)
 
-	// Open connection
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: newLogger,
 	})
@@ -37,8 +35,11 @@ func NewGormDB(cfg *config.DatabaseConfig) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	// AutoMigrate models
-	if err = db.AutoMigrate(&domain.Objective{}, &domain.KeyResult{}); err != nil {
+	if err = db.AutoMigrate(
+		&domain.Objective{},
+		&domain.KeyResult{},
+		&domain.Transaction{},
+	); err != nil {
 		return nil, err
 	}
 

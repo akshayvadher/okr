@@ -3,6 +3,7 @@
 import React from 'react';
 import {useQueueMonitor} from './queue';
 import {usePgLocal} from './usePgLocal';
+import ServerTransactionFeed from "@/sync/ServerTransactionFeed";
 
 
 // Queue Monitor Component - Displays queue status
@@ -44,6 +45,9 @@ export const QueueApp = () => {
   const {db} = usePgLocal();
 
   const cleanup = () => {
+    if(!db) {
+      throw new Error('Database not initialized');
+    }
     db.exec(`truncate table objectives`);
     db.exec(`truncate table key_results`);
   }
@@ -53,7 +57,10 @@ export const QueueApp = () => {
         <div className="app-container">
           <QueueMonitor/>
 
-          <button type={"button"} className="btn" onClick={cleanup}>Cleanup
+          <ServerTransactionFeed/>
+
+          <button type={"button"} className="btn  bg-cyan-700 rounded"
+                  onClick={cleanup}>Cleanup
           </button>
         </div>
       </div>
