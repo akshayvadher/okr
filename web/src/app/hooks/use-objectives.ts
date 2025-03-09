@@ -1,11 +1,11 @@
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   CreateKeyResultRequest,
   CreateObjectiveRequest,
   ObjectiveWithProgress,
-  UpdateProgressRequest
+  UpdateProgressRequest,
 } from '@/types';
-import {api, calculateObjectiveStatus} from '@/lib/api';
+import { api, calculateObjectiveStatus } from '@/lib/api';
 
 export function useObjectives() {
   const queryClient = useQueryClient();
@@ -14,10 +14,10 @@ export function useObjectives() {
     queryKey: ['objectives'],
     queryFn: api.getObjectives,
     select: (data) =>
-        data.map((objective) => ({
-          ...objective,
-          ...calculateObjectiveStatus(objective),
-        })) as ObjectiveWithProgress[],
+      data.map((objective) => ({
+        ...objective,
+        ...calculateObjectiveStatus(objective),
+      })) as ObjectiveWithProgress[],
   });
 
   const createObjectiveMutation = useMutation({
@@ -43,10 +43,11 @@ export function useObjective(id: string) {
   const objectiveQuery = useQuery({
     queryKey: ['objective', id],
     queryFn: () => api.getObjectiveDetails(id),
-    select: (data) => ({
-      ...data,
-      ...calculateObjectiveStatus(data),
-    }) as ObjectiveWithProgress,
+    select: (data) =>
+      ({
+        ...data,
+        ...calculateObjectiveStatus(data),
+      }) as ObjectiveWithProgress,
   });
 
   const createKeyResultMutation = useMutation({
@@ -59,11 +60,11 @@ export function useObjective(id: string) {
 
   const updateKeyResultProgressMutation = useMutation({
     mutationFn: ({
-                   keyResultId,
-                   data
-                 }: {
+      keyResultId,
+      data,
+    }: {
       keyResultId: string;
-      data: UpdateProgressRequest
+      data: UpdateProgressRequest;
     }) => api.updateKeyResultProgress(keyResultId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['objective', id] });

@@ -29,7 +29,8 @@ export interface CreateKeyResultRequest {
   metrics: string;
 }
 
-export interface CreateKeyResultRequestWithObjective extends CreateKeyResultRequest{
+export interface CreateKeyResultRequestWithObjective
+  extends CreateKeyResultRequest {
   objective_id: string;
 }
 
@@ -37,7 +38,8 @@ export interface UpdateProgressRequest {
   progress: number;
 }
 
-export interface UpdateProgressRequestWithKeyResult extends UpdateProgressRequest {
+export interface UpdateProgressRequestWithKeyResult
+  extends UpdateProgressRequest {
   keyResultId: string;
   objective_id: string;
 }

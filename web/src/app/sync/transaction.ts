@@ -1,13 +1,16 @@
 import {
   CreateKeyResultRequestWithObjective,
   CreateObjectiveRequest,
-  UpdateProgressRequestWithKeyResult
-} from "@/types";
+  UpdateProgressRequestWithKeyResult,
+} from '@/types';
 
 export interface Transaction {
   entity: 'OBJECTIVE' | 'KEY_RESULT';
   action: 'CREATE' | 'UPDATE_PROGRESS';
-  payload: CreateObjectiveRequest | CreateKeyResultRequestWithObjective | UpdateProgressRequestWithKeyResult;
+  payload:
+    | CreateObjectiveRequest
+    | CreateKeyResultRequestWithObjective
+    | UpdateProgressRequestWithKeyResult;
 }
 
 export interface TransactionEnriched extends Transaction {
@@ -15,7 +18,7 @@ export interface TransactionEnriched extends Transaction {
   created_at: string;
 }
 
-export interface TransactionServer{
+export interface TransactionServer {
   id: string;
   created_at: string;
   payload: string;

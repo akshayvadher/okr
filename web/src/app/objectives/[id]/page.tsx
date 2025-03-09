@@ -1,14 +1,14 @@
-import { ObjectiveDetail } from "@/components/objectives/objective-detail";
+import { ObjectiveDetail } from '@/components/objectives/objective-detail';
 
 export default async function ObjectiveDetailPage({
-                                              params,
-                                            }: {
+  params,
+}: {
   params: Promise<{ id: string }>;
 }) {
-  const {id} = await params;
+  const { id } = await params;
   return (
-      <div>
-        <ObjectiveDetail objectiveId={id} />
-      </div>
+    <div>
+      <ObjectiveDetail objectiveId={id} />
+    </div>
   );
 }

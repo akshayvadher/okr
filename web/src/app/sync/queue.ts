@@ -1,5 +1,5 @@
-import {atom, useAtom} from 'jotai';
-import {Transaction, TransactionEnriched} from "@/sync/transaction";
+import { atom, useAtom } from 'jotai';
+import { Transaction, TransactionEnriched } from '@/sync/transaction';
 
 // Define the queue item type
 interface QueueItem {
@@ -16,7 +16,7 @@ const queueAtom = atom<QueueItem[]>([]);
 // Derived atom for pending items
 const pendingItemsAtom = atom((get) => {
   const queue = get(queueAtom);
-  return queue.filter(item => item.status === 'pending');
+  return queue.filter((item) => item.status === 'pending');
 });
 
 // Actions to manipulate the queue
@@ -30,7 +30,7 @@ export const useQueueActions = () => {
       transaction: {
         ...transaction,
         id: crypto.randomUUID(),
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       },
       status: 'pending',
       createdAt: new Date(),
@@ -42,55 +42,51 @@ export const useQueueActions = () => {
 
   // Get the next pending item without removing it
   const peek = () => {
-    return queue.find(item => item.status === 'pending');
+    return queue.find((item) => item.status === 'pending');
   };
 
   // Mark an item as processing
   const markAsProcessing = (id: string) => {
     setQueue((currentQueue) =>
-        currentQueue.map(item =>
-            item.id === id
-                ? {...item, status: 'processing'}
-                : item
-        )
+      currentQueue.map((item) =>
+        item.id === id ? { ...item, status: 'processing' } : item,
+      ),
     );
   };
 
   // Complete an item
   const complete = (id: string) => {
     setQueue((currentQueue) =>
-        currentQueue.map(item =>
-            item.id === id
-                ? {...item, status: 'completed', processedAt: new Date()}
-                : item
-        )
+      currentQueue.map((item) =>
+        item.id === id
+          ? { ...item, status: 'completed', processedAt: new Date() }
+          : item,
+      ),
     );
   };
 
   // Mark an item as failed
   const fail = (id: string, error?: string) => {
     setQueue((currentQueue) =>
-        currentQueue.map(item =>
-            item.id === id
-                ? {...item, status: 'failed', error, processedAt: new Date()}
-                : item
-        )
+      currentQueue.map((item) =>
+        item.id === id
+          ? { ...item, status: 'failed', error, processedAt: new Date() }
+          : item,
+      ),
     );
   };
 
   // Remove an item from the queue
   const remove = (id: string) => {
-    setQueue((currentQueue) =>
-        currentQueue.filter(item => item.id !== id)
-    );
+    setQueue((currentQueue) => currentQueue.filter((item) => item.id !== id));
   };
 
   // Clear completed and failed items
   const cleanup = () => {
     setQueue((currentQueue) =>
-        currentQueue.filter(item =>
-            item.status !== 'completed' && item.status !== 'failed'
-        )
+      currentQueue.filter(
+        (item) => item.status !== 'completed' && item.status !== 'failed',
+      ),
     );
   };
 
@@ -114,19 +110,14 @@ export const useQueueActions = () => {
 
 // Hook to use for adding items to the queue (Producer component)
 export const useQueueProducer = () => {
-  const {enqueue} = useQueueActions();
-  return {enqueue};
+  const { enqueue } = useQueueActions();
+  return { enqueue };
 };
 
 // Hook for consuming the queue (Consumer component or service)
 export const useQueueConsumer = () => {
   const [pendingItems] = useAtom(pendingItemsAtom);
-  const {
-    markAsProcessing,
-    complete,
-    fail,
-    remove
-  } = useQueueActions();
+  const { markAsProcessing, complete, fail, remove } = useQueueActions();
 
   return {
     pendingItems,
@@ -143,10 +134,10 @@ export const useQueueMonitor = () => {
 
   const stats = {
     total: queue.length,
-    pending: queue.filter(item => item.status === 'pending').length,
-    processing: queue.filter(item => item.status === 'processing').length,
-    completed: queue.filter(item => item.status === 'completed').length,
-    failed: queue.filter(item => item.status === 'failed').length,
+    pending: queue.filter((item) => item.status === 'pending').length,
+    processing: queue.filter((item) => item.status === 'processing').length,
+    completed: queue.filter((item) => item.status === 'completed').length,
+    failed: queue.filter((item) => item.status === 'failed').length,
   };
 
   return {

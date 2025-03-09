@@ -1,7 +1,11 @@
-import {PGlite} from "@electric-sql/pglite";
-import {useCallback, useEffect, useState} from "react";
-import {useAddKeyResult, useAddObjective, useGetAll} from "@/sync/object-pool";
-import {KeyResult, Objective} from "@/types";
+import { PGlite } from '@electric-sql/pglite';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  useAddKeyResult,
+  useAddObjective,
+  useGetAll,
+} from '@/sync/object-pool';
+import { KeyResult, Objective } from '@/types';
 
 // Create a singleton instance outside of the hook
 let pgLiteInstance: PGlite;
@@ -11,9 +15,9 @@ export const usePgLocal = () => {
 
   useEffect(() => {
     if (!pgLiteInstance) {
-      pgLiteInstance = new PGlite('idb://okr-sandbox')
+      pgLiteInstance = new PGlite('idb://okr-sandbox');
     }
-    setDb(pgLiteInstance)
+    setDb(pgLiteInstance);
   }, []);
 
   const all = useGetAll();
@@ -22,7 +26,7 @@ export const usePgLocal = () => {
 
   const init = useCallback(async () => {
     if (!db) {
-      console.log('returning because db is not available')
+      console.log('returning because db is not available');
       return;
     }
     await db.exec(`
@@ -33,7 +37,7 @@ export const usePgLocal = () => {
             created_at TEXT,
             updated_at TEXT
         )
-    `)
+    `);
 
     await db.exec(`
         CREATE TABLE IF NOT EXISTS key_results
@@ -47,7 +51,7 @@ export const usePgLocal = () => {
             created_at   TEXT,
             updated_at   TEXT
         )
-    `)
+    `);
     await db.exec(`
     CREATE TABLE IF NOT EXISTS transactions
     (
@@ -58,7 +62,7 @@ export const usePgLocal = () => {
         created_at TEXT
     )
     `);
-  }, [db])
+  }, [db]);
 
   const localIfFirstTime = useCallback(async () => {
     if (all.length === 0 && db) {
@@ -66,19 +70,18 @@ export const usePgLocal = () => {
           select 
             *
           from 
-            objectives`)
+            objectives`);
       const allObjectives = os.rows as Objective[];
-      allObjectives.forEach(addObjective)
-
+      allObjectives.forEach(addObjective);
 
       const ks = await db.query(`
           select 
             *
           from 
-            key_results`)
+            key_results`);
       const allKeyResults = ks.rows as KeyResult[];
-      allKeyResults.forEach(addKeyResult)
-      console.log({os, ks})
+      allKeyResults.forEach(addKeyResult);
+      console.log({ os, ks });
     }
   }, [addKeyResult, addObjective, all.length, db]);
 
@@ -87,13 +90,18 @@ export const usePgLocal = () => {
     localIfFirstTime().then();
   }, [init, localIfFirstTime]);
 
-  const doesTransactionExist = useCallback(async (txId: string) => {
-    if (!db) {
-      throw new Error('db not found')
-    }
-    const result = await db.query(`SELECT * FROM transactions WHERE id = '${txId}'`);
-    return {exists: result.rows.length > 0, transaction: result.rows[0]};
-  }, [db])
+  const doesTransactionExist = useCallback(
+    async (txId: string) => {
+      if (!db) {
+        throw new Error('db not found');
+      }
+      const result = await db.query(
+        `SELECT * FROM transactions WHERE id = '${txId}'`,
+      );
+      return { exists: result.rows.length > 0, transaction: result.rows[0] };
+    },
+    [db],
+  );
 
-  return {db, doesTransactionExist}
-}
+  return { db, doesTransactionExist };
+};
