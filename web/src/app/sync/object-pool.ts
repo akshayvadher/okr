@@ -33,8 +33,26 @@ const objectives = atom<ObjectiveWithProgress[]>((get) =>
     })),
 );
 
+const keyResults = atom<KeyResult[]>((get) =>
+  get(objectPool)
+    .filter((o) => o.type === 'KEY_RESULT')
+    .map((o) => o.object as KeyResult)
+    .sort(
+      (a, b) =>
+        parseISO(a.created_at).getMilliseconds() -
+        parseISO(b.created_at).getMilliseconds(),
+    ),
+);
+
 const addObjective = atom(null, (get, set, o: Objective) => {
   const allObjects = get(objectPool);
+  const existingObjective = allObjects.find(
+    (objectInPool) =>
+      objectInPool.type === 'OBJECTIVE' && objectInPool.object.id === o.id,
+  );
+  if (existingObjective) {
+    return;
+  }
   set(objectPool, [
     ...allObjects,
     {
@@ -45,10 +63,17 @@ const addObjective = atom(null, (get, set, o: Objective) => {
 });
 
 export const useObjectiveFromPool = () => useAtomValue(objectives);
+export const useKeyResultsFromPool = () => useAtomValue(keyResults);
 export const useAddObjective = () => useSetAtom(addObjective);
 
 const addKeyResult = atom(null, (get, set, kr: KeyResult) => {
   const allObjects = get(objectPool);
+  const existingKeyResult = allObjects.find(
+    (o) => o.type === 'KEY_RESULT' && o.object.id === kr.id,
+  );
+  if (existingKeyResult) {
+    return;
+  }
   set(objectPool, [
     ...allObjects,
     {
@@ -77,11 +102,12 @@ const updateKeyResultProgress = atom(
     if (!keyResult || !keyResult.object) {
       throw new Error(`Key result with id ${id} not found`);
     }
-    (keyResult.object as KeyResult).current = progress;
+    const krObject = keyResult.object as KeyResult;
+    krObject.current = progress;
 
     set(objectPool, [
       ...allObjects.filter((o) => o.object.id !== keyResult.object.id),
-      keyResult,
+      { ...keyResult, object: krObject },
     ]);
   },
 );

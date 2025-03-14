@@ -10,12 +10,6 @@ import { useQueueProducer } from '@/sync/queue';
 import { useObjectiveFromPool } from '@/sync/object-pool';
 
 export function ObjectiveList() {
-  // const {
-  //   isError,
-  //   error,
-  //   isCreating,
-  // } = useObjectives();
-
   const objectives = useObjectiveFromPool();
   const { enqueue } = useQueueProducer();
 

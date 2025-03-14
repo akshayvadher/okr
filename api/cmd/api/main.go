@@ -41,7 +41,7 @@ func main() {
 
 	clientManager.Start()
 
-	go broadcast.MonitorTransactions(db, repo, clientManager)
+	go broadcast.MonitorTransactions(db, clientManager)
 
 	// Setup router
 	r := gin.Default()
@@ -69,6 +69,7 @@ func main() {
 			transactions.POST("/", okrHandler.AddTransaction)
 			transactions.GET("/events", okrHandler.ListenEvents)
 		}
+		v1.DELETE("/delete-all", okrHandler.DeleteAll)
 	}
 
 	// Start server

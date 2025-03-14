@@ -27,8 +27,15 @@ export const useTransactionQueue = () => {
   const { db, doesTransactionExist } = usePgLocal();
 
   const addObjectivePgLocal = useCallback(
-    (objective: Objective) => {
+    async (objective: Objective) => {
       if (!db) throw new Error('db connection not available');
+      const existing = await db.query(
+        `select * from objectives where id = '${objective.id}'`,
+      );
+      if (existing?.rows?.length > 0) {
+        console.log('Objective already exists in the database');
+        return;
+      }
       db.exec(`
         INSERT INTO objectives (id, title, created_at, updated_at)
         values ('${objective.id}',
@@ -41,8 +48,15 @@ export const useTransactionQueue = () => {
   );
 
   const addKeyResultPgLocal = useCallback(
-    (keyResult: KeyResult) => {
+    async (keyResult: KeyResult) => {
       if (!db) throw new Error('db connection not available');
+      const existing = await db.query(
+        `select * from key_results where id = '${keyResult.id}'`,
+      );
+      if (existing?.rows?.length > 0) {
+        console.log('Key result already exists in the database');
+        return;
+      }
       db.exec(`
         INSERT INTO key_results (id, title, target, metrics, objective_id,
                                  created_at, updated_at, current)
@@ -184,6 +198,25 @@ export const useTransactionQueue = () => {
     [],
   );
 
+  const transactionLocalDb = useCallback(
+    async (transaction: TransactionEnriched) => {
+      const { exists } = await doesTransactionExist(transaction.id);
+      if (exists) return;
+      if (!db) throw new Error('db connection not available');
+      db.exec(
+        `
+        INSERT INTO transactions (id, entity, action, payload, created_at)
+        values ('${transaction.id}',
+                '${transaction.entity}',
+                '${transaction.action}',
+                '${JSON.stringify(transaction.payload)}',
+                '${transaction.created_at}')
+    `,
+      ).then();
+    },
+    [db, doesTransactionExist],
+  );
+
   const processInMemory = useCallback(
     async (id: string, transaction: TransactionEnriched) => {
       try {
@@ -202,25 +235,6 @@ export const useTransactionQueue = () => {
       transactionLocalDbProcessor,
       transactionLocalInMemoryProcessor,
     ],
-  );
-
-  const transactionLocalDb = useCallback(
-    async (transaction: TransactionEnriched) => {
-      const { exists } = await doesTransactionExist(transaction.id);
-      if (exists) return;
-      if (!db) throw new Error('db connection not available');
-      db.exec(
-        `
-        INSERT INTO transactions (id, entity, action, payload, created_at)
-        values ('${transaction.id}',
-                '${transaction.entity}',
-                '${transaction.action}',
-                '${JSON.stringify(transaction.payload)}',
-                '${transaction.created_at}')
-    `,
-      ).then();
-    },
-    [db, doesTransactionExist],
   );
 
   const processItem = useCallback(

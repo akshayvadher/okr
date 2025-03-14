@@ -13,11 +13,10 @@ const ServerTransactionFeed = () => {
   const [filter, setFilter] = useState({ entity: '', action: '' });
   const [connectionStatus, setConnectionStatus] = useState('Connecting...');
   const { processInMemory } = useTransactionQueue();
-  const { db } = usePgLocal();
+  const { ready: localPgReady } = usePgLocal();
 
   useEffect(() => {
-    if (!db) {
-      console.log('waiting because db is not available');
+    if (!localPgReady) {
       return;
     }
     let eventSource: EventSource | null = null;
@@ -53,7 +52,7 @@ const ServerTransactionFeed = () => {
             eventData.data.forEach((transaction: TransactionServer) => {
               processInMemory(transaction.id, {
                 ...transaction,
-                payload: JSON.parse(transaction.payload as string),
+                payload: JSON.parse(transaction.payload),
               }).then();
             });
           } else if (eventData.type === 'new') {
@@ -67,7 +66,11 @@ const ServerTransactionFeed = () => {
               }
               return updatedTransactions;
             });
-            processInMemory(eventData.data.id, eventData.data).then();
+            const serverTransaction = eventData.data as TransactionServer;
+            processInMemory(serverTransaction.id, {
+              ...serverTransaction,
+              payload: JSON.parse(serverTransaction.payload),
+            }).then();
           }
         } catch (err) {
           console.error('Error parsing event data:', err);
@@ -101,7 +104,7 @@ const ServerTransactionFeed = () => {
         eventSource.close();
       }
     };
-  }, [db, filter, processInMemory]); // Reconnect when filters change
+  }, [localPgReady, filter, processInMemory]); // Reconnect when filters change
 
   // Parse JSON payload for display
   const formatPayload = (payloadStr: unknown) => {

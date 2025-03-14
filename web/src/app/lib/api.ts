@@ -71,6 +71,10 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ ...data, payload: JSON.stringify(data.payload) }),
     }),
+
+  deleteAll: () => {
+    fetchWithError(`${API_BASE_URL}/delete-all`, { method: 'DELETE' });
+  },
 };
 
 // Utility to calculate objective progress and status

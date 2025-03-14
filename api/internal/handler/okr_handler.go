@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"io"
 	"log"
 	"net/http"
@@ -91,11 +90,6 @@ func (h *OKRHandler) ListObjectives(c *gin.Context) {
 
 func (h *OKRHandler) CreateKeyResult(c *gin.Context) {
 	objectiveID := c.Param("id")
-	objID, err := uuid.Parse(objectiveID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid objective ID"})
-		return
-	}
 
 	var req createKeyResultRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -104,7 +98,7 @@ func (h *OKRHandler) CreateKeyResult(c *gin.Context) {
 	}
 
 	kr := &domain.KeyResult{
-		ObjectiveID: objID,
+		ObjectiveID: objectiveID,
 		Title:       req.Title,
 		Target:      req.Target,
 		Current:     0,
@@ -278,4 +272,9 @@ func (h *OKRHandler) ListenEvents(c *gin.Context) {
 		}
 		return false
 	})
+}
+
+func (h *OKRHandler) DeleteAll(c *gin.Context) {
+	h.service.DeleteAll(c)
+	c.JSON(http.StatusOK, "ok")
 }

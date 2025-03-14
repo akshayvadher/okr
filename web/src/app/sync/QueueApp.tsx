@@ -4,6 +4,7 @@ import React from 'react';
 import { useQueueMonitor } from './queue';
 import { usePgLocal } from './usePgLocal';
 import ServerTransactionFeed from '@/sync/ServerTransactionFeed';
+import { api } from '@/lib/api';
 
 // Queue Monitor Component - Displays queue status
 export const QueueMonitor = () => {
@@ -48,6 +49,9 @@ export const QueueApp = () => {
     }
     db.exec(`truncate table objectives`);
     db.exec(`truncate table key_results`);
+    db.exec(`truncate table transactions`);
+
+    api.deleteAll()
   };
   return (
     <div className="queue-app">

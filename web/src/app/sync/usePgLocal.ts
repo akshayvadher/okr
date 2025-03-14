@@ -12,6 +12,7 @@ let pgLiteInstance: PGlite;
 
 export const usePgLocal = () => {
   const [db, setDb] = useState<PGlite>();
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     if (!pgLiteInstance) {
@@ -26,42 +27,43 @@ export const usePgLocal = () => {
 
   const init = useCallback(async () => {
     if (!db) {
-      console.log('returning because db is not available');
       return;
     }
     await db.exec(`
-        CREATE TABLE IF NOT EXISTS objectives
-        (
-            id         TEXT PRIMARY KEY,
-            title      TEXT,
-            created_at TEXT,
-            updated_at TEXT
-        )
+      CREATE TABLE IF NOT EXISTS objectives
+      (
+          id         TEXT PRIMARY KEY,
+          title      TEXT,
+          created_at TEXT,
+          updated_at TEXT
+      )
     `);
 
     await db.exec(`
-        CREATE TABLE IF NOT EXISTS key_results
-        (
-            id           TEXT PRIMARY KEY,
-            objective_id TEXT,
-            title        TEXT,
-            target       INTEGER,
-            current      INTEGER,
-            metrics      TEXT,
-            created_at   TEXT,
-            updated_at   TEXT
-        )
+      CREATE TABLE IF NOT EXISTS key_results
+      (
+          id           TEXT PRIMARY KEY,
+          objective_id TEXT,
+          title        TEXT,
+          target       INTEGER,
+          current      INTEGER,
+          metrics      TEXT,
+          created_at   TEXT,
+          updated_at   TEXT
+      )
     `);
+
     await db.exec(`
-    CREATE TABLE IF NOT EXISTS transactions
-    (
-        id         TEXT PRIMARY KEY,
-        entity     TEXT,
-        action     TEXT,
-        payload    TEXT,
-        created_at TEXT
-    )
+      CREATE TABLE IF NOT EXISTS transactions
+      (
+          id         TEXT PRIMARY KEY,
+          entity     TEXT,
+          action     TEXT,
+          payload    TEXT,
+          created_at TEXT
+      )
     `);
+    setReady(true);
   }, [db]);
 
   const localIfFirstTime = useCallback(async () => {
@@ -103,5 +105,5 @@ export const usePgLocal = () => {
     [db],
   );
 
-  return { db, doesTransactionExist };
+  return { db, doesTransactionExist, ready };
 };

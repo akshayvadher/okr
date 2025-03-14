@@ -13,14 +13,12 @@ import { KeyResultQuickUpdate } from '@/components/key-results/key-result-quick-
 interface ObjectiveCardProps {
   objective: ObjectiveWithProgress;
   onUpdateProgress: (keyResultId: string, data: { progress: number }) => void;
-  isUpdatingProgress?: boolean;
   isExpanded?: boolean;
   onExpandToggle?: (expanded: boolean) => void;
 }
 
 export function ObjectiveCard({
   objective,
-  isUpdatingProgress = false,
   isExpanded = false,
   onExpandToggle,
 }: ObjectiveCardProps) {
@@ -57,7 +55,7 @@ export function ObjectiveCard({
                 href={`/objectives/${objective.id}`}
                 className="text-lg font-medium hover:text-indigo-600 transition-colors"
               >
-                {objective.title}
+                {objective.title} ℹ️ {objective.id}
               </Link>
             </div>
           </div>
@@ -85,25 +83,24 @@ export function ObjectiveCard({
       </div>
 
       {expanded &&
-        objective.key_results &&
-        objective.key_results.length > 0 && (
+        objective?.key_results &&
+        objective?.key_results.length > 0 && (
           <div className="border-t p-4 bg-gray-50">
             <div className="flex justify-between items-center mb-3">
               <h3 className="text-sm font-medium">Key Results</h3>
             </div>
             <div className="space-y-2">
-              {objective.key_results.map((keyResult: KeyResult) => (
+              {objective?.key_results.map((keyResult: KeyResult) => (
                 <KeyResultQuickUpdate
                   key={keyResult.id}
                   keyResult={keyResult}
-                  isUpdating={isUpdatingProgress}
                 />
               ))}
             </div>
           </div>
         )}
       {expanded &&
-        (!objective.key_results || objective.key_results?.length === 0) && (
+        (!objective?.key_results || objective?.key_results?.length === 0) && (
           <div className="border-t p-4 bg-gray-50">
             <small className="text-gray-500">No key results created</small>
           </div>

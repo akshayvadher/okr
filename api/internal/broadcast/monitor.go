@@ -4,11 +4,10 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"okr/internal/domain"
-	"okr/internal/repository"
 	"time"
 )
 
-func MonitorTransactions(db *gorm.DB, repo repository.OKRRepository, manager *ClientManager) {
+func MonitorTransactions(db *gorm.DB, manager *ClientManager) {
 	var lastTimestamp time.Time
 
 	// Get the most recent timestamp from the database
@@ -30,7 +29,7 @@ func MonitorTransactions(db *gorm.DB, repo repository.OKRRepository, manager *Cl
 
 	log.Printf("Starting monitoring from timestamp: %v", lastTimestamp)
 
-	ticker := time.NewTicker(1 * time.Second)
+	ticker := time.NewTicker(100 * time.Millisecond)
 	defer ticker.Stop()
 
 	for range ticker.C {

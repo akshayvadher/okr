@@ -3,7 +3,6 @@ package gorm
 import (
 	"context"
 	"errors"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 
 	"okr/internal/domain"
@@ -22,13 +21,8 @@ func (r *OKRRepository) CreateObjective(ctx context.Context, obj *domain.Objecti
 }
 
 func (r *OKRRepository) GetObjective(ctx context.Context, id string) (*domain.Objective, error) {
-	objID, err := uuid.Parse(id)
-	if err != nil {
-		return nil, err
-	}
-
 	var objective domain.Objective
-	if err := r.db.WithContext(ctx).First(&objective, "id = ?", objID).Error; err != nil {
+	if err := r.db.WithContext(ctx).First(&objective, "id = ?", id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("objective not found")
 		}
@@ -52,13 +46,8 @@ func (r *OKRRepository) CreateKeyResult(ctx context.Context, kr *domain.KeyResul
 }
 
 func (r *OKRRepository) UpdateKeyResultProgress(ctx context.Context, id string, progress float64) error {
-	krID, err := uuid.Parse(id)
-	if err != nil {
-		return err
-	}
-
 	result := r.db.WithContext(ctx).Model(&domain.KeyResult{}).
-		Where("id = ?", krID).
+		Where("id = ?", id).
 		Update("current", progress)
 
 	if result.Error != nil {
@@ -73,13 +62,8 @@ func (r *OKRRepository) UpdateKeyResultProgress(ctx context.Context, id string, 
 }
 
 func (r *OKRRepository) GetObjectiveWithKeyResults(ctx context.Context, id string) (*domain.Objective, error) {
-	objID, err := uuid.Parse(id)
-	if err != nil {
-		return nil, err
-	}
-
 	var objective domain.Objective
-	if err := r.db.WithContext(ctx).Preload("KeyResults").First(&objective, "id = ?", objID).Error; err != nil {
+	if err := r.db.WithContext(ctx).Preload("KeyResults").First(&objective, "id = ?", id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("objective not found")
 		}
@@ -110,4 +94,10 @@ func (r *OKRRepository) GetTransactions(ctx context.Context, entity, action stri
 	}
 
 	return transactions, nil
+}
+
+func (r *OKRRepository) DeleteAll(ctx context.Context) {
+	r.db.WithContext(ctx).Unscoped().Where("1 = 1").Delete(&domain.Transaction{})
+	r.db.WithContext(ctx).Unscoped().Where("1 = 1").Delete(&domain.KeyResult{})
+	r.db.WithContext(ctx).Unscoped().Where("1 = 1").Delete(&domain.Objective{})
 }

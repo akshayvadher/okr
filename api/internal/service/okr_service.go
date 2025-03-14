@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"github.com/gin-gonic/gin"
 	"okr/internal/domain"
 	"okr/internal/repository"
 )
@@ -41,7 +42,7 @@ func (s *OKRService) CreateKeyResult(ctx context.Context, kr *domain.KeyResult) 
 	}
 
 	// Verify objective exists
-	_, err := s.repo.GetObjective(ctx, kr.ObjectiveID.String())
+	_, err := s.repo.GetObjective(ctx, kr.ObjectiveID)
 	if err != nil {
 		return err
 	}
@@ -67,4 +68,8 @@ func (s *OKRService) AddTransaction(ctx context.Context, t *domain.Transaction) 
 
 func (s *OKRService) GetTransactions(c context.Context, entity string, action string) ([]*domain.Transaction, error) {
 	return s.repo.GetTransactions(c, entity, action)
+}
+
+func (s *OKRService) DeleteAll(c *gin.Context) {
+	s.repo.DeleteAll(c)
 }

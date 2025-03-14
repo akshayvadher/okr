@@ -3,13 +3,12 @@ package domain
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 // Base model with common fields
 type Base struct {
-	ID        uuid.UUID      `gorm:"type:uuid;primary_key" json:"id"`
+	ID        string         `gorm:"type:varchar(255);primary_key" json:"id"`
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
@@ -17,8 +16,8 @@ type Base struct {
 
 // BeforeCreate will set a UUID rather than numeric ID
 func (base *Base) BeforeCreate(tx *gorm.DB) error {
-	if base.ID == uuid.Nil {
-		base.ID = uuid.New()
+	if base.ID == "" {
+		panic("blank id")
 	}
 	return nil
 }
@@ -39,11 +38,11 @@ func (Objective) TableName() string {
 // KeyResult represents a measurable outcome for an objective
 type KeyResult struct {
 	Base
-	ObjectiveID uuid.UUID `gorm:"type:uuid;not null" json:"objective_id"`
-	Title       string    `gorm:"type:varchar(255);not null" json:"title"`
-	Target      float64   `gorm:"not null" json:"target"`
-	Current     float64   `gorm:"not null;default:0" json:"current"`
-	Metrics     string    `gorm:"not null;default:'%''" json:"metrics"`
+	ObjectiveID string  `gorm:"type:varchar(255);not null" json:"objective_id"`
+	Title       string  `gorm:"type:varchar(255);not null" json:"title"`
+	Target      float64 `gorm:"not null" json:"target"`
+	Current     float64 `gorm:"not null;default:0" json:"current"`
+	Metrics     string  `gorm:"not null;default:'%''" json:"metrics"`
 }
 
 // TableName overrides the table name
@@ -52,7 +51,7 @@ func (KeyResult) TableName() string {
 }
 
 type Transaction struct {
-	ID              string    `gorm:"type:uuid;primary_key" json:"id"`
+	ID              string    `gorm:"type:varchar(255);primary_key" json:"id"`
 	CreatedAt       time.Time `json:"created_at"`
 	ServerCreatedAt time.Time `json:"server_created_at"`
 	Entity          string    `gorm:"type:string;not null" json:"entity"`
