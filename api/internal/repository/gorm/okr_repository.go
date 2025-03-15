@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"gorm.io/gorm"
+	"time"
 
 	"okr/internal/domain"
 )
@@ -48,7 +49,8 @@ func (r *OKRRepository) CreateKeyResult(ctx context.Context, kr *domain.KeyResul
 func (r *OKRRepository) UpdateKeyResultProgress(ctx context.Context, id string, progress float64) error {
 	result := r.db.WithContext(ctx).Model(&domain.KeyResult{}).
 		Where("id = ?", id).
-		Update("current", progress)
+		Update("current", progress).
+		Update("updated_at", time.Now())
 
 	if result.Error != nil {
 		return result.Error
@@ -88,7 +90,7 @@ func (r *OKRRepository) GetTransactions(ctx context.Context, entity, action, fro
 		query = query.Where("action = ?", action)
 	}
 	if from != "" {
-		query = query.Where("server_created_at = ?", from)
+		query = query.Where("server_created_at >= ?", from)
 	}
 
 	result := query.Find(&transactions)

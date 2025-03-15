@@ -3,6 +3,7 @@ import { Open_Sans } from 'next/font/google';
 import './globals.css';
 import { AppProviders } from '@/components/app-providers';
 import Link from 'next/link';
+import NetworkStatus from '@/components/NetworkStatus';
 
 const openSans = Open_Sans({ subsets: ['latin'] });
 
@@ -24,13 +25,14 @@ export default function RootLayout({
             <header className="sticky top-0 bg-white border-b z-10">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex h-16 items-center justify-between">
-                  <div className="flex items-center">
+                  <div className="flex items-center justify-between w-full">
                     <Link
                       href="/"
                       className="text-xl font-semibold text-indigo-600"
                     >
                       OKR App
                     </Link>
+                    <NetworkStatus />
                   </div>
                 </div>
               </div>

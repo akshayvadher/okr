@@ -3,6 +3,7 @@ import { useTransactionQueue } from '@/sync/useTransactionQueue';
 import useGetObjects from '@/sync/useGetObjects';
 import { useTimeContext } from '@/contex/TimeContext';
 import { TransactionServer } from '@/sync/transaction';
+import { usePgLocal } from '@/sync/usePgLocal';
 
 const useServerTransactions = () => {
   const [transactions, setTransactions] = useState([]);
@@ -11,10 +12,16 @@ const useServerTransactions = () => {
   const [connectionStatus, setConnectionStatus] = useState('Connecting...');
   const { processInMemory } = useTransactionQueue();
   const { serverLoadingDone: ready } = useGetObjects();
-  const { clientAppStartTime } = useTimeContext();
+  const { setLastSync } = usePgLocal();
+  const { lastSyncTime } = useTimeContext();
 
   useEffect(() => {
-    if (!ready) {
+    if (!ready || !lastSyncTime || connectionStatus === 'Connected') {
+      console.log('Not ready or last sync time not set or already connected', {
+        ready,
+        lastSyncTime,
+        connectionStatus,
+      });
       return;
     }
     let eventSource: EventSource | null = null;
@@ -25,7 +32,8 @@ const useServerTransactions = () => {
       // Build URL with any filters
       let url = 'http://localhost:8080/api/v1/transactions/events';
       const params = new URLSearchParams();
-      params.append('from', clientAppStartTime.toISOString());
+      console.log({ lastSyncTime });
+      params.append('from', lastSyncTime.toISOString());
       if (params.toString()) url += `?${params.toString()}`;
 
       // Create EventSource connection
@@ -52,6 +60,13 @@ const useServerTransactions = () => {
                 payload: JSON.parse(transaction.payload),
               }).then();
             });
+            if (eventData.data.length > 0) {
+              const lastTx = eventData.data[
+                eventData.data.length - 1
+              ] as TransactionServer;
+              console.log('lastTx', lastTx);
+              setLastSync(lastTx.created_at).then();
+            }
           } else if (eventData.type === 'new') {
             // Add new transaction to the top of the list and remove the last one to keep the list size consistent
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -67,7 +82,10 @@ const useServerTransactions = () => {
             processInMemory(serverTransaction.id, {
               ...serverTransaction,
               payload: JSON.parse(serverTransaction.payload),
-            }).then();
+            }).then(() => {
+              console.log('processing transaction', serverTransaction);
+              return setLastSync(serverTransaction.created_at);
+            });
           }
         } catch (err) {
           console.error('Error parsing event data:', err);
@@ -97,11 +115,11 @@ const useServerTransactions = () => {
 
     // Cleanup on component unmount
     return () => {
-      if (eventSource) {
-        eventSource.close();
-      }
+      // if (eventSource) {
+      //   eventSource.close();
+      // }
     };
-  }, [ready, processInMemory, clientAppStartTime]); // Reconnect when filters change
+  }, [ready, processInMemory, lastSyncTime, setLastSync, connectionStatus]); // Reconnect when filters change
 
   return { transactions, loading, error, connectionStatus };
 };

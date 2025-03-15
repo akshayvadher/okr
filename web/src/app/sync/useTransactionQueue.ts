@@ -278,7 +278,7 @@ export const useTransactionQueue = () => {
       if (pendingItems.length > 0 && !isProcessing) {
         processNext().then();
       }
-    }, 100); // TODO fix the delay
+    }, 10); // TODO fix the delay
 
     return () => {
       if (interval) clearInterval(interval);

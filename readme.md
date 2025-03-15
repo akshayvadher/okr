@@ -11,8 +11,10 @@
 
 # Todo
 
-- [ ] Last sync persistance
-- [ ] Remove dead code
+- [x] Last sync persistance
+- [ ] Last sync persistance (refactor)
+- [ ] Local load is too slow (code executing 6 times)
 - [ ] Offline support
 - [ ] Better queue in web (remove delay)
 - [ ] Better event in server (remove polling)
+- [ ] Remove dead code

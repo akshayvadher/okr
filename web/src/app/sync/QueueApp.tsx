@@ -50,6 +50,7 @@ export const QueueApp = () => {
     db.exec(`truncate table objectives`);
     db.exec(`truncate table key_results`);
     db.exec(`truncate table transactions`);
+    db.exec(`truncate table sync`);
 
     await api.deleteAll();
     window.location.reload();
