@@ -43,7 +43,7 @@ export const QueueMonitor = () => {
 export const QueueApp = () => {
   const { db } = usePgLocal();
 
-  const cleanup = () => {
+  const cleanup = async () => {
     if (!db) {
       throw new Error('Database not initialized');
     }
@@ -51,7 +51,8 @@ export const QueueApp = () => {
     db.exec(`truncate table key_results`);
     db.exec(`truncate table transactions`);
 
-    api.deleteAll()
+    await api.deleteAll();
+    window.location.reload();
   };
   return (
     <div className="queue-app">

@@ -72,8 +72,8 @@ export const api = {
       body: JSON.stringify({ ...data, payload: JSON.stringify(data.payload) }),
     }),
 
-  deleteAll: () => {
-    fetchWithError(`${API_BASE_URL}/delete-all`, { method: 'DELETE' });
+  deleteAll: async () => {
+    await fetchWithError(`${API_BASE_URL}/delete-all`, { method: 'DELETE' });
   },
 };
 
