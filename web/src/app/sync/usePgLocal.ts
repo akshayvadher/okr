@@ -12,6 +12,8 @@ let pgLiteInstance: PGlite;
 
 export const usePgLocal = () => {
   const [db, setDb] = useState<PGlite>();
+  const [dbCreated, setDbCreated] = useState(false);
+  const [localLoadingDone, setLocalLoadingDone] = useState(false);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -63,29 +65,33 @@ export const usePgLocal = () => {
           created_at TEXT
       )
     `);
-    setReady(true);
+    setDbCreated(true);
   }, [db]);
 
   const localIfFirstTime = useCallback(async () => {
-    if (all.length === 0 && db) {
-      const os = await db.query(`
+    if (db && dbCreated) {
+      if (all.length === 0) {
+        const os = await db.query(`
           select 
             *
           from 
             objectives`);
-      const allObjectives = os.rows as Objective[];
-      allObjectives.forEach(addObjective);
+        const allObjectives = os.rows as Objective[];
+        allObjectives.forEach(addObjective);
 
-      const ks = await db.query(`
+        const ks = await db.query(`
           select 
             *
           from 
             key_results`);
-      const allKeyResults = ks.rows as KeyResult[];
-      allKeyResults.forEach(addKeyResult);
-      console.log({ os, ks });
+        const allKeyResults = ks.rows as KeyResult[];
+        allKeyResults.forEach(addKeyResult);
+        console.log({ os, ks });
+      }
+      setLocalLoadingDone(true);
+      setReady(true);
     }
-  }, [addKeyResult, addObjective, all.length, db]);
+  }, [addKeyResult, addObjective, all.length, db, dbCreated]);
 
   useEffect(() => {
     init().then();
@@ -105,5 +111,5 @@ export const usePgLocal = () => {
     [db],
   );
 
-  return { db, doesTransactionExist, ready };
+  return { db, doesTransactionExist, ready, localLoadingDone };
 };

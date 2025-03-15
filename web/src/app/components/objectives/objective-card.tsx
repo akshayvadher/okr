@@ -9,6 +9,7 @@ import { StatusBadge } from '@/components/objectives/status-badge';
 import { Button } from '@/components/ui/button';
 import { KeyResultFormModal } from '@/components/key-results/key-result-form-modal';
 import { KeyResultQuickUpdate } from '@/components/key-results/key-result-quick-update';
+import {useIsDebugModeOn} from "@/contex/debug";
 
 interface ObjectiveCardProps {
   objective: ObjectiveWithProgress;
@@ -22,6 +23,7 @@ export function ObjectiveCard({
   isExpanded = false,
   onExpandToggle,
 }: ObjectiveCardProps) {
+  const isDebugModeOn = useIsDebugModeOn();
   const [expanded, setExpanded] = useState(isExpanded);
 
   // Sync with parent component's expanded state
@@ -55,7 +57,7 @@ export function ObjectiveCard({
                 href={`/objectives/${objective.id}`}
                 className="text-lg font-medium hover:text-indigo-600 transition-colors"
               >
-                {objective.title} ℹ️ {objective.id}
+                {objective.title} {isDebugModeOn && `ℹ️ ${objective.id}`}
               </Link>
             </div>
           </div>

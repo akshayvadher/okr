@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"okr/internal/broadcast"
 	"okr/internal/domain"
+	"okr/internal/dto"
 	"okr/internal/service"
 	"time"
 )
@@ -23,31 +24,8 @@ func NewOKRHandler(service *service.OKRService, clientManager *broadcast.ClientM
 	return &OKRHandler{service: service, clientManager: clientManager}
 }
 
-type createObjectiveRequest struct {
-	Title       string `json:"title" binding:"required"`
-	Description string `json:"description"`
-}
-
-type createKeyResultRequest struct {
-	Title   string  `json:"title" binding:"required"`
-	Target  float64 `json:"target" binding:"required"`
-	Metrics string  `json:"metrics" binding:"required"`
-}
-
-type updateProgressRequest struct {
-	Progress float64 `json:"progress" binding:"required"`
-}
-
-type createTransactionRequest struct {
-	Id        string    `json:"id" binding:"required"`
-	Action    string    `json:"action" binding:"required"`
-	Entity    string    `json:"entity" binding:"required"`
-	Payload   string    `json:"payload" binding:"required"`
-	CreatedAt time.Time `json:"created_at" binding:"required"`
-}
-
 func (h *OKRHandler) CreateObjective(c *gin.Context) {
-	var req createObjectiveRequest
+	var req dto.CreateObjectiveRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -91,7 +69,7 @@ func (h *OKRHandler) ListObjectives(c *gin.Context) {
 func (h *OKRHandler) CreateKeyResult(c *gin.Context) {
 	objectiveID := c.Param("id")
 
-	var req createKeyResultRequest
+	var req dto.CreateKeyResultRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -116,7 +94,7 @@ func (h *OKRHandler) CreateKeyResult(c *gin.Context) {
 func (h *OKRHandler) UpdateKeyResultProgress(c *gin.Context) {
 	id := c.Param("id")
 
-	var req updateProgressRequest
+	var req dto.UpdateProgressRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -143,7 +121,7 @@ func (h *OKRHandler) GetObjectiveWithKeyResults(c *gin.Context) {
 }
 
 func (h *OKRHandler) AddTransaction(c *gin.Context) {
-	var req createTransactionRequest
+	var req dto.CreateTransactionRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -167,59 +145,6 @@ func (h *OKRHandler) AddTransaction(c *gin.Context) {
 	c.JSON(http.StatusCreated, t)
 }
 
-func (h *OKRHandler) ListenEvents_(c *gin.Context) {
-	// Set headers for SSE
-	c.Writer.Header().Set("Content-Type", "text/event-stream")
-	c.Writer.Header().Set("Cache-Control", "no-cache")
-	c.Writer.Header().Set("Connection", "keep-alive")
-	c.Writer.Header().Set("Transfer-Encoding", "chunked")
-	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-
-	// Create a channel for this client
-	clientChan := make(chan broadcast.Event)
-
-	// Register the client
-	h.clientManager.Register <- clientChan
-
-	// Optional: Filter transactions by entity or action
-	entity := c.Query("entity")
-	action := c.Query("action")
-
-	// Send initial data
-	transactions, err := h.service.GetTransactions(c, entity, action)
-	if err == nil {
-		fmt.Println("broadcasting initial transactions", transactions)
-		clientChan <- broadcast.Event{Type: "initial", Data: transactions}
-	}
-
-	// Create a context that gets canceled when client disconnects
-	ctx, cancel := context.WithCancel(c.Request.Context())
-	defer cancel()
-
-	// Notify of client disconnection
-	go func() {
-		<-ctx.Done()
-		h.clientManager.Unregister <- clientChan
-	}()
-
-	// Stream events to client
-	c.Stream(func(w io.Writer) bool {
-		if msg, ok := <-clientChan; ok {
-			fmt.Println("received a message in client", msg)
-			data, err := json.Marshal(msg)
-			if err != nil {
-				log.Printf("Error marshaling event: %v", err)
-				return true
-			}
-
-			// Write the event to the response
-			fmt.Fprintf(w, "data: %s\n\n", data)
-			return true
-		}
-		return false
-	})
-}
-
 func (h *OKRHandler) ListenEvents(c *gin.Context) {
 	// Set headers for SSE
 	c.Writer.Header().Set("Content-Type", "text/event-stream")
@@ -236,9 +161,10 @@ func (h *OKRHandler) ListenEvents(c *gin.Context) {
 	go func() {
 		entity := c.Query("entity")
 		action := c.Query("action")
+		from := c.Query("from")
 
 		// Send initial data
-		transactions, _ := h.service.GetTransactions(c, entity, action)
+		transactions, _ := h.service.GetTransactions(c, entity, action, from)
 
 		clientChan <- broadcast.Event{
 			Type: "initial",

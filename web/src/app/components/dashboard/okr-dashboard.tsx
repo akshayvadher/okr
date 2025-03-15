@@ -1,6 +1,5 @@
 'use client';
 
-import { useObjectives } from '@/hooks/use-objectives';
 import { Progress } from '@/components/ui/progress';
 import {
   Bar,
@@ -12,11 +11,12 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { useObjectivesFromPool } from '@/sync/object-pool';
 
 export function OKRDashboard() {
-  const { objectives, isLoading } = useObjectives();
+  const objectives = useObjectivesFromPool();
 
-  if (isLoading || objectives.length === 0) {
+  if (objectives.length === 0) {
     return null;
   }
 

@@ -2,9 +2,11 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"okr/internal/domain"
+	"okr/internal/dto"
 	"okr/internal/repository"
 )
 
@@ -63,11 +65,74 @@ func (s *OKRService) GetObjectiveWithKeyResults(ctx context.Context, id string) 
 }
 
 func (s *OKRService) AddTransaction(ctx context.Context, t *domain.Transaction) error {
-	return s.repo.AddTransaction(ctx, t)
+	err := s.repo.AddTransaction(ctx, t)
+	if err != nil {
+		return err
+	}
+	switch t.Entity {
+	case "OBJECTIVE":
+		switch t.Action {
+		case "CREATE":
+			var createObjectiveRequest dto.CreateObjectiveRequest
+			err := json.Unmarshal([]byte(t.Payload), &createObjectiveRequest)
+			if err != nil {
+				return err
+			}
+			obj := &domain.Objective{
+				Base: domain.Base{
+					ID:        t.ID,
+					CreatedAt: t.CreatedAt,
+					UpdatedAt: t.CreatedAt,
+				},
+				Title:       createObjectiveRequest.Title,
+				Description: createObjectiveRequest.Description,
+			}
+			err = s.repo.CreateObjective(ctx, obj)
+			if err != nil {
+				return err
+			}
+		}
+	case "KEY_RESULT":
+		switch t.Action {
+		case "CREATE":
+			var createKeyResultRequest dto.CreateKeyResultRequest
+			err := json.Unmarshal([]byte(t.Payload), &createKeyResultRequest)
+			if err != nil {
+				return err
+			}
+			kr := &domain.KeyResult{
+				Base: domain.Base{
+					ID:        t.ID,
+					CreatedAt: t.CreatedAt,
+					UpdatedAt: t.CreatedAt,
+				},
+				ObjectiveID: createKeyResultRequest.ObjectiveId,
+				Title:       createKeyResultRequest.Title,
+				Target:      createKeyResultRequest.Target,
+				Current:     0,
+				Metrics:     createKeyResultRequest.Metrics,
+			}
+			err = s.repo.CreateKeyResult(ctx, kr)
+			if err != nil {
+				return err
+			}
+		case "UPDATE_PROGRESS":
+			var updateProgressRequest dto.UpdateProgressRequest
+			err := json.Unmarshal([]byte(t.Payload), &updateProgressRequest)
+			if err != nil {
+				return err
+			}
+			err = s.repo.UpdateKeyResultProgress(ctx, updateProgressRequest.KeyResultId, updateProgressRequest.Progress)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
-func (s *OKRService) GetTransactions(c context.Context, entity string, action string) ([]*domain.Transaction, error) {
-	return s.repo.GetTransactions(c, entity, action)
+func (s *OKRService) GetTransactions(c context.Context, entity, action, from string) ([]*domain.Transaction, error) {
+	return s.repo.GetTransactions(c, entity, action, from)
 }
 
 func (s *OKRService) DeleteAll(c *gin.Context) {

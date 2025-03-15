@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react';
 import './ServerTransactionFeed.css';
 import { TransactionServer } from '@/sync/transaction';
 import { useTransactionQueue } from '@/sync/useTransactionQueue';
-import { usePgLocal } from '@/sync/usePgLocal';
+import { useTimeContext } from '@/contex/TimeContext';
+import useGetObjects from '@/sync/useGetObjects';
 
 const ServerTransactionFeed = () => {
   const [transactions, setTransactions] = useState([]);
@@ -13,10 +14,11 @@ const ServerTransactionFeed = () => {
   const [filter, setFilter] = useState({ entity: '', action: '' });
   const [connectionStatus, setConnectionStatus] = useState('Connecting...');
   const { processInMemory } = useTransactionQueue();
-  const { ready: localPgReady } = usePgLocal();
+  const { serverLoadingDone: ready } = useGetObjects();
+  const { clientAppStartTime } = useTimeContext();
 
   useEffect(() => {
-    if (!localPgReady) {
+    if (!ready) {
       return;
     }
     let eventSource: EventSource | null = null;
@@ -29,6 +31,7 @@ const ServerTransactionFeed = () => {
       const params = new URLSearchParams();
       if (filter.entity) params.append('entity', filter.entity);
       if (filter.action) params.append('action', filter.action);
+      params.append('from', clientAppStartTime.toISOString());
       if (params.toString()) url += `?${params.toString()}`;
 
       // Create EventSource connection
@@ -104,7 +107,7 @@ const ServerTransactionFeed = () => {
         eventSource.close();
       }
     };
-  }, [localPgReady, filter, processInMemory]); // Reconnect when filters change
+  }, [ready, filter, processInMemory, clientAppStartTime]); // Reconnect when filters change
 
   // Parse JSON payload for display
   const formatPayload = (payloadStr: unknown) => {

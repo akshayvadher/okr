@@ -8,10 +8,9 @@ import (
 
 // Base model with common fields
 type Base struct {
-	ID        string         `gorm:"type:varchar(255);primary_key" json:"id"`
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	ID        string    `gorm:"type:varchar(255);primary_key" json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 // BeforeCreate will set a UUID rather than numeric ID
@@ -53,7 +52,7 @@ func (KeyResult) TableName() string {
 type Transaction struct {
 	ID              string    `gorm:"type:varchar(255);primary_key" json:"id"`
 	CreatedAt       time.Time `json:"created_at"`
-	ServerCreatedAt time.Time `json:"server_created_at"`
+	ServerCreatedAt time.Time `gorm:"index" json:"server_created_at"`
 	Entity          string    `gorm:"type:string;not null" json:"entity"`
 	Action          string    `gorm:"type:string;not null" json:"action"`
 	Payload         string    `gorm:"type:json;not null" json:"payload"`

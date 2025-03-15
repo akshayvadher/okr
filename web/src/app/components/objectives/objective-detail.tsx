@@ -1,6 +1,5 @@
 'use client';
 
-import { useObjective } from '@/hooks/use-objectives';
 import { StatusBadge } from '@/components/objectives/status-badge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -9,44 +8,14 @@ import { KeyResultProgressUpdate } from '@/components/key-results/progress-updat
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { UpdateProgressRequest } from '@/types';
+import { useObjectiveFromPool } from '@/sync/object-pool';
 
 interface ObjectiveDetailProps {
   objectiveId: string;
 }
 
 export function ObjectiveDetail({ objectiveId }: ObjectiveDetailProps) {
-  const {
-    objective,
-    isLoading,
-    isError,
-    error,
-    isCreatingKeyResult,
-    updateKeyResultProgress,
-    isUpdatingProgress,
-  } = useObjective(objectiveId);
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-600"></div>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="rounded-lg bg-red-50 p-4 text-red-800">
-        <p>Error loading objective: {error?.message || 'Unknown error'}</p>
-        <Button
-          className="mt-2"
-          variant="secondary"
-          onClick={() => window.location.reload()}
-        >
-          Try Again
-        </Button>
-      </div>
-    );
-  }
+  const objective = useObjectiveFromPool(objectiveId);
 
   if (!objective) {
     return (
@@ -63,7 +32,8 @@ export function ObjectiveDetail({ objectiveId }: ObjectiveDetailProps) {
     keyResultId: string,
     data: UpdateProgressRequest,
   ) => {
-    updateKeyResultProgress({ keyResultId, data });
+    console.debug({ keyResultId, data });
+    // TODO updateKeyResultProgress({ keyResultId, data });
   };
 
   return (
@@ -108,7 +78,6 @@ export function ObjectiveDetail({ objectiveId }: ObjectiveDetailProps) {
           <KeyResultFormModal
             objectiveId={objective.id}
             objectiveTitle={objective.title}
-            isSubmitting={isCreatingKeyResult}
           />
         </div>
 
@@ -124,7 +93,6 @@ export function ObjectiveDetail({ objectiveId }: ObjectiveDetailProps) {
                   onUpdate={(keyResultId, data) =>
                     handleUpdateProgress(keyResultId, data)
                   }
-                  isUpdating={isUpdatingProgress}
                 />
               </div>
             ))}
@@ -135,7 +103,6 @@ export function ObjectiveDetail({ objectiveId }: ObjectiveDetailProps) {
             <KeyResultFormModal
               objectiveId={objective.id}
               objectiveTitle={objective.title}
-              isSubmitting={isCreatingKeyResult}
               trigger={<Button>Add Your First Key Result</Button>}
             />
           </div>

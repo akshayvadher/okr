@@ -33,6 +33,11 @@ const objectives = atom<ObjectiveWithProgress[]>((get) =>
     })),
 );
 
+const objective = (id: string) =>
+  atom<ObjectiveWithProgress | undefined>((get) =>
+    get(objectives).find((o) => o.id === id),
+  );
+
 const keyResults = atom<KeyResult[]>((get) =>
   get(objectPool)
     .filter((o) => o.type === 'KEY_RESULT')
@@ -62,7 +67,8 @@ const addObjective = atom(null, (get, set, o: Objective) => {
   ]);
 });
 
-export const useObjectiveFromPool = () => useAtomValue(objectives);
+export const useObjectivesFromPool = () => useAtomValue(objectives);
+export const useObjectiveFromPool = (id: string) => useAtomValue(objective(id));
 export const useKeyResultsFromPool = () => useAtomValue(keyResults);
 export const useAddObjective = () => useSetAtom(addObjective);
 

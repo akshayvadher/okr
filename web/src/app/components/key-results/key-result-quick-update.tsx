@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Minus, Plus } from 'lucide-react';
 import { useQueueActions } from '@/sync/queue';
+import { useIsDebugModeOn } from '@/contex/debug';
 
 interface KeyResultQuickUpdateProps {
   keyResult: KeyResult;
@@ -12,6 +13,7 @@ interface KeyResultQuickUpdateProps {
 
 export function KeyResultQuickUpdate({ keyResult }: KeyResultQuickUpdateProps) {
   const { enqueue } = useQueueActions();
+  const isDebugModeOn = useIsDebugModeOn();
 
   const progress = keyResult.current;
 
@@ -43,7 +45,7 @@ export function KeyResultQuickUpdate({ keyResult }: KeyResultQuickUpdateProps) {
       <div className="flex-grow">
         <div className="flex justify-between items-center mb-1">
           <h4 className="text-sm font-medium truncate max-w-[200px]">
-            {keyResult.title} ℹ️ {keyResult.id}
+            {keyResult.title} {isDebugModeOn && `ℹ️ ${keyResult.id}`}
           </h4>
           <div className="flex items-center gap-1 text-xs text-gray-500">
             <span className="text-indigo-600 font-medium">{progress}</span>

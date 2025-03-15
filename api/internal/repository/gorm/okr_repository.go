@@ -77,7 +77,7 @@ func (r *OKRRepository) AddTransaction(ctx context.Context, t *domain.Transactio
 	return r.db.WithContext(ctx).Create(t).Error
 }
 
-func (r *OKRRepository) GetTransactions(ctx context.Context, entity, action string) ([]*domain.Transaction, error) {
+func (r *OKRRepository) GetTransactions(ctx context.Context, entity, action, from string) ([]*domain.Transaction, error) {
 	var transactions []*domain.Transaction
 	query := r.db.WithContext(ctx).Model(&domain.Transaction{}).Order("server_created_at ASC")
 
@@ -86,6 +86,9 @@ func (r *OKRRepository) GetTransactions(ctx context.Context, entity, action stri
 	}
 	if action != "" {
 		query = query.Where("action = ?", action)
+	}
+	if from != "" {
+		query = query.Where("server_created_at = ?", from)
 	}
 
 	result := query.Find(&transactions)

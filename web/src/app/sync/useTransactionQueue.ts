@@ -198,7 +198,7 @@ export const useTransactionQueue = () => {
     [],
   );
 
-  const transactionLocalDb = useCallback(
+  const registerTransactionLocalDb = useCallback(
     async (transaction: TransactionEnriched) => {
       const { exists } = await doesTransactionExist(transaction.id);
       if (exists) return;
@@ -242,10 +242,10 @@ export const useTransactionQueue = () => {
       markAsProcessing(id);
 
       try {
-        await transactionApi(transaction);
-        await transactionLocalDb(transaction);
+        await registerTransactionLocalDb(transaction);
         await transactionLocalInMemoryProcessor(transaction);
         await transactionLocalDbProcessor(transaction);
+        await transactionApi(transaction);
 
         complete(id);
       } catch (error) {
@@ -258,7 +258,7 @@ export const useTransactionQueue = () => {
       fail,
       markAsProcessing,
       transactionApi,
-      transactionLocalDb,
+      registerTransactionLocalDb,
       transactionLocalDbProcessor,
       transactionLocalInMemoryProcessor,
     ],
@@ -285,5 +285,5 @@ export const useTransactionQueue = () => {
     };
   }, [pendingItems, processNext]);
 
-  return { processInMemory };
+  return { processInMemory, addObjectivePgLocal, addKeyResultPgLocal };
 };

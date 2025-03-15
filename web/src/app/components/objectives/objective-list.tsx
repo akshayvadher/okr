@@ -7,10 +7,10 @@ import { CreateObjectiveRequest, UpdateProgressRequest } from '@/types';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { useQueueProducer } from '@/sync/queue';
-import { useObjectiveFromPool } from '@/sync/object-pool';
+import { useObjectivesFromPool } from '@/sync/object-pool';
 
 export function ObjectiveList() {
-  const objectives = useObjectiveFromPool();
+  const objectives = useObjectivesFromPool();
   const { enqueue } = useQueueProducer();
 
   const [expandedObjectives, setExpandedObjectives] = useState<Set<string>>(
