@@ -9,6 +9,19 @@
 
 ![image](./docs/okr-sync-localfirst.excalidraw.svg)
 
+# Start
+
+```shell
+cd api
+podman compose up
+go build ./cmd/api/main.go && ./main
+```
+
+```shell
+bun i
+bun run build && bun start
+```
+
 # Todo
 
 - [x] Last sync persistance
@@ -18,9 +31,19 @@
 - [ ] Jotai listener to avoid code duplication
 - [ ] dynamic table naming in client
 - [ ] PgLite listener
-- [ ] Remove dead code
+- [x] Remove dead code
 - [ ] Using dynamic table name based on create query
 - [ ] Backend to be transactional
+- [ ] Consistency in naming (key_results vs keyResults)
+
+# Todo for completeness
+
+- [ ] Workspace/multi-tenancy support
+
+# Bugs
+
+- [ ] Too many connections when server stopped
+- [ ] After many transactions, the client becomes slow
 
 # To check
 
@@ -32,7 +55,7 @@
 - [ ] Conflict handling
 - [ ] Delete old tables
 
-# Issues
+# Risk
 
 - [ ] Complexity
 - [ ] Client code to have a lot of business logic

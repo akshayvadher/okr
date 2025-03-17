@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
-import { useTransactionQueue } from '@/sync/useTransactionQueue';
 import { TransactionServer } from '@/sync/transaction';
 import useMemoryLocalSeed from '@/sync/useMemoryLocalSeed';
 import usePgLocalAndMemorySetLastSync from '@/sync/usePgLocalAndMemorySetLastSync';
 import { useLastSync } from '@/sync/last-sync-memory';
 import { API_BASE_URL } from '@/lib/api';
+import useProcessTransaction from '@/sync/useProcessTransaction';
 
 const useServerTransactions = () => {
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<TransactionServer[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [connectionStatus, setConnectionStatus] = useState('Connecting...');
-  const { processInMemory } = useTransactionQueue();
+  const [error, setError] = useState<string>();
+  const [connectionStatus, setConnectionStatus] = useState('Pending');
+  const { processInMemory } = useProcessTransaction();
   const { pgLocalAndMemoryReady } = useMemoryLocalSeed();
   const { setLastSync } = usePgLocalAndMemorySetLastSync();
   const lastSyncTime = useLastSync();
@@ -27,9 +27,14 @@ const useServerTransactions = () => {
     let eventSource: EventSource | null = null;
 
     const connectToSSE = () => {
+      if (
+        connectionStatus === 'Connected' ||
+        connectionStatus === 'Connecting...'
+      ) {
+        return;
+      }
       setConnectionStatus('Connecting...');
 
-      // Build URL with any filters
       let url = `${API_BASE_URL}/transactions/events`;
       const params = new URLSearchParams();
       console.log({ lastSyncTime });
@@ -40,7 +45,7 @@ const useServerTransactions = () => {
 
       eventSource.onopen = () => {
         setConnectionStatus('Connected');
-        setError(null);
+        setError(undefined);
       };
 
       eventSource.onmessage = (event) => {
@@ -52,7 +57,7 @@ const useServerTransactions = () => {
             setTransactions(eventData.data);
             setLoading(false);
             eventData.data.forEach((transaction: TransactionServer) => {
-              processInMemory(transaction.id, {
+              processInMemory({
                 ...transaction,
                 payload: JSON.parse(transaction.payload),
               }).then();
@@ -64,9 +69,6 @@ const useServerTransactions = () => {
               setLastSync(lastTx.created_at).then();
             }
           } else if (eventData.type === 'new') {
-            // Add new transaction to the top of the list and remove the last one to keep the list size consistent
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
             setTransactions((prevTransactions) => {
               const updatedTransactions = [eventData.data, ...prevTransactions];
               if (updatedTransactions.length > 50) {
@@ -75,7 +77,7 @@ const useServerTransactions = () => {
               return updatedTransactions;
             });
             const serverTransaction = eventData.data as TransactionServer;
-            processInMemory(serverTransaction.id, {
+            processInMemory({
               ...serverTransaction,
               payload: JSON.parse(serverTransaction.payload),
             }).then(() => {
@@ -90,13 +92,13 @@ const useServerTransactions = () => {
       eventSource.onerror = (err) => {
         console.error('EventSource error:', err);
         setConnectionStatus('Disconnected');
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
         setError('Connection lost. Attempting to reconnect...');
 
-        // Close the current connection
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
+        if (eventSource === null) {
+          throw new Error(
+            'Weird how eventSource is null inside its own onerror method',
+          );
+        }
         eventSource.close();
 
         // Try to reconnect after a delay
@@ -107,7 +109,6 @@ const useServerTransactions = () => {
     // Initial connection
     connectToSSE();
 
-    // Cleanup on component unmount
     return () => {
       // if (eventSource) {
       //   eventSource.close();
