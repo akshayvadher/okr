@@ -1,11 +1,11 @@
 'use client';
 
-import useOnline from '@/hooks/useOnline';
+import { useNetworkStatus } from '@/sync/network-status-memory';
 
 const NetworkStatus = () => {
-  const { isOnline } = useOnline();
+  const networkStatus = useNetworkStatus();
 
-  return <div>{!isOnline && `🟠 offline`}</div>;
+  return <div>{!networkStatus.connected && `🟠 offline`}</div>;
 };
 
 export default NetworkStatus;

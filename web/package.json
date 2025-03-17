@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.2.17",
+    "@electric-sql/pglite-react": "^0.2.17",
     "@headlessui/react": "^2.2.0",
     "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-label": "^2.1.2",
@@ -18,6 +19,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.0.0",
     "date-fns": "^4.1.0",
+    "drizzle-orm": "^0.40.0",
     "jotai": "^2.12.1",
     "lucide-react": "^0.476.0",
     "next": "^15.2.2",
@@ -34,6 +36,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "^0.30.5",
     "eslint": "^9",
     "eslint-config-next": "15.1.7",
     "postcss": "^8",

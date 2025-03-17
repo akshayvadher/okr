@@ -18,12 +18,12 @@ const useProcessTransaction = () => {
       if (!transaction.clientId) {
         transaction.clientId = clientId;
       }
-      api.addTransaction(transaction).then();
+      await api.addTransaction(transaction);
     },
     [clientId],
   );
 
-  const processInMemory = useCallback(
+  const processTransactionSyncBack = useCallback(
     async (transaction: TransactionEnriched) => {
       try {
         if (transaction.clientId === clientId) {
@@ -62,7 +62,7 @@ const useProcessTransaction = () => {
     ],
   );
 
-  return { transactionApi, processInMemory, processTransaction };
+  return { transactionApi, processTransactionSyncBack, processTransaction };
 };
 
 export default useProcessTransaction;

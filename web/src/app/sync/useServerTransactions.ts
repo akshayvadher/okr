@@ -5,16 +5,22 @@ import usePgLocalAndMemorySetLastSync from '@/sync/usePgLocalAndMemorySetLastSyn
 import { useLastSync } from '@/sync/last-sync-memory';
 import { API_BASE_URL } from '@/lib/api';
 import useProcessTransaction from '@/sync/useProcessTransaction';
+import {
+  useRegisterNetworkOffline,
+  useRegisterNetworkOnline,
+} from '@/sync/network-status-memory';
 
 const useServerTransactions = () => {
   const [transactions, setTransactions] = useState<TransactionServer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
   const [connectionStatus, setConnectionStatus] = useState('Pending');
-  const { processInMemory } = useProcessTransaction();
+  const { processTransactionSyncBack } = useProcessTransaction();
   const { pgLocalAndMemoryReady } = useMemoryLocalSeed();
   const { setLastSync } = usePgLocalAndMemorySetLastSync();
   const lastSyncTime = useLastSync();
+  const registerNetworkOffline = useRegisterNetworkOffline();
+  const registerNetworkOnline = useRegisterNetworkOnline();
 
   useEffect(() => {
     if (
@@ -46,18 +52,19 @@ const useServerTransactions = () => {
       eventSource.onopen = () => {
         setConnectionStatus('Connected');
         setError(undefined);
+        registerNetworkOnline();
       };
 
       eventSource.onmessage = (event) => {
         try {
           const eventData = JSON.parse(event.data);
           console.log('received event', eventData);
-
+          registerNetworkOnline();
           if (eventData.type === 'initial') {
             setTransactions(eventData.data);
             setLoading(false);
             eventData.data.forEach((transaction: TransactionServer) => {
-              processInMemory({
+              processTransactionSyncBack({
                 ...transaction,
                 payload: JSON.parse(transaction.payload),
               }).then();
@@ -69,20 +76,15 @@ const useServerTransactions = () => {
               setLastSync(lastTx.created_at).then();
             }
           } else if (eventData.type === 'new') {
-            setTransactions((prevTransactions) => {
-              const updatedTransactions = [eventData.data, ...prevTransactions];
-              if (updatedTransactions.length > 50) {
-                updatedTransactions.pop();
-              }
-              return updatedTransactions;
-            });
+            setTransactions((prevTransactions) => [
+              eventData.data,
+              ...prevTransactions,
+            ]);
             const serverTransaction = eventData.data as TransactionServer;
-            processInMemory({
+            processTransactionSyncBack({
               ...serverTransaction,
               payload: JSON.parse(serverTransaction.payload),
-            }).then(() => {
-              return setLastSync(serverTransaction.created_at);
-            });
+            }).then(() => setLastSync(serverTransaction.created_at));
           }
         } catch (err) {
           console.error('Error parsing event data:', err);
@@ -93,6 +95,7 @@ const useServerTransactions = () => {
         console.error('EventSource error:', err);
         setConnectionStatus('Disconnected');
         setError('Connection lost. Attempting to reconnect...');
+        registerNetworkOffline('Event source connection lost');
 
         if (eventSource === null) {
           throw new Error(
@@ -100,9 +103,6 @@ const useServerTransactions = () => {
           );
         }
         eventSource.close();
-
-        // Try to reconnect after a delay
-        setTimeout(connectToSSE, 3000);
       };
     };
 
@@ -117,10 +117,12 @@ const useServerTransactions = () => {
     };
   }, [
     pgLocalAndMemoryReady,
-    processInMemory,
+    processTransactionSyncBack,
     lastSyncTime,
     setLastSync,
     connectionStatus,
+    registerNetworkOnline,
+    registerNetworkOffline,
   ]);
 
   return { transactions, loading, error, connectionStatus };

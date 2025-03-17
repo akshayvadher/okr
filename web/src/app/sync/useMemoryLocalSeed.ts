@@ -13,7 +13,7 @@ import { useClientMetadata } from '@/sync/client-metadata-memory';
 
 const useMemoryLocalSeed = () => {
   const { db } = usePgLocal();
-  const { dbCreated } = usePgLocalMigrate();
+  const { dbCreated, tableNames } = usePgLocalMigrate();
   const [seeded, setSeeded] = useState(false);
   const [pgLocalAndMemoryReady, setPgLocalAndMemoryReady] = useState(false);
 
@@ -34,28 +34,21 @@ const useMemoryLocalSeed = () => {
     if (allObjectsFromMemoryPool.length !== 0) {
       return;
     }
-    const objectivesFromPgLocal = await db.query(`
-        select 
-          *
-        from 
-          objectives`);
+    const objectivesFromPgLocal = await db.query(
+      `select * from ${tableNames.objective}`,
+    );
     const allObjectives = objectivesFromPgLocal.rows as Objective[];
     allObjectives.forEach(addObjective);
 
-    const keyResultsFromPgLocal = await db.query(`
-        select 
-          *
-        from 
-          key_results`);
+    const keyResultsFromPgLocal = await db.query(
+      `select * from ${tableNames.keyResult}`,
+    );
     const allKeyResults = keyResultsFromPgLocal.rows as KeyResult[];
     allKeyResults.forEach(addKeyResult);
 
-    const lastSync = await db.query(`
-        select 
-          *
-        from 
-          sync
-        where id = 'last_sync'`);
+    const lastSync = await db.query(
+      `select * from ${tableNames.sync} where id = 'last_sync'`,
+    );
     if (lastSync.rows.length > 0) {
       const lastSyncRow = lastSync.rows[0] as {
         id: string;
@@ -78,6 +71,7 @@ const useMemoryLocalSeed = () => {
     seeded,
     serverSeed,
     setLastSync,
+    tableNames,
   ]);
 
   useEffect(() => {

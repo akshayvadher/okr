@@ -1,18 +1,32 @@
 import { PGlite } from '@electric-sql/pglite';
 import { useEffect, useState } from 'react';
+import { live, LiveNamespace } from '@electric-sql/pglite/live';
+import { drizzle, PgliteDatabase } from 'drizzle-orm/pglite';
 
-// Create a singleton instance outside of the hook
-let pgLiteInstance: PGlite;
+type PGLiteWithLive = PGlite & {
+  live: LiveNamespace;
+};
+// Create a singleton instance outside the hook
+let pgLiteInstance: PGLiteWithLive;
 
 export const usePgLocal = () => {
-  const [db, setDb] = useState<PGlite>();
+  const [db, setDb] = useState<PGLiteWithLive>();
+  const [drizzleDb, setDrizzleDb] = useState<PgliteDatabase>();
 
   useEffect(() => {
-    if (!pgLiteInstance) {
-      pgLiteInstance = new PGlite('idb://okr-sandbox');
-    }
+    pgLiteInstance ??= new PGlite('idb://okr-sandbox', {
+      extensions: { live },
+    }) as PGLiteWithLive;
     setDb(pgLiteInstance);
   }, []);
 
-  return { db };
+  useEffect(() => {
+    if (!db) {
+      return;
+    }
+    const drizzleDbInstance = drizzle(db);
+    setDrizzleDb(drizzleDbInstance);
+  }, [db]);
+
+  return { db, drizzleDb };
 };

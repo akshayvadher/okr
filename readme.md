@@ -25,16 +25,19 @@ bun run build && bun start
 # Todo
 
 - [x] Last sync persistance
+- [x] Offline tracker
 - [ ] Offline support
 - [ ] Better queue in web (remove delay)
 - [ ] Better event in server (remove polling)
 - [ ] Jotai listener to avoid code duplication
-- [ ] dynamic table naming in client
 - [ ] PgLite listener
+- [x] Using dynamic table name based on create query
+
+# Nice to have (not directly related to sync)
 - [x] Remove dead code
-- [ ] Using dynamic table name based on create query
 - [ ] Backend to be transactional
 - [ ] Consistency in naming (key_results vs keyResults)
+- [ ] Use go migrations instead of
 
 # Todo for completeness
 
@@ -54,6 +57,8 @@ bun run build && bun start
 - [ ] Error rollback
 - [ ] Conflict handling
 - [ ] Delete old tables
+- [ ] I don't know how to test the sync part
+- [ ] Not doing any sort of testing
 
 # Risk
 
