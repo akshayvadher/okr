@@ -1,11 +1,10 @@
 import { useCallback } from 'react';
 import { usePgLocal } from './usePgLocal';
 import { useSetLastSyncMemory } from '@/sync/last-sync-memory';
-import usePgLocalMigrate from '@/sync/usePgLocalMigrate';
+import { tableNames } from './migration-queries';
 
 const usePgLocalAndMemorySetLastSync = () => {
   const { db } = usePgLocal();
-  const { tableNames } = usePgLocalMigrate();
   const setLastSyncInMemory = useSetLastSyncMemory();
 
   const setLastSync = useCallback(
@@ -32,7 +31,7 @@ const usePgLocalAndMemorySetLastSync = () => {
       const dateToSet = typeof date === 'string' ? new Date(date) : date;
       setLastSyncInMemory(dateToSet);
     },
-    [db, setLastSyncInMemory, tableNames.sync],
+    [db, setLastSyncInMemory],
   );
 
   return { setLastSync };

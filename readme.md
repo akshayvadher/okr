@@ -32,12 +32,15 @@ bun run build && bun start
 - [ ] Jotai listener to avoid code duplication
 - [ ] PgLite listener
 - [x] Using dynamic table name based on create query
+- [ ] Add loading per entity
 
 # Nice to have (not directly related to sync)
+
 - [x] Remove dead code
 - [ ] Backend to be transactional
 - [ ] Consistency in naming (key_results vs keyResults)
 - [ ] Use go migrations instead of
+- [ ] Default exampand to be on
 
 # Todo for completeness
 

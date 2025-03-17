@@ -2,11 +2,10 @@ import { usePgLocal } from '@/sync/usePgLocal';
 import { useCallback } from 'react';
 import { KeyResult, Objective } from '@/types';
 import { TransactionEnriched } from '@/sync/transaction';
-import usePgLocalMigrate from '@/sync/usePgLocalMigrate';
+import { tableNames } from './migration-queries';
 
 const usePgLocalOperations = () => {
   const { db } = usePgLocal();
-  const { tableNames } = usePgLocalMigrate();
 
   const addObjectivePgLocal = useCallback(
     async (objective: Objective) => {
@@ -26,7 +25,7 @@ const usePgLocalOperations = () => {
                 '${objective.updated_at}')
     `);
     },
-    [db, tableNames.objective],
+    [db],
   );
 
   const addKeyResultPgLocal = useCallback(
@@ -52,7 +51,7 @@ const usePgLocalOperations = () => {
                 '${keyResult.current}')
     `);
     },
-    [db, tableNames.keyResult],
+    [db],
   );
 
   const updateKeyResultProgressPgLocal = useCallback(
@@ -64,7 +63,7 @@ const usePgLocalOperations = () => {
         WHERE id = '${id}'
     `);
     },
-    [db, tableNames.keyResult],
+    [db],
   );
 
   const doesTransactionExist = useCallback(
@@ -77,7 +76,7 @@ const usePgLocalOperations = () => {
       );
       return { exists: result.rows.length > 0, transaction: result.rows[0] };
     },
-    [db, tableNames.transaction],
+    [db],
   );
 
   const registerTransactionLocalDb = useCallback(
@@ -95,7 +94,7 @@ const usePgLocalOperations = () => {
     `,
       );
     },
-    [db, doesTransactionExist, tableNames.transaction],
+    [db, doesTransactionExist],
   );
 
   return {

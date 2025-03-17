@@ -10,10 +10,11 @@ import { usePgLocal } from '@/sync/usePgLocal';
 import usePgLocalAndMemorySetLastSync from '@/sync/usePgLocalAndMemorySetLastSync';
 import useServerSeed from '@/sync/useServerSeed';
 import { useClientMetadata } from '@/sync/client-metadata-memory';
+import { tableNames } from '@/sync/migration-queries';
 
 const useMemoryLocalSeed = () => {
   const { db } = usePgLocal();
-  const { dbCreated, tableNames } = usePgLocalMigrate();
+  const { dbCreated } = usePgLocalMigrate();
   const [seeded, setSeeded] = useState(false);
   const [pgLocalAndMemoryReady, setPgLocalAndMemoryReady] = useState(false);
 
@@ -71,7 +72,6 @@ const useMemoryLocalSeed = () => {
     seeded,
     serverSeed,
     setLastSync,
-    tableNames,
   ]);
 
   useEffect(() => {

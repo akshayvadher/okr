@@ -5,6 +5,7 @@ import { useQueueMonitor } from '../queue';
 import { usePgLocal } from '../usePgLocal';
 import ServerTransactionFeed from './ServerTransactionFeed';
 import { api } from '@/lib/api';
+import { tableNames } from '@/sync/migration-queries';
 
 // Queue Monitor Component - Displays queue status
 export const QueueMonitor = () => {
@@ -47,10 +48,10 @@ export const QueueApp = () => {
     if (!db) {
       throw new Error('Database not initialized');
     }
-    await db.exec(`truncate table objectives`);
-    await db.exec(`truncate table key_results`);
-    await db.exec(`truncate table transactions`);
-    await db.exec(`truncate table sync`);
+    await db.exec(`truncate table ${tableNames.objective}`);
+    await db.exec(`truncate table ${tableNames.keyResult}`);
+    await db.exec(`truncate table ${tableNames.transaction}`);
+    await db.exec(`truncate table ${tableNames.sync}`);
 
     await api.deleteAll();
     window.location.reload();

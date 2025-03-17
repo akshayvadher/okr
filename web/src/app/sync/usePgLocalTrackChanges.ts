@@ -2,10 +2,11 @@ import usePgLocalMigrate from '@/sync/usePgLocalMigrate';
 import { useEffect } from 'react';
 import { usePgLocal } from '@/sync/usePgLocal';
 import { LiveChanges } from '@electric-sql/pglite/live';
+import { tableNames } from '@/sync/migration-queries';
 
 const usePgLocalTrackChanges = () => {
   const { db } = usePgLocal();
-  const { dbCreated, tableNames } = usePgLocalMigrate();
+  const { dbCreated } = usePgLocalMigrate();
 
   useEffect(() => {
     if (!dbCreated || !db) {
@@ -29,7 +30,7 @@ const usePgLocalTrackChanges = () => {
     return () => {
       ret?.unsubscribe().then();
     };
-  }, [db, dbCreated, tableNames.transaction]);
+  }, [db, dbCreated]);
 };
 
 export default usePgLocalTrackChanges;
