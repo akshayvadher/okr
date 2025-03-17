@@ -24,26 +24,6 @@ func NewOKRHandler(service *service.OKRService, clientManager *broadcast.ClientM
 	return &OKRHandler{service: service, clientManager: clientManager}
 }
 
-func (h *OKRHandler) CreateObjective(c *gin.Context) {
-	var req dto.CreateObjectiveRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	obj := &domain.Objective{
-		Title:       req.Title,
-		Description: req.Description,
-	}
-
-	if err := h.service.CreateObjective(c.Request.Context(), obj); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated, obj)
-}
-
 func (h *OKRHandler) GetObjective(c *gin.Context) {
 	id := c.Param("id")
 
@@ -64,48 +44,6 @@ func (h *OKRHandler) ListObjectives(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, objectives)
-}
-
-func (h *OKRHandler) CreateKeyResult(c *gin.Context) {
-	objectiveID := c.Param("id")
-
-	var req dto.CreateKeyResultRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	kr := &domain.KeyResult{
-		ObjectiveID: objectiveID,
-		Title:       req.Title,
-		Target:      req.Target,
-		Current:     0,
-		Metrics:     req.Metrics,
-	}
-
-	if err := h.service.CreateKeyResult(c.Request.Context(), kr); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated, kr)
-}
-
-func (h *OKRHandler) UpdateKeyResultProgress(c *gin.Context) {
-	id := c.Param("id")
-
-	var req dto.UpdateProgressRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := h.service.UpdateKeyResultProgress(c.Request.Context(), id, req.Progress); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "progress updated successfully"})
 }
 
 func (h *OKRHandler) GetObjectiveWithKeyResults(c *gin.Context) {
@@ -135,6 +73,7 @@ func (h *OKRHandler) AddTransaction(c *gin.Context) {
 		Entity:          req.Entity,
 		Action:          req.Action,
 		Payload:         req.Payload,
+		ClientId:        req.ClientId,
 	}
 
 	if err := h.service.AddTransaction(c.Request.Context(), t); err != nil {
@@ -180,6 +119,7 @@ func (h *OKRHandler) ListenEvents(c *gin.Context) {
 	go func() {
 		<-ctx.Done()
 		h.clientManager.Unregister <- clientChan
+		// TODO check if this is working
 	}()
 
 	// Stream events to client

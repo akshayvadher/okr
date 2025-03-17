@@ -1,7 +1,6 @@
 import { KeyResult, Objective, ObjectiveWithProgress } from '@/types';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
-import { calculateObjectiveStatus } from '@/lib/api';
-import { parseISO } from 'date-fns';
+import { calculateObjectiveStatus } from '@/lib/utils';
 
 export interface ObjectInPool {
   object: Objective | KeyResult;
@@ -9,7 +8,7 @@ export interface ObjectInPool {
 }
 
 export const objectPool = atom<ObjectInPool[]>([]);
-export const useGetAll = () => useAtomValue(objectPool);
+export const useGetAllObjectsFromMemory = () => useAtomValue(objectPool);
 
 const objectives = atom<ObjectiveWithProgress[]>((get) =>
   get(objectPool)
@@ -21,11 +20,7 @@ const objectives = atom<ObjectiveWithProgress[]>((get) =>
         .filter((k) => k.type === 'KEY_RESULT')
         .filter((k) => (k.object as KeyResult).objective_id === o.id)
         .map((k) => k.object as KeyResult)
-        .sort(
-          (a, b) =>
-            parseISO(a.created_at).getMilliseconds() -
-            parseISO(b.created_at).getMilliseconds(),
-        ),
+        .sort((a, b) => a.id.localeCompare(b.id)),
     }))
     .map((o) => ({
       ...o,
@@ -37,17 +32,6 @@ const objective = (id: string) =>
   atom<ObjectiveWithProgress | undefined>((get) =>
     get(objectives).find((o) => o.id === id),
   );
-
-const keyResults = atom<KeyResult[]>((get) =>
-  get(objectPool)
-    .filter((o) => o.type === 'KEY_RESULT')
-    .map((o) => o.object as KeyResult)
-    .sort(
-      (a, b) =>
-        parseISO(a.created_at).getMilliseconds() -
-        parseISO(b.created_at).getMilliseconds(),
-    ),
-);
 
 const addObjective = atom(null, (get, set, o: Objective) => {
   const allObjects = get(objectPool);
@@ -69,7 +53,6 @@ const addObjective = atom(null, (get, set, o: Objective) => {
 
 export const useObjectivesFromPool = () => useAtomValue(objectives);
 export const useObjectiveFromPool = (id: string) => useAtomValue(objective(id));
-export const useKeyResultsFromPool = () => useAtomValue(keyResults);
 export const useAddObjective = () => useSetAtom(addObjective);
 
 const addKeyResult = atom(null, (get, set, kr: KeyResult) => {

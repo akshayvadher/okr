@@ -3,7 +3,6 @@ import { Open_Sans } from 'next/font/google';
 import './globals.css';
 import { AppProviders } from '@/components/app-providers';
 import Link from 'next/link';
-import NetworkStatus from '@/components/NetworkStatus';
 
 const openSans = Open_Sans({ subsets: ['latin'] });
 
@@ -32,7 +31,7 @@ export default function RootLayout({
                     >
                       OKR App
                     </Link>
-                    <NetworkStatus />
+                    {/*<NetworkStatus />*/}
                   </div>
                 </div>
               </div>

@@ -1,14 +1,9 @@
 'use client';
 
-import { TransactionQueueProcessor } from '@/sync/TransactionQueueProcessor';
 import { ReactNode } from 'react';
-import { TimeContextProvider } from '@/contex/TimeContext';
+import useSyncEngine from '@/sync/useSyncEngine';
 
 export function AppProviders({ children }: { children: ReactNode }) {
-  return (
-    <TimeContextProvider>
-      <TransactionQueueProcessor />
-      {children}
-    </TimeContextProvider>
-  );
+  useSyncEngine();
+  return <>{children}</>;
 }

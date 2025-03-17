@@ -7,7 +7,6 @@ import { KeyResultFormModal } from '@/components/key-results/key-result-form-mod
 import { KeyResultProgressUpdate } from '@/components/key-results/progress-update';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { UpdateProgressRequest } from '@/types';
 import { useObjectiveFromPool } from '@/sync/object-pool';
 
 interface ObjectiveDetailProps {
@@ -27,14 +26,6 @@ export function ObjectiveDetail({ objectiveId }: ObjectiveDetailProps) {
       </div>
     );
   }
-
-  const handleUpdateProgress = (
-    keyResultId: string,
-    data: UpdateProgressRequest,
-  ) => {
-    console.debug({ keyResultId, data });
-    // TODO updateKeyResultProgress({ keyResultId, data });
-  };
 
   return (
     <div>
@@ -88,12 +79,7 @@ export function ObjectiveDetail({ objectiveId }: ObjectiveDetailProps) {
                 key={keyResult.id}
                 className="border rounded-lg p-4 bg-white"
               >
-                <KeyResultProgressUpdate
-                  keyResult={keyResult}
-                  onUpdate={(keyResultId, data) =>
-                    handleUpdateProgress(keyResultId, data)
-                  }
-                />
+                <KeyResultProgressUpdate keyResult={keyResult} />
               </div>
             ))}
           </div>

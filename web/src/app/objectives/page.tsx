@@ -1,7 +1,7 @@
 'use client';
 
 import { ObjectiveList } from '@/components/objectives/objective-list';
-import { QueueApp } from '@/sync/QueueApp';
+import { QueueApp } from '@/sync/debug/QueueApp';
 import { useIsDebugModeOn, useToggleDebugMode } from '@/contex/debug';
 import { useCallback, useEffect } from 'react';
 

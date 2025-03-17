@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useTransactionQueue } from '@/sync/useTransactionQueue';
-import useGetObjects from '@/sync/useGetObjects';
-import { useTimeContext } from '@/contex/TimeContext';
 import { TransactionServer } from '@/sync/transaction';
-import { usePgLocal } from '@/sync/usePgLocal';
+import useMemoryLocalSeed from '@/sync/useMemoryLocalSeed';
+import usePgLocalAndMemorySetLastSync from '@/sync/usePgLocalAndMemorySetLastSync';
+import { useLastSync } from '@/sync/last-sync-memory';
+import { API_BASE_URL } from '@/lib/api';
 
 const useServerTransactions = () => {
   const [transactions, setTransactions] = useState([]);
@@ -11,17 +12,16 @@ const useServerTransactions = () => {
   const [error, setError] = useState(null);
   const [connectionStatus, setConnectionStatus] = useState('Connecting...');
   const { processInMemory } = useTransactionQueue();
-  const { serverLoadingDone: ready } = useGetObjects();
-  const { setLastSync } = usePgLocal();
-  const { lastSyncTime } = useTimeContext();
+  const { pgLocalAndMemoryReady } = useMemoryLocalSeed();
+  const { setLastSync } = usePgLocalAndMemorySetLastSync();
+  const lastSyncTime = useLastSync();
 
   useEffect(() => {
-    if (!ready || !lastSyncTime || connectionStatus === 'Connected') {
-      console.log('Not ready or last sync time not set or already connected', {
-        ready,
-        lastSyncTime,
-        connectionStatus,
-      });
+    if (
+      !pgLocalAndMemoryReady ||
+      !lastSyncTime ||
+      connectionStatus === 'Connected'
+    ) {
       return;
     }
     let eventSource: EventSource | null = null;
@@ -30,22 +30,19 @@ const useServerTransactions = () => {
       setConnectionStatus('Connecting...');
 
       // Build URL with any filters
-      let url = 'http://localhost:8080/api/v1/transactions/events';
+      let url = `${API_BASE_URL}/transactions/events`;
       const params = new URLSearchParams();
       console.log({ lastSyncTime });
       params.append('from', lastSyncTime.toISOString());
       if (params.toString()) url += `?${params.toString()}`;
 
-      // Create EventSource connection
       eventSource = new EventSource(url);
 
-      // Handle connection open
       eventSource.onopen = () => {
         setConnectionStatus('Connected');
         setError(null);
       };
 
-      // Handle incoming messages
       eventSource.onmessage = (event) => {
         try {
           const eventData = JSON.parse(event.data);
@@ -64,7 +61,6 @@ const useServerTransactions = () => {
               const lastTx = eventData.data[
                 eventData.data.length - 1
               ] as TransactionServer;
-              console.log('lastTx', lastTx);
               setLastSync(lastTx.created_at).then();
             }
           } else if (eventData.type === 'new') {
@@ -83,7 +79,6 @@ const useServerTransactions = () => {
               ...serverTransaction,
               payload: JSON.parse(serverTransaction.payload),
             }).then(() => {
-              console.log('processing transaction', serverTransaction);
               return setLastSync(serverTransaction.created_at);
             });
           }
@@ -92,7 +87,6 @@ const useServerTransactions = () => {
         }
       };
 
-      // Handle errors
       eventSource.onerror = (err) => {
         console.error('EventSource error:', err);
         setConnectionStatus('Disconnected');
@@ -118,8 +112,15 @@ const useServerTransactions = () => {
       // if (eventSource) {
       //   eventSource.close();
       // }
+      // TODO find a way to close the connection
     };
-  }, [ready, processInMemory, lastSyncTime, setLastSync, connectionStatus]); // Reconnect when filters change
+  }, [
+    pgLocalAndMemoryReady,
+    processInMemory,
+    lastSyncTime,
+    setLastSync,
+    connectionStatus,
+  ]);
 
   return { transactions, loading, error, connectionStatus };
 };

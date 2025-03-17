@@ -52,16 +52,9 @@ func main() {
 	{
 		objectives := v1.Group("/objectives")
 		{
-			objectives.POST("/", okrHandler.CreateObjective)
 			objectives.GET("/", okrHandler.ListObjectives)
 			objectives.GET("/:id", okrHandler.GetObjective)
 			objectives.GET("/:id/details", okrHandler.GetObjectiveWithKeyResults)
-			objectives.POST("/:id/key-results", okrHandler.CreateKeyResult)
-		}
-
-		keyResults := v1.Group("/key-results")
-		{
-			keyResults.PATCH("/:id/progress", okrHandler.UpdateKeyResultProgress)
 		}
 
 		transactions := v1.Group("/transactions")

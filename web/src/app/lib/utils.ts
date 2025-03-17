@@ -1,50 +1,36 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { Objective } from '@/types';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-}
+export function calculateObjectiveStatus(objective: Objective): {
+  progress: number;
+  status: 'on-track' | 'at-risk' | 'behind';
+} {
+  if (!objective.key_results || objective.key_results.length === 0) {
+    return { progress: 0, status: 'at-risk' };
+  }
 
-export function formatDateShort(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  });
-}
+  const totalProgress = objective.key_results.reduce((sum, kr) => {
+    return sum + (kr.current / kr.target) * 100;
+  }, 0);
 
-export function getDaysBetween(startDate: string, endDate: string): number {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  const diffTime = Math.abs(end.getTime() - start.getTime());
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-}
+  const averageProgress = totalProgress / objective.key_results.length;
 
-export function getPercentageComplete(
-  startDate: string,
-  endDate: string,
-): number {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  const today = new Date();
+  // Determine status based on progress percentage
+  let status: 'on-track' | 'at-risk' | 'behind' = 'on-track';
 
-  const totalDays = Math.max(
-    1,
-    (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24),
-  );
-  const elapsedDays = Math.max(
-    0,
-    (today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24),
-  );
+  if (averageProgress < 40) {
+    status = 'behind';
+  } else if (averageProgress < 70) {
+    status = 'at-risk';
+  }
 
-  return Math.min(100, Math.round((elapsedDays / totalDays) * 100));
+  return {
+    progress: Math.round(averageProgress * 10) / 10, // Round to 1 decimal place
+    status,
+  };
 }

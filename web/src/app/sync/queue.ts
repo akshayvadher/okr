@@ -1,6 +1,6 @@
 import { atom, useAtom } from 'jotai';
 import { Transaction, TransactionEnriched } from '@/sync/transaction';
-import {nanoid} from "nanoid";
+import { ulid } from 'ulid';
 
 // Define the queue item type
 interface QueueItem {
@@ -27,10 +27,10 @@ export const useQueueActions = () => {
   // Add an item to the queue
   const enqueue = (transaction: Transaction) => {
     const newItem: QueueItem = {
-      id: nanoid(),
+      id: ulid(),
       transaction: {
         ...transaction,
-        id: nanoid(),
+        id: ulid(),
         created_at: new Date().toISOString(),
       },
       status: 'pending',

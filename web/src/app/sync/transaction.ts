@@ -16,6 +16,7 @@ export interface Transaction {
 export interface TransactionEnriched extends Transaction {
   id: string;
   created_at: string;
+  clientId?: string;
 }
 
 export interface TransactionServer {
@@ -25,4 +26,5 @@ export interface TransactionServer {
   entity: 'OBJECTIVE' | 'KEY_RESULT';
   action: 'CREATE' | 'UPDATE_PROGRESS';
   server_created_at: string;
+  clientId: string;
 }

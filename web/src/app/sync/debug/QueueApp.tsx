@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { useQueueMonitor } from './queue';
-import { usePgLocal } from './usePgLocal';
-import ServerTransactionFeed from '@/sync/ServerTransactionFeed';
+import { useQueueMonitor } from '../queue';
+import { usePgLocal } from '../usePgLocal';
+import ServerTransactionFeed from './ServerTransactionFeed';
 import { api } from '@/lib/api';
 
 // Queue Monitor Component - Displays queue status
@@ -47,10 +47,10 @@ export const QueueApp = () => {
     if (!db) {
       throw new Error('Database not initialized');
     }
-    db.exec(`truncate table objectives`);
-    db.exec(`truncate table key_results`);
-    db.exec(`truncate table transactions`);
-    db.exec(`truncate table sync`);
+    await db.exec(`truncate table objectives`);
+    await db.exec(`truncate table key_results`);
+    await db.exec(`truncate table transactions`);
+    await db.exec(`truncate table sync`);
 
     await api.deleteAll();
     window.location.reload();

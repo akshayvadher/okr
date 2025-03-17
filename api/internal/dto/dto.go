@@ -25,4 +25,5 @@ type CreateTransactionRequest struct {
 	Entity    string    `json:"entity" binding:"required"`
 	Payload   string    `json:"payload" binding:"required"`
 	CreatedAt time.Time `json:"created_at" binding:"required"`
+	ClientId  string    `json:"clientId" binding:"required"`
 }

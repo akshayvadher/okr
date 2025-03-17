@@ -1,18 +1,18 @@
 services:
-  db:
+  db5:
     image: postgres:17.4-alpine3.21
-    container_name: okr_db
+    container_name: okr_db5
     environment:
       POSTGRES_DB: okr
       POSTGRES_USER: okr_app_user
       POSTGRES_PASSWORD: super_secret_okr
     ports:
-      - "5432:5432"
+      - "5435:5432"
     volumes:
-      - okr-db-data:/var/lib/postgresql/data
+      - okr-db-data5:/var/lib/postgresql/data
 
 x-podman:
   in_pod: false
 
 volumes:
-  okr-db-data:
+  okr-db-data5:

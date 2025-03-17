@@ -87,7 +87,7 @@ func (s *OKRService) AddTransaction(ctx context.Context, t *domain.Transaction) 
 				Title:       createObjectiveRequest.Title,
 				Description: createObjectiveRequest.Description,
 			}
-			err = s.repo.CreateObjective(ctx, obj)
+			err = s.CreateObjective(ctx, obj)
 			if err != nil {
 				return err
 			}
@@ -112,7 +112,7 @@ func (s *OKRService) AddTransaction(ctx context.Context, t *domain.Transaction) 
 				Current:     0,
 				Metrics:     createKeyResultRequest.Metrics,
 			}
-			err = s.repo.CreateKeyResult(ctx, kr)
+			err = s.CreateKeyResult(ctx, kr)
 			if err != nil {
 				return err
 			}
@@ -122,7 +122,7 @@ func (s *OKRService) AddTransaction(ctx context.Context, t *domain.Transaction) 
 			if err != nil {
 				return err
 			}
-			err = s.repo.UpdateKeyResultProgress(ctx, updateProgressRequest.KeyResultId, updateProgressRequest.Progress)
+			err = s.UpdateKeyResultProgress(ctx, updateProgressRequest.KeyResultId, updateProgressRequest.Progress)
 			if err != nil {
 				return err
 			}

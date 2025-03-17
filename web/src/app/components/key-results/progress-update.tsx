@@ -1,46 +1,50 @@
 'use client';
 
-import { useState } from 'react';
-import { KeyResult, UpdateProgressRequest } from '@/types';
+import { KeyResult } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Minus, Plus } from 'lucide-react';
+import { useQueueActions } from '@/sync/queue';
 
 interface KeyResultProgressUpdateProps {
   keyResult: KeyResult;
-  onUpdate: (keyResultId: string, data: UpdateProgressRequest) => void;
-  isUpdating?: boolean;
 }
 
 export function KeyResultProgressUpdate({
   keyResult,
-  onUpdate,
-  isUpdating = false,
 }: KeyResultProgressUpdateProps) {
-  const [progress, setProgress] = useState<number>(keyResult.current);
+  const { enqueue } = useQueueActions();
+
+  const progress = keyResult.current;
+
+  const update = (progress: number) => {
+    enqueue({
+      entity: 'KEY_RESULT',
+      action: 'UPDATE_PROGRESS',
+      payload: {
+        objective_id: keyResult.objective_id,
+        keyResultId: keyResult.id,
+        progress: progress,
+      },
+    });
+  };
 
   const handleIncrement = () => {
     const newValue = Math.min(keyResult.target, progress + 1);
-    setProgress(newValue);
+    update(newValue);
   };
 
   const handleDecrement = () => {
     const newValue = Math.max(0, progress - 1);
-    setProgress(newValue);
+    update(newValue);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value, 10);
     if (!isNaN(value)) {
       const newValue = Math.max(0, Math.min(keyResult.target, value));
-      setProgress(newValue);
-    }
-  };
-
-  const handleUpdate = () => {
-    if (progress !== keyResult.current) {
-      onUpdate(keyResult.id, { progress });
+      update(newValue);
     }
   };
 
@@ -63,7 +67,7 @@ export function KeyResultProgressUpdate({
         <Button
           type="button"
           size="sm"
-          variant="outline"
+          variant="ghost"
           className="rounded-full h-8 w-8 p-0"
           onClick={handleDecrement}
         >
@@ -82,22 +86,11 @@ export function KeyResultProgressUpdate({
         <Button
           type="button"
           size="sm"
-          variant="outline"
+          variant="ghost"
           className="rounded-full h-8 w-8 p-0"
           onClick={handleIncrement}
         >
           <Plus className="h-4 w-4" />
-        </Button>
-
-        <Button
-          type="button"
-          size="sm"
-          variant="secondary"
-          className="ml-2"
-          disabled={progress === keyResult.current || isUpdating}
-          onClick={handleUpdate}
-        >
-          {isUpdating ? 'Updating...' : 'Save'}
         </Button>
       </div>
     </div>
