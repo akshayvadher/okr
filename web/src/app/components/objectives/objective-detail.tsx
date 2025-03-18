@@ -9,12 +9,8 @@ import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useObjectiveFromPool } from '@/sync/object-pool';
 
-interface ObjectiveDetailProps {
-  objectiveId: string;
-}
-
-export function ObjectiveDetail({ objectiveId }: ObjectiveDetailProps) {
-  const objective = useObjectiveFromPool(objectiveId);
+export function ObjectiveDetail() {
+  const objective = useObjectiveFromPool();
 
   if (!objective) {
     return (

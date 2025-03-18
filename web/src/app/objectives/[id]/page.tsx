@@ -1,14 +1,21 @@
-import { ObjectiveDetail } from '@/components/objectives/objective-detail';
+'use client';
 
-export default async function ObjectiveDetailPage({
+import { ObjectiveDetail } from '@/components/objectives/objective-detail';
+import { use } from 'react';
+import { useSelectedObjectiveId } from '@/sync/object-pool';
+
+export default function ObjectiveDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
+  const { id } = use(params);
+  const selectObjectiveId = useSelectedObjectiveId();
+  selectObjectiveId(id);
+
   return (
     <div>
-      <ObjectiveDetail objectiveId={id} />
+      <ObjectiveDetail />
     </div>
   );
 }
