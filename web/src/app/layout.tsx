@@ -19,6 +19,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          src="https://cdn.jsdelivr.net/npm/@electric-sql/pglite-repl/dist-webcomponent/Repl.js"
+          type="module"
+          defer
+        ></script>
+        <title>OKR App</title>
+      </head>
       <body className={openSans.className}>
         <AppProviders>
           <div className="min-h-screen bg-gray-50">

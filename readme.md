@@ -54,6 +54,7 @@ bun run build && bun start
 # To check
 
 - [ ] If using a big object pool and calculating upfront is costly
+- [ ] First DB query is slow (Like 1 whole second)
 
 # Not doing
 

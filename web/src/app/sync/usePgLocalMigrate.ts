@@ -10,7 +10,6 @@ const usePgLocalMigrate = () => {
     if (!db) {
       return;
     }
-    console.log('creating tables if not exists');
     await db.exec(`
       CREATE TABLE IF NOT EXISTS ${tableNames.objective}
       ${queries.objective}

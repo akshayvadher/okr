@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useQueueMonitor } from '../queue';
 import { usePgLocal } from '../usePgLocal';
 import ServerTransactionFeed from './ServerTransactionFeed';
@@ -56,10 +56,29 @@ export const QueueApp = () => {
     await api.deleteAll();
     window.location.reload();
   };
+
+  useEffect(() => {
+    if (!db) {
+      return;
+    }
+    // Retrieve the Repl element
+    const repl = document?.getElementById('repl');
+
+    if (repl) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      repl.pg = db;
+    }
+  }, [db]);
+
   return (
     <div className="queue-app">
       <h1>React Queue System Demo</h1>
       <div className="app-container">
+        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+        {/*// @ts-expect-error*/}
+        <pglite-repl id="repl"></pglite-repl>
+
         <QueueMonitor />
 
         <ServerTransactionFeed />
