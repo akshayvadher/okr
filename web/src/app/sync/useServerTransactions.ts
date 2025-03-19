@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { TransactionServer } from '@/sync/transaction';
 import useMemoryLocalSeed from '@/sync/useMemoryLocalSeed';
-import usePgLocalAndMemorySetLastSync from '@/sync/usePgLocalAndMemorySetLastSync';
+import useSetLastSync from '@/sync/useSetLastSync';
 import { useLastSync } from '@/sync/last-sync-memory';
 import { API_BASE_URL } from '@/lib/api';
 import useProcessTransaction from '@/sync/useProcessTransaction';
@@ -17,7 +17,7 @@ const useServerTransactions = () => {
   const [connectionStatus, setConnectionStatus] = useState('Pending');
   const { processTransactionSyncBack } = useProcessTransaction();
   const { pgLocalAndMemoryReady } = useMemoryLocalSeed();
-  const { setLastSync } = usePgLocalAndMemorySetLastSync();
+  const { setLastSync } = useSetLastSync();
   const lastSyncTime = useLastSync();
   const registerNetworkOffline = useRegisterNetworkOffline();
   const registerNetworkOnline = useRegisterNetworkOnline();

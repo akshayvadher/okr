@@ -100,12 +100,45 @@ const usePgLocalOperations = () => {
     [db, doesTransactionExist],
   );
 
+  const getAllObjectives = useCallback(async () => {
+    if (!db) throw new Error('db connection not available');
+    const objectivesFromPgLocal = await db.query(
+      `select * from ${tableNames.objective}`,
+    );
+    return objectivesFromPgLocal.rows as Objective[];
+  }, [db]);
+
+  const getAllKeyResults = useCallback(async () => {
+    if (!db) throw new Error('db connection not available');
+    const keyResultsFromPgLocal = await db.query(
+      `select * from ${tableNames.keyResult}`,
+    );
+    return keyResultsFromPgLocal.rows as KeyResult[];
+  }, [db]);
+
+  const getLastSync = useCallback(async () => {
+    if (!db) throw new Error('db connection not available');
+    const lastSync = await db.query(
+      `select * from ${tableNames.sync} where id = 'last_sync'`,
+    );
+    if (lastSync.rows.length === 0) {
+      return undefined;
+    }
+    return lastSync.rows[0] as {
+      id: string;
+      last_sync: string;
+    };
+  }, [db]);
+
   return {
     addObjectivePgLocal,
     addKeyResultPgLocal,
     updateKeyResultProgressPgLocal,
     registerTransactionLocalDb,
     doesTransactionExist,
+    getAllObjectives,
+    getAllKeyResults,
+    getLastSync,
   };
 };
 

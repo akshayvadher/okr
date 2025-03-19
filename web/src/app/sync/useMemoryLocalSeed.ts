@@ -1,61 +1,50 @@
 import usePgLocalMigrate from '@/sync/usePgLocalMigrate';
 import { useCallback, useEffect, useState } from 'react';
-import { KeyResult, Objective } from '@/types';
 import {
   useAddKeyResult,
   useAddObjective,
   useGetAllObjectsFromMemory,
 } from '@/sync/object-pool';
-import { usePgLocal } from '@/sync/usePgLocal';
-import usePgLocalAndMemorySetLastSync from '@/sync/usePgLocalAndMemorySetLastSync';
+import useSetLastSync from '@/sync/useSetLastSync';
 import useServerSeed from '@/sync/useServerSeed';
 import { useClientMetadata } from '@/sync/client-metadata-memory';
-import { tableNames } from '@/sync/migration-queries';
+import usePgLocalOperations from '@/sync/usePgLocalOperations';
 
 const useMemoryLocalSeed = () => {
-  const { db } = usePgLocal();
-  const { dbCreated } = usePgLocalMigrate();
   const [seeded, setSeeded] = useState(false);
   const [pgLocalAndMemoryReady, setPgLocalAndMemoryReady] = useState(false);
 
   const { clientAppStartTime } = useClientMetadata();
 
+  const { dbCreated } = usePgLocalMigrate();
+  const { getAllObjectives, getAllKeyResults, getLastSync } =
+    usePgLocalOperations();
+
   const allObjectsFromMemoryPool = useGetAllObjectsFromMemory();
   const addObjective = useAddObjective();
   const addKeyResult = useAddKeyResult();
-  const { setLastSync } = usePgLocalAndMemorySetLastSync();
+  const { setLastSync } = useSetLastSync();
 
   const { serverSeed } = useServerSeed();
 
   const localIfFirstTime = useCallback(async () => {
-    if (!db || !dbCreated || seeded) {
+    if (!dbCreated || seeded) {
       return;
     }
     setSeeded(true);
     if (allObjectsFromMemoryPool.length !== 0) {
       return;
     }
-    const objectivesFromPgLocal = await db.query(
-      `select * from ${tableNames.objective}`,
-    );
-    const allObjectives = objectivesFromPgLocal.rows as Objective[];
+
+    const allObjectives = await getAllObjectives();
     allObjectives.forEach(addObjective);
 
-    const keyResultsFromPgLocal = await db.query(
-      `select * from ${tableNames.keyResult}`,
-    );
-    const allKeyResults = keyResultsFromPgLocal.rows as KeyResult[];
+    const allKeyResults = await getAllKeyResults();
     allKeyResults.forEach(addKeyResult);
 
-    const lastSync = await db.query(
-      `select * from ${tableNames.sync} where id = 'last_sync'`,
-    );
-    if (lastSync.rows.length > 0) {
-      const lastSyncRow = lastSync.rows[0] as {
-        id: string;
-        last_sync: string;
-      };
-      const lastSyncDate = new Date(lastSyncRow.last_sync);
+    const lastSync = await getLastSync();
+    if (lastSync) {
+      const lastSyncDate = new Date(lastSync.last_sync);
       setLastSync(lastSyncDate).then();
     } else {
       setLastSync(clientAppStartTime).then();
@@ -67,8 +56,10 @@ const useMemoryLocalSeed = () => {
     addObjective,
     allObjectsFromMemoryPool.length,
     clientAppStartTime,
-    db,
     dbCreated,
+    getAllKeyResults,
+    getAllObjectives,
+    getLastSync,
     seeded,
     serverSeed,
     setLastSync,

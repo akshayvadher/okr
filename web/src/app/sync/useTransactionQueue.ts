@@ -4,8 +4,7 @@ import {
   useMarkFirstProcessing,
   usePeekPendingOrProcessingItem,
 } from '@/sync/queue';
-import { useCallback, useEffect } from 'react';
-import { TransactionEnriched } from '@/sync/transaction';
+import { useEffect } from 'react';
 import useProcessTransaction from '@/sync/useProcessTransaction';
 
 export const useTransactionQueue = () => {
@@ -15,18 +14,6 @@ export const useTransactionQueue = () => {
   const markFirstFailed = useMarkFirstFailed();
 
   const { processTransaction } = useProcessTransaction();
-  const processItem = useCallback(
-    async (id: string, transaction: TransactionEnriched) => {
-      try {
-        await processTransaction(transaction);
-        return id;
-      } catch (error) {
-        console.error('transaction queue process failed', error);
-        return id;
-      }
-    },
-    [processTransaction],
-  );
 
   useEffect(() => {
     if (!pendingOrProcessingItem) {
@@ -38,7 +25,7 @@ export const useTransactionQueue = () => {
       return;
     }
     markFirstProcessing();
-    processItem(pendingOrProcessingItem.id, pendingOrProcessingItem.transaction)
+    processTransaction(pendingOrProcessingItem.transaction)
       .then(() => markFirstComplete())
       .catch(() => markFirstFailed());
   }, [
@@ -46,6 +33,6 @@ export const useTransactionQueue = () => {
     markFirstFailed,
     markFirstProcessing,
     pendingOrProcessingItem,
-    processItem,
+    processTransaction,
   ]);
 };

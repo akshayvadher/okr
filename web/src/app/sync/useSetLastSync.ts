@@ -3,7 +3,7 @@ import { usePgLocal } from './usePgLocal';
 import { useSetLastSyncMemory } from '@/sync/last-sync-memory';
 import { tableNames } from './migration-queries';
 
-const usePgLocalAndMemorySetLastSync = () => {
+const useSetLastSync = () => {
   const { db } = usePgLocal();
   const setLastSyncInMemory = useSetLastSyncMemory();
 
@@ -36,4 +36,4 @@ const usePgLocalAndMemorySetLastSync = () => {
 
   return { setLastSync };
 };
-export default usePgLocalAndMemorySetLastSync;
+export default useSetLastSync;
