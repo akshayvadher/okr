@@ -42,7 +42,7 @@ export function ObjectiveDetail() {
         </div>
 
         {objective.description && (
-          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+          <div className="mt-4 bg-gray-50 rounded-lg">
             <p className="text-gray-700 whitespace-pre-line">
               {objective.description}
             </p>

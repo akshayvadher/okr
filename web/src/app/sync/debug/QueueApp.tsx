@@ -76,11 +76,9 @@ export const QueueApp = () => {
         {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
         {/*// @ts-expect-error*/}
         <pglite-repl id="repl"></pglite-repl>
-
-        <QueueMonitor />
-
+        Current tables {JSON.stringify(tableNames)}
+        {/*<QueueMonitor />*/}
         <ServerTransactionFeed />
-
         <button
           type={'button'}
           className="btn  bg-cyan-700 rounded"

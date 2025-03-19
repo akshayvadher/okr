@@ -18,9 +18,10 @@ const usePgLocalOperations = () => {
         return;
       }
       await db.exec(`
-        INSERT INTO ${tableNames.objective} (id, title, created_at, updated_at)
+        INSERT INTO ${tableNames.objective} (id, title, description, created_at, updated_at)
         values ('${objective.id}',
                 '${objective.title}',
+                '${objective.description}',
                 '${objective.created_at}',
                 '${objective.updated_at}')
     `);

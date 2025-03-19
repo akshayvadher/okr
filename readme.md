@@ -24,6 +24,8 @@ bun run build && bun start
 
 # Todo
 
+## LocalFirst + Sync
+
 - [x] Last sync persistance
 - [x] Offline tracker
 - [ ] Offline support
@@ -34,29 +36,32 @@ bun run build && bun start
 - [x] Using dynamic table name based on create query
 - [ ] Add loading per entity
 
-# Nice to have (not directly related to sync)
+## OKR App
+
+- [ ] Workspace/multi-tenancy support
+- [ ] Comments
+- [ ] Todo inside objective
+
+## Nice to have (not directly related to sync)
 
 - [x] Remove dead code
 - [ ] Backend to be transactional
 - [ ] Consistency in naming (key_results vs keyResults)
-- [ ] Use go migrations instead of
+- [ ] Use go migrations instead of gorm auto
 - [ ] Default exampand to be on
 
-# Todo for completeness
+## Bugs
 
-- [ ] Workspace/multi-tenancy support
-
-# Bugs
-
-- [ ] Too many connections when server stopped
+- [x] Too many connections when server stopped
 - [ ] After many transactions, the client becomes slow
 
-# To check
+## To check
 
 - [ ] If using a big object pool and calculating upfront is costly
 - [ ] First DB query is slow (Like 1 whole second)
+- [ ] Queue monitor debug not working
 
-# Not doing
+## Not doing
 
 - [ ] Error rollback
 - [ ] Conflict handling

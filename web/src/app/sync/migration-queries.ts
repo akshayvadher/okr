@@ -1,11 +1,12 @@
-import {simpleHash} from "@/lib/simple-hash";
+import { simpleHash } from '@/lib/simple-hash';
 
 export const queries = {
   objective: `(
-          id         TEXT PRIMARY KEY,
-          title      TEXT,
-          created_at TEXT,
-          updated_at TEXT
+          id          TEXT PRIMARY KEY,
+          title       TEXT,
+          description TEXT,
+          created_at  TEXT,
+          updated_at  TEXT
       )`,
   keyResult: `(
           id           TEXT PRIMARY KEY,
