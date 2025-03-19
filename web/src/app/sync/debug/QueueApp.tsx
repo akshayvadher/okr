@@ -1,15 +1,14 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { useQueueMonitor } from '../queue';
 import { usePgLocal } from '../usePgLocal';
 import ServerTransactionFeed from './ServerTransactionFeed';
 import { api } from '@/lib/api';
 import { tableNames } from '@/sync/migration-queries';
+import { useQueueStats } from '@/sync/queue';
 
-// Queue Monitor Component - Displays queue status
 export const QueueMonitor = () => {
-  const { queue, stats } = useQueueMonitor();
+  const { queue, stats } = useQueueStats();
 
   return (
     <div className="monitor">
@@ -40,7 +39,6 @@ export const QueueMonitor = () => {
   );
 };
 
-// Main App Component
 export const QueueApp = () => {
   const { db } = usePgLocal();
 

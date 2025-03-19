@@ -1,47 +1,51 @@
-import { useQueueConsumer } from '@/sync/queue';
+import {
+  useMarkFirstComplete,
+  useMarkFirstFailed,
+  useMarkFirstProcessing,
+  usePeekPendingOrProcessingItem,
+} from '@/sync/queue';
 import { useCallback, useEffect } from 'react';
 import { TransactionEnriched } from '@/sync/transaction';
 import useProcessTransaction from '@/sync/useProcessTransaction';
 
-let isProcessing = false;
-
 export const useTransactionQueue = () => {
-  const { pendingItems, markAsProcessing, complete, fail } = useQueueConsumer();
+  const pendingOrProcessingItem = usePeekPendingOrProcessingItem();
+  const markFirstProcessing = useMarkFirstProcessing();
+  const markFirstComplete = useMarkFirstComplete();
+  const markFirstFailed = useMarkFirstFailed();
 
   const { processTransaction } = useProcessTransaction();
-
   const processItem = useCallback(
     async (id: string, transaction: TransactionEnriched) => {
-      markAsProcessing(id);
       try {
         await processTransaction(transaction);
-        complete(id);
+        return id;
       } catch (error) {
-        console.error('process failed', error);
-        fail(id, '' + error);
+        console.error('transaction queue process failed', error);
+        return id;
       }
     },
-    [complete, fail, markAsProcessing, processTransaction],
+    [processTransaction],
   );
 
-  const processNext = useCallback(async () => {
-    if (pendingItems.length > 0 && !isProcessing) {
-      isProcessing = true;
-      const item = pendingItems[0];
-      await processItem(item.id, item.transaction);
-      isProcessing = false;
-    }
-  }, [pendingItems, processItem]);
-
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (pendingItems.length > 0 && !isProcessing) {
-        processNext().then();
-      }
-    }, 10); // TODO fix the delay
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [pendingItems, processNext]);
+    if (!pendingOrProcessingItem) {
+      // nothing pending
+      return;
+    }
+    if (pendingOrProcessingItem.status === 'processing') {
+      // already processing
+      return;
+    }
+    markFirstProcessing();
+    processItem(pendingOrProcessingItem.id, pendingOrProcessingItem.transaction)
+      .then(() => markFirstComplete())
+      .catch(() => markFirstFailed());
+  }, [
+    markFirstComplete,
+    markFirstFailed,
+    markFirstProcessing,
+    pendingOrProcessingItem,
+    processItem,
+  ]);
 };

@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Minus, Plus } from 'lucide-react';
-import { useQueueActions } from '@/sync/queue';
+import useKeyResults from '@/hooks/useKeyResults';
+import { ChangeEvent } from 'react';
 
 interface KeyResultProgressUpdateProps {
   keyResult: KeyResult;
@@ -14,40 +15,27 @@ interface KeyResultProgressUpdateProps {
 export function KeyResultProgressUpdate({
   keyResult,
 }: KeyResultProgressUpdateProps) {
-  const { enqueue } = useQueueActions();
-
-  const progress = keyResult.current;
-
-  const update = (progress: number) => {
-    enqueue({
-      entity: 'KEY_RESULT',
-      action: 'UPDATE_PROGRESS',
-      payload: {
-        objective_id: keyResult.objective_id,
-        keyResultId: keyResult.id,
-        progress: progress,
-      },
-    });
-  };
+  const { updateProgress } = useKeyResults();
 
   const handleIncrement = () => {
     const newValue = Math.min(keyResult.target, progress + 1);
-    update(newValue);
+    updateProgress(keyResult, newValue);
   };
 
   const handleDecrement = () => {
     const newValue = Math.max(0, progress - 1);
-    update(newValue);
+    updateProgress(keyResult, newValue);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value, 10);
     if (!isNaN(value)) {
       const newValue = Math.max(0, Math.min(keyResult.target, value));
-      update(newValue);
+      updateProgress(keyResult, newValue);
     }
   };
 
+  const progress = keyResult.current;
   const progressPercentage = (progress / keyResult.target) * 100;
 
   return (

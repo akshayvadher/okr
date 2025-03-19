@@ -3,36 +3,16 @@
 import { useState } from 'react';
 import { ObjectiveCard } from '@/components/objectives/objective-card';
 import { ObjectiveFormModal } from '@/components/objectives/objective-form-modal';
-import { CreateObjectiveRequest, UpdateProgressRequest } from '@/types';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import { useQueueProducer } from '@/sync/queue';
-import { useObjectivesFromPool } from '@/sync/object-pool';
+import useObjectives from '@/hooks/useObjectives';
 
 export function ObjectiveList() {
-  const objectives = useObjectivesFromPool();
-  const { enqueue } = useQueueProducer();
+  const { objectives, createObjective } = useObjectives();
 
   const [expandedObjectives, setExpandedObjectives] = useState<Set<string>>(
     new Set(),
   );
-
-  const handleCreateObjective = (data: CreateObjectiveRequest) => {
-    enqueue({
-      entity: 'OBJECTIVE',
-      action: 'CREATE',
-      payload: data,
-    });
-  };
-
-  const handleUpdateProgress = (
-    objectiveId: string,
-    keyResultId: string,
-    data: UpdateProgressRequest,
-  ) => {
-    // This will be implemented via the ObjectiveCard component
-    console.debug({ objectiveId, keyResultId, data });
-  };
 
   const toggleObjectiveExpanded = (objectiveId: string, expanded: boolean) => {
     setExpandedObjectives((prev) => {
@@ -84,7 +64,7 @@ export function ObjectiveList() {
               )}
             </Button>
           )}
-          <ObjectiveFormModal onSubmit={handleCreateObjective} />
+          <ObjectiveFormModal onSubmit={createObjective} />
         </div>
       </div>
 
@@ -92,7 +72,7 @@ export function ObjectiveList() {
         <div className="text-center p-8 border rounded-lg bg-gray-50">
           <p className="text-gray-500 mb-4">No objectives found</p>
           <ObjectiveFormModal
-            onSubmit={handleCreateObjective}
+            onSubmit={createObjective}
             trigger={<Button>Create Your First Objective</Button>}
           />
         </div>
@@ -102,9 +82,6 @@ export function ObjectiveList() {
             <ObjectiveCard
               key={objective.id}
               objective={objective}
-              onUpdateProgress={(keyResultId, data) =>
-                handleUpdateProgress(objective.id, keyResultId, data)
-              }
               isExpanded={expandedObjectives.has(objective.id)}
               onExpandToggle={(expanded) =>
                 toggleObjectiveExpanded(objective.id, expanded)

@@ -101,13 +101,20 @@ const updateKeyResultProgress = atom(
     if (!keyResult || !keyResult.object) {
       throw new Error(`Key result with id ${id} not found`);
     }
-    const krObject = keyResult.object as KeyResult;
-    krObject.current = progress;
 
-    set(objectPool, [
-      ...allObjects.filter((o) => o.object.id !== keyResult.object.id),
-      { ...keyResult, object: krObject },
-    ]);
+    set(objectPool, (prev) =>
+      prev.map((item) =>
+        item.object.id === id
+          ? {
+              ...item,
+              object: {
+                ...item.object,
+                current: progress,
+              },
+            }
+          : item,
+      ),
+    );
   },
 );
 export const useAddKeyResult = () => useSetAtom(addKeyResult);

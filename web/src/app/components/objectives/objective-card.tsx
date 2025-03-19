@@ -9,11 +9,10 @@ import { StatusBadge } from '@/components/objectives/status-badge';
 import { Button } from '@/components/ui/button';
 import { KeyResultFormModal } from '@/components/key-results/key-result-form-modal';
 import { KeyResultQuickUpdate } from '@/components/key-results/key-result-quick-update';
-import {useIsDebugModeOn} from "@/contex/debug";
+import { useIsDebugModeOn } from '@/contex/debug';
 
 interface ObjectiveCardProps {
   objective: ObjectiveWithProgress;
-  onUpdateProgress: (keyResultId: string, data: { progress: number }) => void;
   isExpanded?: boolean;
   onExpandToggle?: (expanded: boolean) => void;
 }

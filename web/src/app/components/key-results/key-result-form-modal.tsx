@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useQueueActions } from '@/sync/queue';
+import useKeyResults from '@/hooks/useKeyResults';
 
 interface KeyResultFormModalProps {
   objectiveId: string;
@@ -41,44 +41,13 @@ export function KeyResultFormModal({
     },
   });
 
-  const { enqueue } = useQueueActions();
+  const { createKeyResult } = useKeyResults();
 
   const handleFormSubmit = (data: CreateKeyResultRequest) => {
-    const kr = parseInput(data.title);
-    enqueue({
-      entity: 'KEY_RESULT',
-      action: 'CREATE',
-      payload: {
-        ...kr,
-        objective_id: objectiveId,
-      },
-    });
+    createKeyResult(objectiveId, data);
     setOpen(false);
     reset();
   };
-
-  function parseInput(input: string) {
-    try {
-      const parts = input.split(' ');
-      const numberIndex = parts.findIndex((part) => !isNaN(Number(part)));
-
-      if (
-        numberIndex === -1 ||
-        numberIndex === 0 ||
-        numberIndex === parts.length - 1
-      ) {
-        return { title: input, target: 100, metrics: '%' };
-      }
-      return {
-        title: parts.slice(0, numberIndex).join(' '),
-        target: parseInt(parts[numberIndex], 10),
-        metrics: parts.slice(numberIndex + 1).join(' '),
-      };
-    } catch (e) {
-      console.log({ e });
-      return { title: input, target: 100, metrics: '%' };
-    }
-  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -108,37 +77,6 @@ export function KeyResultFormModal({
                 <p className="text-xs text-red-500">{errors.title.message}</p>
               )}
             </div>
-            {/*<div className="grid grid-cols-3 gap-4">*/}
-            {/*  <div className="col-span-2 grid gap-2">*/}
-            {/*    <Label htmlFor="target">Target Value</Label>*/}
-            {/*    <Input*/}
-            {/*        id="target"*/}
-            {/*        type="number"*/}
-            {/*        min="0"*/}
-            {/*        step="1"*/}
-            {/*        placeholder="Enter target value (e.g., 100)"*/}
-            {/*        {...register("target", {*/}
-            {/*          required: "Target is required",*/}
-            {/*          valueAsNumber: true,*/}
-            {/*          min: {*/}
-            {/*            value: 1,*/}
-            {/*            message: "Target must be greater than 0"*/}
-            {/*          }*/}
-            {/*        })}*/}
-            {/*    />*/}
-            {/*    {errors.target && (*/}
-            {/*        <p className="text-xs text-red-500">{errors.target.message}</p>*/}
-            {/*    )}*/}
-            {/*  </div>*/}
-            {/*  <div className="grid gap-2">*/}
-            {/*    <Label htmlFor="metrics">Metrics</Label>*/}
-            {/*    <Input*/}
-            {/*        id="metrics"*/}
-            {/*        placeholder="e.g., %, $, users"*/}
-            {/*        {...register("metrics")}*/}
-            {/*    />*/}
-            {/*  </div>*/}
-            {/*</div>*/}
           </div>
           <DialogFooter>
             <Button

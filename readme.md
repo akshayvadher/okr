@@ -27,7 +27,7 @@ bun run build && bun start
 - [x] Last sync persistance
 - [x] Offline tracker
 - [ ] Offline support
-- [ ] Better queue in web (remove delay)
+- [x] Better queue in web (remove delay)
 - [ ] Better event in server (remove polling)
 - [ ] Jotai listener to avoid code duplication
 - [ ] PgLite listener
