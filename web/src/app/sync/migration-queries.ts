@@ -19,11 +19,13 @@ export const queries = {
           updated_at   TEXT
       )`,
   transaction: `(
-          id         TEXT PRIMARY KEY,
-          entity     TEXT,
-          action     TEXT,
-          payload    TEXT,
-          created_at TEXT
+          id            TEXT PRIMARY KEY,
+          entity        TEXT,
+          action        TEXT,
+          payload       TEXT,
+          client_id     TEXT,
+          session_id    TEXT,
+          created_at    TEXT
       )`,
   sync: `(
           id         TEXT PRIMARY KEY,

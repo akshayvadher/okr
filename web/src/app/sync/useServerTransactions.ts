@@ -92,7 +92,7 @@ const useServerTransactions = () => {
       };
 
       eventSource.onerror = (err) => {
-        console.error('EventSource error:', err);
+        console.log('EventSource error:', err);
         setConnectionStatus('Disconnected');
         setError('Connection lost. Attempting to reconnect...');
         registerNetworkOffline('Event source connection lost');

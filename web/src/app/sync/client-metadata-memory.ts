@@ -1,9 +1,30 @@
 import { atom, useAtomValue } from 'jotai';
 import { ulid } from 'ulid';
+import { atomWithStorage } from 'jotai/utils';
 
-const clientAtom = atom({
+const sessionAtom = atom({
   clientAppStartTime: new Date(),
-  clientId: ulid(),
+  sessionId: ulid(),
 });
 
-export const useClientMetadata = () => useAtomValue(clientAtom);
+const getOrCreateClientId = () => {
+  if (typeof window === 'undefined') return ulid();
+
+  const storedId = window.localStorage.getItem('okr-client');
+  if (storedId) return storedId;
+
+  const newId = ulid();
+  window.localStorage.setItem('okr-client', newId);
+  return newId;
+};
+
+const clientAtom = atomWithStorage('okr-client', {
+  clientId: getOrCreateClientId(),
+});
+
+const combinedIdentity = atom((get) => ({
+  ...get(sessionAtom),
+  ...get(clientAtom),
+}));
+
+export const useClientMetadata = () => useAtomValue(combinedIdentity);

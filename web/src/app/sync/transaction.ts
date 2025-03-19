@@ -17,6 +17,7 @@ export interface TransactionEnriched extends Transaction {
   id: string;
   created_at: string;
   clientId?: string;
+  sessionId?: string;
 }
 
 export interface TransactionServer {
@@ -27,4 +28,5 @@ export interface TransactionServer {
   action: 'CREATE' | 'UPDATE_PROGRESS';
   server_created_at: string;
   clientId: string;
+  sessionId: string;
 }

@@ -54,6 +54,7 @@ type Transaction struct {
 	CreatedAt       time.Time `json:"created_at"`
 	ServerCreatedAt time.Time `gorm:"index" json:"server_created_at"`
 	ClientId        string    `gorm:"type:varchar(255)" json:"clientId"`
+	SessionId       string    `gorm:"type:varchar(255)" json:"sessionId"`
 	Entity          string    `gorm:"type:string;not null" json:"entity"`
 	Action          string    `gorm:"type:string;not null" json:"action"`
 	Payload         string    `gorm:"type:json;not null" json:"payload"`

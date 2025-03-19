@@ -77,7 +77,7 @@ export const QueueApp = () => {
         {/*// @ts-expect-error*/}
         <pglite-repl id="repl"></pglite-repl>
         Current tables {JSON.stringify(tableNames)}
-        {/*<QueueMonitor />*/}
+        <QueueMonitor />
         <ServerTransactionFeed />
         <button
           type={'button'}

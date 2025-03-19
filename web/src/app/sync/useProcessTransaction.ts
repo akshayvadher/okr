@@ -11,22 +11,19 @@ const useProcessTransaction = () => {
   const { transactionLocalInMemoryProcessor } =
     useMemoryLocalTransactionProcess();
   const { doesTransactionExist } = usePgLocalOperations();
-  const { clientId } = useClientMetadata();
+  const { clientId, sessionId } = useClientMetadata();
 
   const transactionApi = useCallback(
     async (transaction: TransactionEnriched) => {
-      if (!transaction.clientId) {
-        transaction.clientId = clientId;
-      }
       await api.addTransaction(transaction);
     },
-    [clientId],
+    [],
   );
 
   const processTransactionSyncBack = useCallback(
     async (transaction: TransactionEnriched) => {
       try {
-        if (transaction.clientId === clientId) {
+        if (transaction.sessionId === sessionId) {
           // no need to process own transaction
           return;
         }
@@ -42,7 +39,7 @@ const useProcessTransaction = () => {
       }
     },
     [
-      clientId,
+      sessionId,
       doesTransactionExist,
       transactionLocalDbProcessor,
       transactionLocalInMemoryProcessor,
@@ -51,11 +48,17 @@ const useProcessTransaction = () => {
 
   const processTransaction = useCallback(
     async (transaction: TransactionEnriched) => {
+      if (!transaction.clientId || !transaction.sessionId) {
+        transaction.clientId = clientId;
+        transaction.sessionId = sessionId;
+      }
       await transactionLocalInMemoryProcessor(transaction);
       await transactionLocalDbProcessor(transaction);
       await transactionApi(transaction);
     },
     [
+      clientId,
+      sessionId,
       transactionApi,
       transactionLocalDbProcessor,
       transactionLocalInMemoryProcessor,

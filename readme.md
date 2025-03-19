@@ -35,6 +35,7 @@ bun run build && bun start
 - [ ] PgLite listener
 - [x] Using dynamic table name based on create query
 - [ ] Add loading per entity
+- [x] Separate session id and client id
 
 ## OKR App
 
@@ -54,12 +55,12 @@ bun run build && bun start
 
 - [x] Too many connections when server stopped
 - [ ] After many transactions, the client becomes slow
+- [x] Queue monitor debug not working
 
 ## To check
 
 - [ ] If using a big object pool and calculating upfront is costly
 - [ ] First DB query is slow (Like 1 whole second)
-- [ ] Queue monitor debug not working
 
 ## Not doing
 

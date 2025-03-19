@@ -114,22 +114,21 @@ export const useMarkFirstFailed = () =>
     }),
   );
 
-export const useQueueStats = () =>
-  useAtomValue(
-    atom((get) => {
-      const queue = get(queueAtom);
+const queueStatusAtom = atom((get) => {
+  const queue = get(queueAtom);
 
-      const stats = {
-        total: queue.length,
-        pending: queue.filter((item) => item.status === 'pending').length,
-        processing: queue.filter((item) => item.status === 'processing').length,
-        completed: queue.filter((item) => item.status === 'completed').length,
-        failed: queue.filter((item) => item.status === 'failed').length,
-      };
+  const stats = {
+    total: queue.length,
+    pending: queue.filter((item) => item.status === 'pending').length,
+    processing: queue.filter((item) => item.status === 'processing').length,
+    completed: queue.filter((item) => item.status === 'completed').length,
+    failed: queue.filter((item) => item.status === 'failed').length,
+  };
 
-      return {
-        queue,
-        stats,
-      };
-    }),
-  );
+  return {
+    queue,
+    stats,
+  };
+});
+
+export const useQueueStats = () => useAtomValue(queueStatusAtom);

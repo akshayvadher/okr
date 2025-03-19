@@ -86,10 +86,12 @@ const usePgLocalOperations = () => {
       if (exists) return;
       if (!db) throw new Error('db connection not available');
       await db.exec(
-        `INSERT INTO ${tableNames.transaction} (id, entity, action, payload, created_at)
+        `INSERT INTO ${tableNames.transaction} (id, entity, action, client_id, session_id, payload, created_at)
         values ('${transaction.id}',
                 '${transaction.entity}',
                 '${transaction.action}',
+                '${transaction.clientId}',
+                '${transaction.sessionId}',
                 '${JSON.stringify(transaction.payload)}',
                 '${transaction.created_at}')
     `,
