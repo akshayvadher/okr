@@ -1,5 +1,5 @@
 import { atom, useAtomValue, useSetAtom } from 'jotai';
-import { Transaction, TransactionEnriched } from '@/sync/transaction';
+import { TransactionEnriched } from '@/sync/transaction';
 import { ulid } from 'ulid';
 
 interface QueueItem {
@@ -38,19 +38,18 @@ const peekPendingOrProcessingItemAtom = atom<QueueItem | undefined>((get) =>
 export const usePeekPendingOrProcessingItem = () =>
   useAtomValue(peekPendingOrProcessingItemAtom);
 
-const enqueuePendingAtom = atom(null, (_get, set, transaction: Transaction) => {
-  const newItem: QueueItem = {
-    id: ulid(),
-    transaction: {
-      ...transaction,
+const enqueuePendingAtom = atom(
+  null,
+  (_get, set, transaction: TransactionEnriched) => {
+    const newItem: QueueItem = {
       id: ulid(),
+      transaction,
+      status: 'pending',
       createdAt: new Date(),
-    },
-    status: 'pending',
-    createdAt: new Date(),
-  };
-  set(queueAtom, (prev) => [...prev, newItem]);
-});
+    };
+    set(queueAtom, (prev) => [...prev, newItem]);
+  },
+);
 
 export const useEnqueue = () => useSetAtom(enqueuePendingAtom);
 
@@ -107,6 +106,25 @@ const markFirstFailed = atom(null, (get, set) => {
   );
 });
 export const useMarkFirstFailed = () => useSetAtom(markFirstFailed);
+
+const markProcessingBackToPending = atom(null, (get, set) => {
+  const firstProcessingItem = get(peekProcessingItemAtom);
+  if (!firstProcessingItem) {
+    return;
+  }
+  set(queueAtom, (prev) =>
+    prev.map((item) =>
+      item.id === firstProcessingItem.id
+        ? {
+            ...item,
+            status: 'pending',
+          }
+        : item,
+    ),
+  );
+});
+export const useMarkProcessingBackToPending = () =>
+  useSetAtom(markProcessingBackToPending);
 
 const queueStatusAtom = atom((get) => {
   const queue = get(queueAtom);

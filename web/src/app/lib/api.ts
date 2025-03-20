@@ -24,12 +24,27 @@ async function fetchWithError<T>(
   return response.json() as Promise<T>;
 }
 
-export const api = {
-  // Objectives
-  getObjectives: () =>
-    fetchWithError<Objective[]>(`${API_BASE_URL}/objectives/`),
+const serverToDtoMapping = (o: Objective) => {
+  return {
+    ...o,
+    createdAt: new Date(o.createdAt),
+    updatedAt: new Date(o.updatedAt),
+    keyResults: o.keyResults?.map((k) => {
+      return {
+        ...k,
+        createdAt: new Date(k.createdAt),
+        updatedAt: new Date(k.updatedAt),
+      };
+    }),
+  };
+};
 
-  // Transactions
+export const api = {
+  getObjectives: () =>
+    fetchWithError<Objective[]>(`${API_BASE_URL}/objectives/`).then(
+      (response: Objective[]) => response.map(serverToDtoMapping),
+    ),
+
   addTransaction: (data: TransactionEnriched) =>
     fetchWithError<TransactionEnriched>(`${API_BASE_URL}/transactions/`, {
       method: 'POST',

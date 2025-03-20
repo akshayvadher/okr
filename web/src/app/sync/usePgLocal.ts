@@ -21,12 +21,12 @@ export const usePgLocal = () => {
   }, []);
 
   useEffect(() => {
-    if (!db) {
+    if (!db || drizzleDb) {
       return;
     }
-    const drizzleDbInstance = drizzle(db);
+    const drizzleDbInstance = drizzle(db, { casing: 'snake_case' });
     setDrizzleDb(drizzleDbInstance);
-  }, [db]);
+  }, [db, drizzleDb]);
 
   return { db, drizzleDb };
 };

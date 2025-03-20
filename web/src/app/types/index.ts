@@ -1,11 +1,11 @@
 export interface Base {
   id: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface KeyResult extends Base {
-  objective_id: string;
+  objectiveId: string;
   title: string;
   target: number;
   current: number;
@@ -14,8 +14,8 @@ export interface KeyResult extends Base {
 
 export interface Objective extends Base {
   title: string;
-  description: string;
-  key_results: KeyResult[];
+  description?: string| null;
+  keyResults?: KeyResult[];
 }
 
 export interface CreateObjectiveRequest {
@@ -31,7 +31,7 @@ export interface CreateKeyResultRequest {
 
 export interface CreateKeyResultRequestWithObjective
   extends CreateKeyResultRequest {
-  objective_id: string;
+  objectiveId: string;
 }
 
 export interface UpdateProgressRequest {
@@ -41,7 +41,7 @@ export interface UpdateProgressRequest {
 export interface UpdateProgressRequestWithKeyResult
   extends UpdateProgressRequest {
   keyResultId: string;
-  objective_id: string;
+  objectiveId: string;
 }
 
 export interface ObjectiveWithProgress extends Objective {

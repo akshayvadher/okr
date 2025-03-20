@@ -9,8 +9,8 @@ import (
 // Base model with common fields
 type Base struct {
 	ID        string    `gorm:"type:varchar(255);primary_key" json:"id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 // BeforeCreate will set a UUID rather than numeric ID
@@ -26,7 +26,7 @@ type Objective struct {
 	Base
 	Title       string      `gorm:"type:varchar(255);not null" json:"title"`
 	Description string      `gorm:"type:text" json:"description"`
-	KeyResults  []KeyResult `gorm:"foreignKey:ObjectiveID" json:"key_results,omitempty"`
+	KeyResults  []KeyResult `gorm:"foreignKey:ObjectiveID" json:"keyResults,omitempty"`
 }
 
 // TableName overrides the table name
@@ -37,7 +37,7 @@ func (Objective) TableName() string {
 // KeyResult represents a measurable outcome for an objective
 type KeyResult struct {
 	Base
-	ObjectiveID string  `gorm:"type:varchar(255);not null" json:"objective_id"`
+	ObjectiveID string  `gorm:"type:varchar(255);not null" json:"objectiveId"`
 	Title       string  `gorm:"type:varchar(255);not null" json:"title"`
 	Target      float64 `gorm:"not null" json:"target"`
 	Current     float64 `gorm:"not null;default:0" json:"current"`
@@ -51,8 +51,8 @@ func (KeyResult) TableName() string {
 
 type Transaction struct {
 	ID              string    `gorm:"type:varchar(255);primary_key" json:"id"`
-	CreatedAt       time.Time `json:"created_at"`
-	ServerCreatedAt time.Time `gorm:"index" json:"server_created_at"`
+	CreatedAt       time.Time `json:"createdAt"`
+	ServerCreatedAt time.Time `gorm:"index" json:"serverCreatedAt"`
 	ClientId        string    `gorm:"type:varchar(255)" json:"clientId"`
 	SessionId       string    `gorm:"type:varchar(255)" json:"sessionId"`
 	Entity          string    `gorm:"type:string;not null" json:"entity"`

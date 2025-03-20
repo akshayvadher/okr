@@ -68,9 +68,9 @@ export function ObjectiveDetail() {
           />
         </div>
 
-        {objective.key_results && objective.key_results.length > 0 ? (
+        {objective.keyResults && objective.keyResults.length > 0 ? (
           <div className="grid gap-4">
-            {objective.key_results.map((keyResult) => (
+            {objective.keyResults.map((keyResult) => (
               <div
                 key={keyResult.id}
                 className="border rounded-lg p-4 bg-white"

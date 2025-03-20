@@ -26,9 +26,9 @@ const useMemoryLocalTransactionProcess = () => {
               addObjectiveLocal({
                 ...request,
                 id: transaction.id,
-                created_at: transaction.created_at,
-                updated_at: transaction.created_at,
-                key_results: [],
+                createdAt: transaction.createdAt,
+                updatedAt: transaction.createdAt,
+                keyResults: [],
               });
               break;
             default:
@@ -43,8 +43,8 @@ const useMemoryLocalTransactionProcess = () => {
               addKeyResultLocal({
                 ...request,
                 id: transaction.id,
-                created_at: transaction.created_at,
-                updated_at: transaction.created_at,
+                createdAt: transaction.createdAt,
+                updatedAt: transaction.createdAt,
                 current: 0,
               });
               break;

@@ -28,14 +28,13 @@ bun run build && bun start
 
 - [x] Last sync persistance
 - [x] Offline tracker
-- [ ] Offline support
+- [x] Offline support
 - [x] Better queue in web (remove delay)
 - [ ] Better event in server (remove polling)
-- [ ] Jotai listener to avoid code duplication
-- [ ] PgLite listener
 - [x] Using dynamic table name based on create query
 - [ ] Add loading per entity
 - [x] Separate session id and client id
+- [ ] Handle failed transaction (correctly failed and wrongly failed both)
 
 ## OKR App
 
@@ -45,11 +44,15 @@ bun run build && bun start
 
 ## Nice to have (not directly related to sync)
 
+- [ ] Jotai listener to avoid code duplication
+- [ ] PgLite listener
 - [x] Remove dead code
 - [ ] Backend to be transactional
-- [ ] Consistency in naming (key_results vs keyResults)
+- [x] Consistency in naming (key_results vs keyResults)
 - [ ] Use go migrations instead of gorm auto
 - [ ] Default exampand to be on
+- [x] Use Drizzle
+- [ ] Better doc
 
 ## Bugs
 
@@ -61,6 +64,8 @@ bun run build && bun start
 
 - [ ] If using a big object pool and calculating upfront is costly
 - [ ] First DB query is slow (Like 1 whole second)
+- [ ] Is PgLite and Drizzle a good choice
+- [ ] Check sync precision. Always at least 1 transaction seems to be coming up
 
 ## Not doing
 

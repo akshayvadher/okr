@@ -7,7 +7,7 @@ import {
 import { api } from '@/lib/api';
 import usePgLocalOperations from '@/sync/usePgLocalOperations';
 
-const useServerSeed = () => {
+const useServerToMemorySeed = () => {
   const [serverSeedDone, setServerSeedDone] = useState(false);
   const objectivesInMemory = useObjectivesFromPool();
 
@@ -31,10 +31,10 @@ const useServerSeed = () => {
         a.id.localeCompare(b.id),
       );
       const keyResults = objectives
-        .flatMap((o) => o.key_results ?? [])
+        .flatMap((o) => o.keyResults ?? [])
         .sort((a, b) => a.id.localeCompare(b.id));
 
-      console.log('server insertion', objectives, keyResults);
+      console.log('Seeding from server', {objectives, keyResults});
       objectives.forEach(addObjective);
       objectives.forEach(addObjectivePgLocal);
 
@@ -54,4 +54,4 @@ const useServerSeed = () => {
   return { serverSeed };
 };
 
-export default useServerSeed;
+export default useServerToMemorySeed;

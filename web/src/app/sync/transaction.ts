@@ -15,18 +15,22 @@ export interface Transaction {
 
 export interface TransactionEnriched extends Transaction {
   id: string;
-  created_at: string;
+  createdAt: Date;
   clientId?: string;
   sessionId?: string;
 }
 
+export interface PgLocalTransaction extends TransactionEnriched {
+  payloadString: string;
+}
+
 export interface TransactionServer {
   id: string;
-  created_at: string;
+  createdAt: Date;
   payload: string;
   entity: 'OBJECTIVE' | 'KEY_RESULT';
   action: 'CREATE' | 'UPDATE_PROGRESS';
-  server_created_at: string;
+  serverCreatedAt: Date;
   clientId: string;
   sessionId: string;
 }

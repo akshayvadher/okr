@@ -2,7 +2,7 @@
 
 import { ObjectiveDetail } from '@/components/objectives/objective-detail';
 import { use } from 'react';
-import { useSelectedObjectiveId } from '@/sync/object-pool';
+import { useSelectObjectiveId } from '@/sync/object-pool';
 
 export default function ObjectiveDetailPage({
   params,
@@ -10,7 +10,7 @@ export default function ObjectiveDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const selectObjectiveId = useSelectedObjectiveId();
+  const selectObjectiveId = useSelectObjectiveId();
   selectObjectiveId(id);
 
   return (

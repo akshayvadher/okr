@@ -4,21 +4,16 @@ import usePgLocalOperations from '@/sync/usePgLocalOperations';
 import { useClientMetadata } from '@/sync/client-metadata-memory';
 import { useCallback } from 'react';
 import { TransactionEnriched } from '@/sync/transaction';
-import { api } from '@/lib/api';
+import { useEnqueue } from '@/sync/transaction-sync-forward-queue';
 
 const useProcessTransaction = () => {
   const { transactionLocalDbProcessor } = usePgLocalTransactionProcess();
   const { transactionLocalInMemoryProcessor } =
     useMemoryLocalTransactionProcess();
-  const { doesTransactionExist } = usePgLocalOperations();
+  const { doesTransactionExist, registerTransactionLocalDb } =
+    usePgLocalOperations();
   const { clientId, sessionId } = useClientMetadata();
-
-  const transactionApi = useCallback(
-    async (transaction: TransactionEnriched) => {
-      await api.addTransaction(transaction);
-    },
-    [],
-  );
+  const enqueueTransactionSyncForward = useEnqueue();
 
   const processTransactionSyncBack = useCallback(
     async (transaction: TransactionEnriched) => {
@@ -54,18 +49,20 @@ const useProcessTransaction = () => {
       }
       await transactionLocalInMemoryProcessor(transaction);
       await transactionLocalDbProcessor(transaction);
-      await transactionApi(transaction);
+      await registerTransactionLocalDb(transaction);
+      enqueueTransactionSyncForward(transaction);
     },
     [
       clientId,
+      enqueueTransactionSyncForward,
+      registerTransactionLocalDb,
       sessionId,
-      transactionApi,
       transactionLocalDbProcessor,
       transactionLocalInMemoryProcessor,
     ],
   );
 
-  return { transactionApi, processTransactionSyncBack, processTransaction };
+  return { processTransactionSyncBack, processTransaction };
 };
 
 export default useProcessTransaction;

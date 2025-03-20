@@ -6,6 +6,12 @@ import ServerTransactionFeed from './ServerTransactionFeed';
 import { api } from '@/lib/api';
 import { tableNames } from '@/sync/migration-queries';
 import { useQueueStats } from '@/sync/queue';
+import {
+  keyResultTable,
+  objectiveTable,
+  syncTable,
+  transactionTable,
+} from '@/sync/drizzle/schema';
 
 export const QueueMonitor = () => {
   const { queue, stats } = useQueueStats();
@@ -40,16 +46,16 @@ export const QueueMonitor = () => {
 };
 
 export const QueueApp = () => {
-  const { db } = usePgLocal();
+  const { db, drizzleDb } = usePgLocal();
 
   const cleanup = async () => {
-    if (!db) {
+    if (!drizzleDb) {
       throw new Error('Database not initialized');
     }
-    await db.exec(`truncate table ${tableNames.objective}`);
-    await db.exec(`truncate table ${tableNames.keyResult}`);
-    await db.exec(`truncate table ${tableNames.transaction}`);
-    await db.exec(`truncate table ${tableNames.sync}`);
+    await drizzleDb.delete(objectiveTable);
+    await drizzleDb.delete(keyResultTable);
+    await drizzleDb.delete(transactionTable);
+    await drizzleDb.delete(syncTable);
 
     await api.deleteAll();
     window.location.reload();
@@ -76,7 +82,7 @@ export const QueueApp = () => {
         {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
         {/*// @ts-expect-error*/}
         <pglite-repl id="repl"></pglite-repl>
-        Current tables {JSON.stringify(tableNames)}
+        Current tables <pre>{JSON.stringify(tableNames, null, 2)}</pre>
         <QueueMonitor />
         <ServerTransactionFeed />
         <button

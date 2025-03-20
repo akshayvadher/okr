@@ -106,6 +106,7 @@ func (h *OKRHandler) ListenEvents(c *gin.Context) {
 		// Send initial data
 		transactions, _ := h.service.GetTransactions(c, entity, action, from)
 
+		fmt.Println("Sending", len(transactions), "initial transactions", "from", from)
 		clientChan <- broadcast.Event{
 			Type: "initial",
 			Data: transactions,
@@ -126,14 +127,12 @@ func (h *OKRHandler) ListenEvents(c *gin.Context) {
 	// Stream events to client
 	c.Stream(func(w io.Writer) bool {
 		if msg, ok := <-clientChan; ok {
-			fmt.Println("received a message in client", msg)
 			data, err := json.Marshal(msg)
 			if err != nil {
 				log.Printf("Error marshaling event: %v", err)
 				return true
 			}
 
-			// Write the event to the response
 			fmt.Fprintf(w, "data: %s\n\n", data)
 			return true
 		}

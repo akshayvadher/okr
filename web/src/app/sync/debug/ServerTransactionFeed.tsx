@@ -67,7 +67,7 @@ const ServerTransactionFeed = () => {
                     {transaction.action}
                   </span>
                   <span className="transaction-date">
-                    {formatDate(transaction.server_created_at)}
+                    {formatDate(transaction.serverCreatedAt)}
                   </span>
                 </div>
                 <div className="transaction-content">
@@ -77,7 +77,7 @@ const ServerTransactionFeed = () => {
                     </div>
                     <div>
                       <strong>Created:</strong>{' '}
-                      {formatDate(transaction.created_at)}
+                      {formatDate(transaction.createdAt)}
                     </div>
                   </div>
                   <div className="transaction-payload-container">

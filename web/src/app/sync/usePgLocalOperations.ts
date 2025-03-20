@@ -2,133 +2,134 @@ import { usePgLocal } from '@/sync/usePgLocal';
 import { useCallback } from 'react';
 import { KeyResult, Objective } from '@/types';
 import { TransactionEnriched } from '@/sync/transaction';
-import { tableNames } from './migration-queries';
+import {
+  keyResultTable,
+  objectiveTable,
+  syncTable,
+  transactionTable,
+} from '@/sync/drizzle/schema';
+import { eq } from 'drizzle-orm/sql';
 
 const usePgLocalOperations = () => {
-  const { db } = usePgLocal();
+  const { drizzleDb } = usePgLocal();
 
   const addObjectivePgLocal = useCallback(
     async (objective: Objective) => {
-      if (!db) throw new Error('db connection not available');
-      const existing = await db.query(
-        `select * from ${tableNames.objective} where id = '${objective.id}'`,
-      );
-      if (existing?.rows?.length > 0) {
+      if (!drizzleDb) throw new Error('db connection not available');
+      const existing = await drizzleDb
+        .select()
+        .from(objectiveTable)
+        .where(eq(objectiveTable.id, objective.id));
+      if (existing.length > 0) {
         console.log('Objective already exists in the database');
         return;
       }
-      await db.exec(`
-        INSERT INTO ${tableNames.objective} (id, title, description, created_at, updated_at)
-        values ('${objective.id}',
-                '${objective.title}',
-                '${objective.description}',
-                '${objective.created_at}',
-                '${objective.updated_at}')
-    `);
+      await drizzleDb.insert(objectiveTable).values(objective);
     },
-    [db],
+    [drizzleDb],
   );
 
   const addKeyResultPgLocal = useCallback(
     async (keyResult: KeyResult) => {
-      if (!db) throw new Error('db connection not available');
-      const existing = await db.query(
-        `select * from ${tableNames.keyResult} where id = '${keyResult.id}'`,
-      );
-      if (existing?.rows?.length > 0) {
-        console.log('Key result already exists in the database');
+      if (!drizzleDb) throw new Error('db connection not available');
+      const existing = await drizzleDb
+        .select()
+        .from(keyResultTable)
+        .where(eq(keyResultTable.id, keyResult.id));
+      if (existing.length > 0) {
+        console.log('KeyResult already exists in the database');
         return;
       }
-      await db.exec(`
-        INSERT INTO ${tableNames.keyResult} (id, title, target, metrics, objective_id,
-                                 created_at, updated_at, current)
-        values ('${keyResult.id}',
-                '${keyResult.title}',
-                ${keyResult.target},
-                '${keyResult.metrics}',
-                '${keyResult.objective_id}',
-                '${keyResult.created_at}',
-                '${keyResult.updated_at}',
-                '${keyResult.current}')
-    `);
+      await drizzleDb.insert(keyResultTable).values(keyResult);
     },
-    [db],
+    [drizzleDb],
   );
 
   const updateKeyResultProgressPgLocal = useCallback(
     async ({ id, progress }: { id: string; progress: number }) => {
-      if (!db) throw new Error('db connection not available');
-      await db.exec(`
-        UPDATE ${tableNames.keyResult}
-        SET current = ${progress}
-        WHERE id = '${id}'
-    `);
+      if (!drizzleDb) throw new Error('db connection not available');
+      await drizzleDb
+        .update(keyResultTable)
+        .set({ current: progress })
+        .where(eq(keyResultTable.id, id));
     },
-    [db],
+    [drizzleDb],
   );
 
   const doesTransactionExist = useCallback(
     async (txId: string) => {
-      if (!db) {
-        throw new Error('db not found');
-      }
-      const result = await db.query(
-        `SELECT * FROM ${tableNames.transaction} WHERE id = '${txId}'`,
-      );
-      return { exists: result.rows.length > 0, transaction: result.rows[0] };
+      if (!drizzleDb) throw new Error('db connection not available');
+      const transactions = await drizzleDb
+        .select()
+        .from(transactionTable)
+        .where(eq(transactionTable.id, txId));
+      return { exists: transactions.length > 0, transaction: transactions[0] };
     },
-    [db],
+    [drizzleDb],
   );
 
   const registerTransactionLocalDb = useCallback(
     async (transaction: TransactionEnriched) => {
       const { exists } = await doesTransactionExist(transaction.id);
       if (exists) return;
-      if (!db) throw new Error('db connection not available');
-      await db.exec(
-        `INSERT INTO ${tableNames.transaction} (id, entity, action, client_id, session_id, payload, created_at)
-        values ('${transaction.id}',
-                '${transaction.entity}',
-                '${transaction.action}',
-                '${transaction.clientId}',
-                '${transaction.sessionId}',
-                '${JSON.stringify(transaction.payload)}',
-                '${transaction.created_at}')
-    `,
-      );
+      if (!drizzleDb) throw new Error('db connection not available');
+      if (!transaction.clientId || !transaction.sessionId)
+        throw new Error('sessionId not provided');
+      await drizzleDb.insert(transactionTable).values({
+        id: transaction.id,
+        entity: transaction.entity,
+        action: transaction.action,
+        clientId: transaction.clientId,
+        sessionId: transaction.sessionId,
+        createdAt: transaction.createdAt,
+        payloadString: JSON.stringify(transaction.payload),
+        serverSyncStatus: 'pending',
+      });
     },
-    [db, doesTransactionExist],
+    [drizzleDb, doesTransactionExist],
+  );
+
+  const getAllPendingSyncForwardTransactions = useCallback(async () => {
+    if (!drizzleDb) throw new Error('db connection not available');
+    const transactions = await drizzleDb
+      .select()
+      .from(transactionTable)
+      .where(eq(transactionTable.serverSyncStatus, 'pending'));
+    return transactions.map((t) => ({
+      ...t,
+      payload: JSON.parse(t.payloadString),
+    }));
+  }, [drizzleDb]);
+
+  const markSyncForwardTransactionDone = useCallback(
+    async (transactionId: string) => {
+      if (!drizzleDb) throw new Error('db connection not available');
+      await drizzleDb
+        .update(transactionTable)
+        .set({ serverSyncStatus: 'done' })
+        .where(eq(transactionTable.id, transactionId));
+    },
+    [drizzleDb],
   );
 
   const getAllObjectives = useCallback(async () => {
-    if (!db) throw new Error('db connection not available');
-    const objectivesFromPgLocal = await db.query(
-      `select * from ${tableNames.objective}`,
-    );
-    return objectivesFromPgLocal.rows as Objective[];
-  }, [db]);
+    if (!drizzleDb) throw new Error('db connection not available');
+    return drizzleDb.select().from(objectiveTable);
+  }, [drizzleDb]);
 
   const getAllKeyResults = useCallback(async () => {
-    if (!db) throw new Error('db connection not available');
-    const keyResultsFromPgLocal = await db.query(
-      `select * from ${tableNames.keyResult}`,
-    );
-    return keyResultsFromPgLocal.rows as KeyResult[];
-  }, [db]);
+    if (!drizzleDb) throw new Error('db connection not available');
+    return drizzleDb.select().from(keyResultTable);
+  }, [drizzleDb]);
 
   const getLastSync = useCallback(async () => {
-    if (!db) throw new Error('db connection not available');
-    const lastSync = await db.query(
-      `select * from ${tableNames.sync} where id = 'last_sync'`,
-    );
-    if (lastSync.rows.length === 0) {
+    if (!drizzleDb) throw new Error('db connection not available');
+    const lastSync = await drizzleDb.select().from(syncTable);
+    if (lastSync.length === 0) {
       return undefined;
     }
-    return lastSync.rows[0] as {
-      id: string;
-      last_sync: string;
-    };
-  }, [db]);
+    return lastSync[0];
+  }, [drizzleDb]);
 
   return {
     addObjectivePgLocal,
@@ -139,6 +140,8 @@ const usePgLocalOperations = () => {
     getAllObjectives,
     getAllKeyResults,
     getLastSync,
+    getAllPendingSyncForwardTransactions,
+    markSyncForwardTransactionDone,
   };
 };
 

@@ -12,22 +12,19 @@ const networkStatus = atom<NetworkStatus>({
 
 export const useNetworkStatus = () => useAtomValue(networkStatus);
 
-export const useRegisterNetworkOnline = () =>
-  useSetAtom(
-    atom(null, (_get, set) =>
-      set(networkStatus, {
-        connected: true,
-        error: undefined,
-      }),
-    ),
-  );
+const registerNetworkOnline = atom(null, (_get, set) =>
+  set(networkStatus, {
+    connected: true,
+    error: undefined,
+  }),
+);
+export const useRegisterNetworkOnline = () => useSetAtom(registerNetworkOnline);
 
+const registerNetworkOffline = atom(null, (_get, set, error: string) =>
+  set(networkStatus, {
+    connected: false,
+    error,
+  }),
+);
 export const useRegisterNetworkOffline = () =>
-  useSetAtom(
-    atom(null, (_get, set, error: string) =>
-      set(networkStatus, {
-        connected: false,
-        error,
-      }),
-    ),
-  );
+  useSetAtom(registerNetworkOffline);

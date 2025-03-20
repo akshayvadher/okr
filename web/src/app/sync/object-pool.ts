@@ -16,9 +16,9 @@ const objectives = atom<ObjectiveWithProgress[]>((get) =>
     .map((o) => o.object as Objective)
     .map((o) => ({
       ...o,
-      key_results: get(objectPool)
+      keyResults: get(objectPool)
         .filter((k) => k.type === 'KEY_RESULT')
-        .filter((k) => (k.object as KeyResult).objective_id === o.id)
+        .filter((k) => (k.object as KeyResult).objectiveId === o.id)
         .map((k) => k.object as KeyResult)
         .sort((a, b) => a.id.localeCompare(b.id)),
     }))
@@ -29,12 +29,7 @@ const objectives = atom<ObjectiveWithProgress[]>((get) =>
 );
 
 const selectedObjectiveId = atom<string>();
-export const useSelectedObjectiveId = () =>
-  useSetAtom(
-    atom(null, (_get, set, objectiveId: string) =>
-      set(selectedObjectiveId, objectiveId),
-    ),
-  );
+export const useSelectObjectiveId = () => useSetAtom(selectedObjectiveId);
 const objective = atom<ObjectiveWithProgress | undefined>((get) => {
   const objectiveId = get(selectedObjectiveId);
   if (!objective) {

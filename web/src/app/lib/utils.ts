@@ -10,15 +10,15 @@ export function calculateObjectiveStatus(objective: Objective): {
   progress: number;
   status: 'on-track' | 'at-risk' | 'behind';
 } {
-  if (!objective.key_results || objective.key_results.length === 0) {
+  if (!objective.keyResults || objective.keyResults.length === 0) {
     return { progress: 0, status: 'at-risk' };
   }
 
-  const totalProgress = objective.key_results.reduce((sum, kr) => {
+  const totalProgress = objective.keyResults.reduce((sum, kr) => {
     return sum + (kr.current / kr.target) * 100;
   }, 0);
 
-  const averageProgress = totalProgress / objective.key_results.length;
+  const averageProgress = totalProgress / objective.keyResults.length;
 
   // Determine status based on progress percentage
   let status: 'on-track' | 'at-risk' | 'behind' = 'on-track';

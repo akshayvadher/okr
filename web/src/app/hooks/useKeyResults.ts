@@ -36,7 +36,7 @@ const useKeyResults = () => {
         action: 'CREATE',
         payload: {
           ...kr,
-          objective_id: objectiveId,
+          objectiveId,
         },
       });
     },
@@ -49,7 +49,7 @@ const useKeyResults = () => {
         entity: 'KEY_RESULT',
         action: 'UPDATE_PROGRESS',
         payload: {
-          objective_id: keyResult.objective_id,
+          objectiveId: keyResult.objectiveId,
           keyResultId: keyResult.id,
           progress: progress,
         },

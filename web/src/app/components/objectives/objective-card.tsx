@@ -84,14 +84,14 @@ export function ObjectiveCard({
       </div>
 
       {expanded &&
-        objective?.key_results &&
-        objective?.key_results.length > 0 && (
+        objective?.keyResults &&
+        objective?.keyResults.length > 0 && (
           <div className="border-t p-4 bg-gray-50">
             <div className="flex justify-between items-center mb-3">
               <h3 className="text-sm font-medium">Key Results</h3>
             </div>
             <div className="space-y-2">
-              {objective?.key_results.map((keyResult: KeyResult) => (
+              {objective?.keyResults.map((keyResult: KeyResult) => (
                 <KeyResultQuickUpdate
                   key={keyResult.id}
                   keyResult={keyResult}
@@ -101,7 +101,7 @@ export function ObjectiveCard({
           </div>
         )}
       {expanded &&
-        (!objective?.key_results || objective?.key_results?.length === 0) && (
+        (!objective?.keyResults || objective?.keyResults?.length === 0) && (
           <div className="border-t p-4 bg-gray-50">
             <small className="text-gray-500">No key results created</small>
           </div>

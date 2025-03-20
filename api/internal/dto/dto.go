@@ -11,7 +11,7 @@ type CreateKeyResultRequest struct {
 	Title       string  `json:"title" binding:"required"`
 	Target      float64 `json:"target" binding:"required"`
 	Metrics     string  `json:"metrics" binding:"required"`
-	ObjectiveId string  `json:"objective_id" binding:"required"`
+	ObjectiveId string  `json:"objectiveId" binding:"required"`
 }
 
 type UpdateProgressRequest struct {
@@ -24,7 +24,7 @@ type CreateTransactionRequest struct {
 	Action    string    `json:"action" binding:"required"`
 	Entity    string    `json:"entity" binding:"required"`
 	Payload   string    `json:"payload" binding:"required"`
-	CreatedAt time.Time `json:"created_at" binding:"required"`
+	CreatedAt time.Time `json:"createdAt" binding:"required"`
 	ClientId  string    `json:"clientId" binding:"required"`
 	SessionId string    `json:"sessionId" binding:"required"`
 }

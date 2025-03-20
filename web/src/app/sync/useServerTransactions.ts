@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { TransactionServer } from '@/sync/transaction';
-import useMemoryLocalSeed from '@/sync/useMemoryLocalSeed';
+import usePgLocalToMemorySeed from '@/sync/usePgLocalToMemorySeed';
 import useSetLastSync from '@/sync/useSetLastSync';
 import { useLastSync } from '@/sync/last-sync-memory';
 import { API_BASE_URL } from '@/lib/api';
@@ -16,7 +16,7 @@ const useServerTransactions = () => {
   const [error, setError] = useState<string>();
   const [connectionStatus, setConnectionStatus] = useState('Pending');
   const { processTransactionSyncBack } = useProcessTransaction();
-  const { pgLocalAndMemoryReady } = useMemoryLocalSeed();
+  const { pgLocalAndMemoryReady } = usePgLocalToMemorySeed();
   const { setLastSync } = useSetLastSync();
   const lastSyncTime = useLastSync();
   const registerNetworkOffline = useRegisterNetworkOffline();
@@ -43,7 +43,7 @@ const useServerTransactions = () => {
 
       let url = `${API_BASE_URL}/transactions/events`;
       const params = new URLSearchParams();
-      console.log({ lastSyncTime });
+      console.log('starting listening transaction from ', lastSyncTime);
       params.append('from', lastSyncTime.toISOString());
       if (params.toString()) url += `?${params.toString()}`;
 
@@ -67,13 +67,14 @@ const useServerTransactions = () => {
               processTransactionSyncBack({
                 ...transaction,
                 payload: JSON.parse(transaction.payload),
+                createdAt: new Date(transaction.createdAt),
               }).then();
             });
             if (eventData.data.length > 0) {
               const lastTx = eventData.data[
                 eventData.data.length - 1
               ] as TransactionServer;
-              setLastSync(lastTx.created_at).then();
+              setLastSync(lastTx.createdAt).then();
             }
           } else if (eventData.type === 'new') {
             setTransactions((prevTransactions) => [
@@ -84,7 +85,8 @@ const useServerTransactions = () => {
             processTransactionSyncBack({
               ...serverTransaction,
               payload: JSON.parse(serverTransaction.payload),
-            }).then(() => setLastSync(serverTransaction.created_at));
+              createdAt: new Date(serverTransaction.createdAt),
+            }).then(() => setLastSync(serverTransaction.createdAt));
           }
         } catch (err) {
           console.error('Error parsing event data:', err);

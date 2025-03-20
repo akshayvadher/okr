@@ -9,7 +9,6 @@ import usePgLocalOperations from '@/sync/usePgLocalOperations';
 
 const usePgLocalTransactionProcess = () => {
   const {
-    registerTransactionLocalDb,
     addKeyResultPgLocal,
     addObjectivePgLocal,
     updateKeyResultProgressPgLocal,
@@ -17,8 +16,6 @@ const usePgLocalTransactionProcess = () => {
 
   const transactionLocalDbProcessor = useCallback(
     async (transaction: TransactionEnriched) => {
-      await registerTransactionLocalDb(transaction);
-
       switch (transaction.entity) {
         case 'OBJECTIVE':
           switch (transaction.action) {
@@ -27,9 +24,9 @@ const usePgLocalTransactionProcess = () => {
               await addObjectivePgLocal({
                 ...request,
                 id: transaction.id,
-                created_at: transaction.created_at,
-                updated_at: transaction.created_at,
-                key_results: [],
+                createdAt: transaction.createdAt,
+                updatedAt: transaction.createdAt,
+                keyResults: [],
               });
               break;
             default:
@@ -44,8 +41,8 @@ const usePgLocalTransactionProcess = () => {
               await addKeyResultPgLocal({
                 ...request,
                 id: transaction.id,
-                created_at: transaction.created_at,
-                updated_at: transaction.created_at,
+                createdAt: transaction.createdAt,
+                updatedAt: transaction.createdAt,
                 current: 0,
               });
               break;
@@ -67,12 +64,7 @@ const usePgLocalTransactionProcess = () => {
           throw new Error(`Unknown entity: ${transaction.entity}`);
       }
     },
-    [
-      addKeyResultPgLocal,
-      addObjectivePgLocal,
-      registerTransactionLocalDb,
-      updateKeyResultProgressPgLocal,
-    ],
+    [addKeyResultPgLocal, addObjectivePgLocal, updateKeyResultProgressPgLocal],
   );
 
   return { transactionLocalDbProcessor };
