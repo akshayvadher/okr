@@ -90,7 +90,7 @@ func (r *OKRRepository) GetTransactions(ctx context.Context, entity, action, fro
 		query = query.Where("action = ?", action)
 	}
 	if from != "" {
-		query = query.Where("server_created_at >= ?", from)
+		query = query.Where("server_created_at > ?", from)
 	}
 
 	result := query.Find(&transactions)

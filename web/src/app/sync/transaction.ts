@@ -20,10 +20,6 @@ export interface TransactionEnriched extends Transaction {
   sessionId?: string;
 }
 
-export interface PgLocalTransaction extends TransactionEnriched {
-  payloadString: string;
-}
-
 export interface TransactionServer {
   id: string;
   createdAt: Date;

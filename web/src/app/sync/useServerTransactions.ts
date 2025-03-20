@@ -9,6 +9,7 @@ import {
   useRegisterNetworkOffline,
   useRegisterNetworkOnline,
 } from '@/sync/network-status-memory';
+import { format } from 'date-fns';
 
 const useServerTransactions = () => {
   const [transactions, setTransactions] = useState<TransactionServer[]>([]);
@@ -43,8 +44,15 @@ const useServerTransactions = () => {
 
       let url = `${API_BASE_URL}/transactions/events`;
       const params = new URLSearchParams();
-      console.log('starting listening transaction from ', lastSyncTime);
-      params.append('from', lastSyncTime.toISOString());
+      const lastSyncTimeFormatted = format(
+        lastSyncTime,
+        "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
+      );
+      console.log(
+        'starting listening transaction from ',
+        lastSyncTimeFormatted,
+      );
+      params.append('from', lastSyncTimeFormatted);
       if (params.toString()) url += `?${params.toString()}`;
 
       eventSource = new EventSource(url);
@@ -74,7 +82,7 @@ const useServerTransactions = () => {
               const lastTx = eventData.data[
                 eventData.data.length - 1
               ] as TransactionServer;
-              setLastSync(lastTx.createdAt).then();
+              setLastSync(lastTx.serverCreatedAt).then();
             }
           } else if (eventData.type === 'new') {
             setTransactions((prevTransactions) => [
@@ -86,7 +94,7 @@ const useServerTransactions = () => {
               ...serverTransaction,
               payload: JSON.parse(serverTransaction.payload),
               createdAt: new Date(serverTransaction.createdAt),
-            }).then(() => setLastSync(serverTransaction.createdAt));
+            }).then(() => setLastSync(serverTransaction.serverCreatedAt));
           }
         } catch (err) {
           console.error('Error parsing event data:', err);

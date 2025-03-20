@@ -44,7 +44,8 @@ func main() {
 	go broadcast.MonitorTransactions(db, clientManager)
 
 	// Setup router
-	r := gin.Default()
+	r := gin.New()
+	r.Use(gin.Recovery())
 	r.Use(cors.Default())
 
 	// Routes
