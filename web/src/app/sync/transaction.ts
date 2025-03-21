@@ -5,8 +5,8 @@ import {
 } from '@/types';
 import { p } from '@/sync/date/format';
 
-type entity = 'OBJECTIVE' | 'KEY_RESULT';
-type action = 'CREATE' | 'UPDATE_PROGRESS';
+export type entity = 'OBJECTIVE' | 'KEY_RESULT';
+export type action = 'CREATE' | 'UPDATE_PROGRESS';
 
 export interface Transaction {
   entity: entity;

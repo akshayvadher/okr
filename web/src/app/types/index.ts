@@ -32,7 +32,7 @@ export interface Objective extends ObjectiveOnly, Base {
 }
 
 export interface ServerObjective extends ObjectiveOnly, ServerBase {
-  keyResults?: ServerKeyResult[];
+  keyResults: ServerKeyResult[];
 }
 
 export interface CreateObjectiveRequest {

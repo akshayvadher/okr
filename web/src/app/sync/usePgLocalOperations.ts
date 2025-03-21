@@ -8,7 +8,7 @@ import {
   syncTable,
   transactionTable,
 } from '@/sync/drizzle/schema';
-import { eq } from 'drizzle-orm/sql';
+import { asc, eq } from 'drizzle-orm/sql';
 
 const usePgLocalOperations = () => {
   const { drizzleDb } = usePgLocal();
@@ -94,7 +94,8 @@ const usePgLocalOperations = () => {
     const transactions = await drizzleDb
       .select()
       .from(transactionTable)
-      .where(eq(transactionTable.serverSyncStatus, 'pending'));
+      .where(eq(transactionTable.serverSyncStatus, 'pending'))
+      .orderBy(asc(transactionTable.serverSyncStatus));
     return transactions.map((t) => ({
       ...t,
       payload: JSON.parse(t.payloadString),
