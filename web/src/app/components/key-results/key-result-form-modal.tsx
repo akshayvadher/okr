@@ -53,7 +53,7 @@ export function KeyResultFormModal({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button className="bg-gray-900/90 hover:bg-gray-900 text-sm font-medium px-3 h-8 rounded-md transition-colors">Add Key Result</Button>
+          <Button className="bg-gray-900/90 hover:bg-gray-900 text-sm font-medium px-3 h-8 rounded-md transition-all duration-200 hover:scale-105">Add Key Result</Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden">
@@ -82,14 +82,14 @@ export function KeyResultFormModal({
               type="button"
               variant="ghost"
               onClick={() => setOpen(false)}
-              className="text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100/80"
+              className="text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100/80 transition-all duration-200"
             >
               Cancel
             </Button>
             <Button 
               type="submit" 
               disabled={isSubmitting}
-              className="bg-gray-900/90 hover:bg-gray-900 text-sm font-medium px-3 h-8 rounded-md transition-colors"
+              className="bg-gray-900/90 hover:bg-gray-900 text-sm font-medium px-3 h-8 rounded-md transition-all duration-200 hover:scale-105"
             >
               {isSubmitting ? 'Adding...' : 'Add Key Result'}
             </Button>
