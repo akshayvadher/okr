@@ -53,6 +53,7 @@ bun run build && bun start
 - [ ] Default exampand to be on
 - [x] Use Drizzle
 - [ ] Better doc
+- [x] Don't show no result until seeded
 
 ## Bugs
 
