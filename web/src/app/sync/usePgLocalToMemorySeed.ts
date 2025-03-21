@@ -61,10 +61,6 @@ const usePgLocalToMemorySeed = () => {
     });
 
     const lastSync = await getLastSync();
-    console.log('for setting last sync', {
-      lastSync,
-      client: f(clientAppStartTime),
-    });
     if (lastSync?.lastSync) {
       setLastSync(lastSync?.lastSync).then();
     } else {

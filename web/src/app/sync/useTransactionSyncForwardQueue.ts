@@ -21,11 +21,11 @@ export const useTransactionSyncForwardQueue = () => {
 
   const { processTransaction } = useProcessSyncForwardTransaction();
 
-  const { connected } = useNetworkStatus();
+  const { status } = useNetworkStatus();
   const registerNetworkOffline = useRegisterNetworkOffline();
 
   useEffect(() => {
-    if (!connected) {
+    if (status !== 'connected') {
       // no internet, so don't try API call
       return;
     }
@@ -50,7 +50,7 @@ export const useTransactionSyncForwardQueue = () => {
         markFirstFailed();
       });
   }, [
-    connected,
+    status,
     markFirstComplete,
     markFirstFailed,
     markFirstProcessing,

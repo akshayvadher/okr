@@ -22,7 +22,6 @@ const useSetLastSync = () => {
       if (lastSync.length > 0) {
         exists = true;
       }
-      console.log('setting last sync as', date);
       if (exists) {
         await drizzleDb
           .update(syncTable)
