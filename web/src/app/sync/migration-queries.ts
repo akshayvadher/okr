@@ -30,7 +30,7 @@ export const queries = {
       )`,
   sync: `(
           id          varchar(10) PRIMARY KEY,
-          last_sync   timestamp (6) with time zone
+          last_sync   text
       )`,
 };
 

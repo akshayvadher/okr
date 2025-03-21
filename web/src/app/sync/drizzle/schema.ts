@@ -43,5 +43,5 @@ export const transactionTable = pgTable(tableNames.transaction, {
 
 export const syncTable = pgTable(tableNames.sync, {
   id: varchar().primaryKey(),
-  lastSync: timestamp({ precision: 6, withTimezone: true }).notNull(),
+  lastSync: varchar({ length: 64 }).notNull(), // because converting it to timestamp truncates precision somehow
 });

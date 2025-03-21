@@ -4,7 +4,13 @@ export interface Base {
   updatedAt: Date;
 }
 
-export interface KeyResult extends Base {
+export interface ServerBase {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface KeyResultOnly {
   objectiveId: string;
   title: string;
   target: number;
@@ -12,10 +18,21 @@ export interface KeyResult extends Base {
   metrics: string;
 }
 
-export interface Objective extends Base {
+export interface KeyResult extends KeyResultOnly, Base {}
+
+export interface ServerKeyResult extends KeyResultOnly, ServerBase {}
+
+export interface ObjectiveOnly {
   title: string;
-  description?: string| null;
+  description?: string | null;
+}
+
+export interface Objective extends ObjectiveOnly, Base {
   keyResults?: KeyResult[];
+}
+
+export interface ServerObjective extends ObjectiveOnly, ServerBase {
+  keyResults?: ServerKeyResult[];
 }
 
 export interface CreateObjectiveRequest {

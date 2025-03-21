@@ -6,8 +6,9 @@ import { TransactionServer } from '@/sync/transaction';
 import useServerTransactions from '@/sync/useServerTransactions';
 
 const ServerTransactionFeed = () => {
-  const { transactions, connectionStatus, error, loading } =
-    useServerTransactions();
+  const { connectionStatus, error, loading } = useServerTransactions();
+
+  const transactions: TransactionServer[] = []; // TODO find a better way to log transactions;
 
   // Parse JSON payload for display
   const formatPayload = (payloadStr: unknown) => {

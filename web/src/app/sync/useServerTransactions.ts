@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { TransactionServer } from '@/sync/transaction';
 import usePgLocalToMemorySeed from '@/sync/usePgLocalToMemorySeed';
-import useSetLastSync from '@/sync/useSetLastSync';
 import { useLastSync } from '@/sync/last-sync-memory';
 import { API_BASE_URL } from '@/lib/api';
 import useProcessTransaction from '@/sync/useProcessTransaction';
@@ -9,16 +8,13 @@ import {
   useRegisterNetworkOffline,
   useRegisterNetworkOnline,
 } from '@/sync/network-status-memory';
-import { format } from 'date-fns';
 
 const useServerTransactions = () => {
-  const [transactions, setTransactions] = useState<TransactionServer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
   const [connectionStatus, setConnectionStatus] = useState('Pending');
   const { processTransactionSyncBack } = useProcessTransaction();
   const { pgLocalAndMemoryReady } = usePgLocalToMemorySeed();
-  const { setLastSync } = useSetLastSync();
   const lastSyncTime = useLastSync();
   const registerNetworkOffline = useRegisterNetworkOffline();
   const registerNetworkOnline = useRegisterNetworkOnline();
@@ -44,15 +40,8 @@ const useServerTransactions = () => {
 
       let url = `${API_BASE_URL}/transactions/events`;
       const params = new URLSearchParams();
-      const lastSyncTimeFormatted = format(
-        lastSyncTime,
-        "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
-      );
-      console.log(
-        'starting listening transaction from ',
-        lastSyncTimeFormatted,
-      );
-      params.append('from', lastSyncTimeFormatted);
+      console.log('starting listening transaction from ', lastSyncTime);
+      params.append('from', lastSyncTime);
       if (params.toString()) url += `?${params.toString()}`;
 
       eventSource = new EventSource(url);
@@ -69,32 +58,13 @@ const useServerTransactions = () => {
           console.log('received event', eventData);
           registerNetworkOnline();
           if (eventData.type === 'initial') {
-            setTransactions(eventData.data);
             setLoading(false);
             eventData.data.forEach((transaction: TransactionServer) => {
-              processTransactionSyncBack({
-                ...transaction,
-                payload: JSON.parse(transaction.payload),
-                createdAt: new Date(transaction.createdAt),
-              }).then();
+              processTransactionSyncBack(transaction).then();
             });
-            if (eventData.data.length > 0) {
-              const lastTx = eventData.data[
-                eventData.data.length - 1
-              ] as TransactionServer;
-              setLastSync(lastTx.serverCreatedAt).then();
-            }
           } else if (eventData.type === 'new') {
-            setTransactions((prevTransactions) => [
-              eventData.data,
-              ...prevTransactions,
-            ]);
             const serverTransaction = eventData.data as TransactionServer;
-            processTransactionSyncBack({
-              ...serverTransaction,
-              payload: JSON.parse(serverTransaction.payload),
-              createdAt: new Date(serverTransaction.createdAt),
-            }).then(() => setLastSync(serverTransaction.serverCreatedAt));
+            processTransactionSyncBack(serverTransaction).then();
           }
         } catch (err) {
           console.error('Error parsing event data:', err);
@@ -129,13 +99,12 @@ const useServerTransactions = () => {
     pgLocalAndMemoryReady,
     processTransactionSyncBack,
     lastSyncTime,
-    setLastSync,
     connectionStatus,
     registerNetworkOnline,
     registerNetworkOffline,
   ]);
 
-  return { transactions, loading, error, connectionStatus };
+  return { loading, error, connectionStatus };
 };
 
 export default useServerTransactions;

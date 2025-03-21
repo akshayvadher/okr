@@ -3,10 +3,14 @@ import {
   CreateObjectiveRequest,
   UpdateProgressRequestWithKeyResult,
 } from '@/types';
+import { p } from '@/sync/date/format';
+
+type entity = 'OBJECTIVE' | 'KEY_RESULT';
+type action = 'CREATE' | 'UPDATE_PROGRESS';
 
 export interface Transaction {
-  entity: 'OBJECTIVE' | 'KEY_RESULT';
-  action: 'CREATE' | 'UPDATE_PROGRESS';
+  entity: entity;
+  action: action;
   payload:
     | CreateObjectiveRequest
     | CreateKeyResultRequestWithObjective
@@ -22,11 +26,17 @@ export interface TransactionEnriched extends Transaction {
 
 export interface TransactionServer {
   id: string;
-  createdAt: Date;
+  createdAt: string;
   payload: string;
-  entity: 'OBJECTIVE' | 'KEY_RESULT';
-  action: 'CREATE' | 'UPDATE_PROGRESS';
-  serverCreatedAt: Date;
+  entity: entity;
+  action: action;
+  serverCreatedAt: string;
   clientId: string;
   sessionId: string;
 }
+
+export const serverToDomain = (s: TransactionServer): TransactionEnriched => ({
+  ...s,
+  createdAt: p(s.createdAt),
+  payload: JSON.parse(s.payload),
+});

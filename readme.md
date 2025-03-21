@@ -65,7 +65,7 @@ bun run build && bun start
 - [ ] If using a big object pool and calculating upfront is costly
 - [ ] First DB query is slow (Like 1 whole second)
 - [ ] Is PgLite and Drizzle a good choice
-- [ ] Check sync precision. Always at least 1 transaction seems to be coming up
+- [x] Check sync precision. Always at least 1 transaction seems to be coming up
 
 ## Not doing
 

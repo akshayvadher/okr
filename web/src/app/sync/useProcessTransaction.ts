@@ -3,8 +3,13 @@ import useMemoryLocalTransactionProcess from '@/sync/useMemoryLocalTransactionPr
 import usePgLocalOperations from '@/sync/usePgLocalOperations';
 import { useClientMetadata } from '@/sync/client-metadata-memory';
 import { useCallback } from 'react';
-import { TransactionEnriched } from '@/sync/transaction';
+import {
+  serverToDomain,
+  TransactionEnriched,
+  TransactionServer,
+} from '@/sync/transaction';
 import { useEnqueue } from '@/sync/transaction-sync-forward-queue';
+import useSetLastSync from '@/sync/useSetLastSync';
 
 const useProcessTransaction = () => {
   const { transactionLocalDbProcessor } = usePgLocalTransactionProcess();
@@ -14,12 +19,14 @@ const useProcessTransaction = () => {
     usePgLocalOperations();
   const { clientId, sessionId } = useClientMetadata();
   const enqueueTransactionSyncForward = useEnqueue();
+  const { setLastSync } = useSetLastSync();
 
   const processTransactionSyncBack = useCallback(
-    async (transaction: TransactionEnriched) => {
+    async (transaction: TransactionServer) => {
       try {
         if (transaction.sessionId === sessionId) {
           // no need to process own transaction
+          await setLastSync(transaction.serverCreatedAt);
           return;
         }
 
@@ -27,8 +34,10 @@ const useProcessTransaction = () => {
         if (exists) return;
 
         console.log('transaction does not exist so processing', transaction);
-        await transactionLocalInMemoryProcessor(transaction);
-        await transactionLocalDbProcessor(transaction);
+        const domainTransaction = serverToDomain(transaction);
+        await transactionLocalInMemoryProcessor(domainTransaction);
+        await transactionLocalDbProcessor(domainTransaction);
+        await setLastSync(transaction.serverCreatedAt);
       } catch (error) {
         console.error('process in memory failed', error);
       }
@@ -36,8 +45,9 @@ const useProcessTransaction = () => {
     [
       sessionId,
       doesTransactionExist,
-      transactionLocalDbProcessor,
       transactionLocalInMemoryProcessor,
+      transactionLocalDbProcessor,
+      setLastSync,
     ],
   );
 

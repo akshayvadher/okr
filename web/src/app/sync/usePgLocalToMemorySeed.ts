@@ -10,6 +10,7 @@ import useServerToMemorySeed from '@/sync/useServerToMemorySeed';
 import { useClientMetadata } from '@/sync/client-metadata-memory';
 import usePgLocalOperations from '@/sync/usePgLocalOperations';
 import { useEnqueue } from '@/sync/transaction-sync-forward-queue';
+import { f } from './date/format';
 
 const usePgLocalToMemorySeed = () => {
   const [seeded, setSeeded] = useState(false);
@@ -60,10 +61,14 @@ const usePgLocalToMemorySeed = () => {
     });
 
     const lastSync = await getLastSync();
+    console.log('for setting last sync', {
+      lastSync,
+      client: f(clientAppStartTime),
+    });
     if (lastSync?.lastSync) {
       setLastSync(lastSync?.lastSync).then();
     } else {
-      setLastSync(clientAppStartTime).then();
+      setLastSync(f(clientAppStartTime)).then();
       await serverSeed();
     }
     setPgLocalAndMemoryReady(true);
