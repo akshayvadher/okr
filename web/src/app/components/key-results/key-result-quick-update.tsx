@@ -30,7 +30,7 @@ export function KeyResultQuickUpdate({ keyResult }: KeyResultQuickUpdateProps) {
   const progressPercentage = (progress / keyResult.target) * 100;
 
   return (
-    <div className="flex items-center gap-4 py-2 group hover:bg-white rounded-md transition-all duration-200 hover:shadow-sm">
+    <div className="flex items-center gap-4 px-3 py-2.5 group hover:bg-gray-50/80 rounded-lg transition-all duration-200 hover:shadow-sm border border-transparent hover:border-gray-100">
       <div className="flex-grow">
         <div className="flex justify-between items-center">
           <h4 className="text-sm text-gray-600 truncate max-w-[200px] group-hover:text-gray-900 transition-all duration-200 group-hover:translate-x-0.5">
@@ -43,35 +43,35 @@ export function KeyResultQuickUpdate({ keyResult }: KeyResultQuickUpdateProps) {
             <span className="text-gray-400">{keyResult.metrics || '%'}</span>
           </div>
         </div>
-        <div className="mt-1.5">
+        <div className="mt-2">
           <Progress 
             value={progressPercentage} 
-            className="h-0.5 bg-gray-100 transition-all duration-500 ease-out" 
+            className="h-1 bg-gray-100 rounded-full transition-all duration-500 ease-out" 
           />
         </div>
       </div>
 
-      <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-200 transform group-hover:translate-x-0">
+      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200 transform group-hover:translate-x-0">
         <Button
           type="button"
           size="sm"
           variant="ghost"
-          className="h-6 w-6 p-0 rounded-md hover:bg-gray-100/80 disabled:opacity-40 disabled:hover:bg-transparent transition-all duration-200 hover:scale-110 disabled:hover:scale-100"
+          className="h-7 w-7 p-0 rounded-md hover:bg-gray-100 disabled:opacity-40 disabled:hover:bg-transparent transition-all duration-200 hover:scale-105 disabled:hover:scale-100"
           onClick={handleDecrement}
           disabled={progress <= 0}
         >
-          <Minus className="h-2.5 w-2.5 text-gray-400 transition-transform duration-200" />
+          <Minus className="h-3 w-3 text-gray-500 transition-transform duration-200" />
         </Button>
 
         <Button
           type="button"
           size="sm"
           variant="ghost"
-          className="h-6 w-6 p-0 rounded-md hover:bg-gray-100/80 disabled:opacity-40 disabled:hover:bg-transparent transition-all duration-200 hover:scale-110 disabled:hover:scale-100"
+          className="h-7 w-7 p-0 rounded-md hover:bg-gray-100 disabled:opacity-40 disabled:hover:bg-transparent transition-all duration-200 hover:scale-105 disabled:hover:scale-100"
           onClick={handleIncrement}
           disabled={progress >= keyResult.target}
         >
-          <Plus className="h-2.5 w-2.5 text-gray-400 transition-transform duration-200" />
+          <Plus className="h-3 w-3 text-gray-500 transition-transform duration-200" />
         </Button>
       </div>
     </div>
