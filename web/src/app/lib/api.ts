@@ -3,7 +3,7 @@ import { TransactionEnriched } from '@/sync/transaction';
 import { p } from '@/sync/date/format';
 
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8085/api/v1';
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8086/api/v1';
 
 async function fetchWithError<T>(
   url: string,
