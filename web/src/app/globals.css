@@ -4,7 +4,7 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-rgb: 250, 250, 250;
+  --background-rgb: 255, 255, 255;
 }
 
 body {
@@ -21,5 +21,30 @@ body {
 @layer utilities {
   .h-dialog {
     height: calc(100vh - 10rem);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.2s ease-out forwards;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-gray-900/90 hover:bg-gray-900 text-white transition-colors duration-200;
+  }
+
+  .btn-ghost {
+    @apply text-gray-700 hover:text-gray-900 hover:bg-gray-100/80 transition-all duration-200;
   }
 }

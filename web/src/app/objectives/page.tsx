@@ -25,10 +25,11 @@ export default function ObjectivesPage() {
     return () => window.removeEventListener('keydown', handler, false);
   }, [handler]);
   return (
-    <div>
-      {/*<OKRDashboard/>*/}
-      <ObjectiveList />
-      {isDebugModeOn && <QueueApp />}
+    <div className="min-h-screen bg-white">
+      <div className="max-w-5xl mx-auto px-4 py-6">
+        <ObjectiveList />
+        {isDebugModeOn && <QueueApp />}
+      </div>
     </div>
   );
 }

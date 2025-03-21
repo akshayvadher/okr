@@ -8,15 +8,15 @@ interface StatusBadgeProps {
 export function StatusBadge({ status, className }: StatusBadgeProps) {
   const statusConfig = {
     'on-track': {
-      color: 'bg-green-100 text-green-800',
+      color: 'bg-green-50 text-green-700',
       label: 'On Track',
     },
     'at-risk': {
-      color: 'bg-yellow-100 text-yellow-800',
+      color: 'bg-yellow-50 text-yellow-700',
       label: 'At Risk',
     },
     behind: {
-      color: 'bg-red-100 text-red-800',
+      color: 'bg-red-50 text-red-700',
       label: 'Behind',
     },
   };
@@ -26,7 +26,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
+        'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium transition-colors duration-200',
         color,
         className,
       )}

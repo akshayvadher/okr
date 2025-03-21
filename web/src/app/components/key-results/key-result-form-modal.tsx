@@ -53,24 +53,23 @@ export function KeyResultFormModal({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button variant="secondary" size="sm">
-            Add Key Result
-          </Button>
+          <Button className="bg-gray-900/90 hover:bg-gray-900 text-sm font-medium px-3 h-8 rounded-md transition-colors">Add Key Result</Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>
+      <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden">
+        <DialogHeader className="px-6 pt-6 pb-4 border-b border-gray-100">
+          <DialogTitle className="text-base font-medium text-gray-900">
             Add Key Result to &#34;{objectiveTitle}&#34;
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(handleFormSubmit)}>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="title">Key Result</Label>
+          <div className="grid gap-4 px-6 py-4">
+            <div className="grid gap-1.5">
+              <Label htmlFor="title" className="text-xs font-medium text-gray-700">Key Result</Label>
               <Input
                 id="title"
                 placeholder="Enter key result title"
+                className="h-8 text-sm border-gray-200 focus:border-gray-300 focus:ring-gray-300"
                 {...register('title', { required: 'Title is required' })}
               />
               {errors.title && (
@@ -78,15 +77,20 @@ export function KeyResultFormModal({
               )}
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="px-6 py-4 border-t border-gray-100 bg-gray-50/50">
             <Button
               type="button"
-              variant="secondary"
+              variant="ghost"
               onClick={() => setOpen(false)}
+              className="text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100/80"
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button 
+              type="submit" 
+              disabled={isSubmitting}
+              className="bg-gray-900/90 hover:bg-gray-900 text-sm font-medium px-3 h-8 rounded-md transition-colors"
+            >
               {isSubmitting ? 'Adding...' : 'Add Key Result'}
             </Button>
           </DialogFooter>

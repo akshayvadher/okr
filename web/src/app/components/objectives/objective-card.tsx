@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ChevronDown, ChevronRight, Plus } from 'lucide-react';
 import { KeyResult, ObjectiveWithProgress } from '@/types';
-import { Progress } from '@/components/ui/progress';
 import { StatusBadge } from '@/components/objectives/status-badge';
 import { Button } from '@/components/ui/button';
 import { KeyResultFormModal } from '@/components/key-results/key-result-form-modal';
@@ -37,45 +36,40 @@ export function ObjectiveCard({
   };
 
   return (
-    <div className="border rounded-lg overflow-hidden bg-white">
-      <div className="p-4">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={toggleExpanded}
-              className="p-1 rounded-md hover:bg-gray-100"
+    <div className="py-4 group/card hover:bg-gray-50/50 transition-colors duration-200">
+      <div className="flex items-start justify-between">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={toggleExpanded}
+            className="p-1.5 rounded-md hover:bg-white transition-all duration-200 transform hover:scale-105"
+          >
+            {expanded ? (
+              <ChevronDown className="h-4 w-4 text-gray-400 transition-transform duration-200 rotate-0" />
+            ) : (
+              <ChevronRight className="h-4 w-4 text-gray-400 transition-transform duration-200 rotate-0" />
+            )}
+          </button>
+          <div>
+            <Link
+              href={`/objectives/${objective.id}`}
+              className="text-sm font-semibold text-gray-900 hover:text-gray-700 transition-all duration-200 hover:translate-x-0.5"
             >
-              {expanded ? (
-                <ChevronDown className="h-4 w-4" />
-              ) : (
-                <ChevronRight className="h-4 w-4" />
-              )}
-            </button>
-            <div>
-              <Link
-                href={`/objectives/${objective.id}`}
-                className="text-lg font-medium hover:text-indigo-600 transition-colors"
-              >
-                {objective.title} {isDebugModeOn && `ℹ️ ${objective.id}`}
-              </Link>
-            </div>
+              {objective.title} {isDebugModeOn && `ℹ️ ${objective.id}`}
+            </Link>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <div className="flex items-center gap-2">
-                <StatusBadge status={objective.status} />
-                <span className="font-medium">{objective.progress}%</span>
-              </div>
-              <div className="w-32 mt-1">
-                <Progress value={objective.progress} className="h-2" />
-              </div>
-            </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <StatusBadge status={objective.status} />
+            <span className="text-xs font-medium text-gray-900 transition-all duration-200">{objective.progress}%</span>
+          </div>
+          <div className="opacity-0 group-hover/card:opacity-100 transition-all duration-200 transform group-hover/card:translate-x-0">
             <KeyResultFormModal
               objectiveId={objective.id}
               objectiveTitle={objective.title}
               trigger={
-                <Button size="sm" variant="ghost" className="rounded-full">
-                  <Plus className="h-4 w-4" />
+                <Button size="sm" variant="ghost" className="h-6 w-6 p-0 rounded-md hover:bg-white transition-all duration-200 hover:scale-110">
+                  <Plus className="h-3 w-3 text-gray-500 transition-transform duration-200" />
                 </Button>
               }
             />
@@ -86,24 +80,26 @@ export function ObjectiveCard({
       {expanded &&
         objective?.keyResults &&
         objective?.keyResults.length > 0 && (
-          <div className="border-t p-4 bg-gray-50">
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="text-sm font-medium">Key Results</h3>
-            </div>
-            <div className="space-y-2">
-              {objective?.keyResults.map((keyResult: KeyResult) => (
-                <KeyResultQuickUpdate
-                  key={keyResult.id}
-                  keyResult={keyResult}
-                />
-              ))}
+          <div className="mt-4 ml-8 animate-fadeIn">
+            <div className="relative pl-4 border-l border-gray-100">
+              <div className="space-y-2">
+                {objective?.keyResults.map((keyResult: KeyResult, index: number) => (
+                  <div key={keyResult.id} style={{ animationDelay: `${index * 50}ms` }} className="animate-fadeIn">
+                    <KeyResultQuickUpdate
+                      keyResult={keyResult}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
       {expanded &&
         (!objective?.keyResults || objective?.keyResults?.length === 0) && (
-          <div className="border-t p-4 bg-gray-50">
-            <small className="text-gray-500">No key results created</small>
+          <div className="mt-4 ml-8 animate-fadeIn">
+            <div className="relative pl-4 border-l border-gray-100">
+              <p className="text-xs text-gray-500">No key results</p>
+            </div>
           </div>
         )}
     </div>

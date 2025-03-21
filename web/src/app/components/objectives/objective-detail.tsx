@@ -1,7 +1,6 @@
 'use client';
 
 import { StatusBadge } from '@/components/objectives/status-badge';
-import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { KeyResultFormModal } from '@/components/key-results/key-result-form-modal';
 import { KeyResultProgressUpdate } from '@/components/key-results/progress-update';
@@ -14,11 +13,14 @@ export function ObjectiveDetail() {
 
   if (!objective) {
     return (
-      <div className="text-center p-8 border rounded-lg bg-gray-50">
-        <p className="text-gray-500">Objective not found</p>
-        <Link href="/objectives" className="mt-4 inline-block">
-          <Button variant="secondary">Back to Objectives</Button>
-        </Link>
+      <div className="text-center py-12">
+        <div className="max-w-sm mx-auto">
+          <h3 className="text-sm font-medium text-gray-900 mb-1">Objective not found</h3>
+          <p className="text-xs text-gray-500 mb-4">The objective you&apos;re looking for doesn&apos;t exist</p>
+          <Link href="/objectives">
+            <Button size="sm" className="bg-gray-900 hover:bg-gray-800">Back to objectives</Button>
+          </Link>
+        </div>
       </div>
     );
   }
@@ -28,40 +30,40 @@ export function ObjectiveDetail() {
       <div className="mb-8">
         <Link
           href="/objectives"
-          className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 mb-4"
+          className="inline-flex items-center text-xs text-gray-500 hover:text-gray-900 mb-4 group"
         >
-          <ArrowLeft className="h-4 w-4 mr-1" />
-          Back to all objectives
+          <ArrowLeft className="h-3 w-3 mr-1 transition-transform group-hover:-translate-x-1" />
+          Back to objectives
         </Link>
 
         <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">{objective.title}</h1>
+          <div className="flex-1">
+            <h1 className="text-lg font-medium text-gray-900">{objective.title}</h1>
+            <div className="mt-1 flex items-center gap-2">
+              <StatusBadge status={objective.status} />
+              <span className="text-xs text-gray-500">Created {new Date(objective.createdAt).toLocaleDateString()}</span>
+            </div>
           </div>
-          <StatusBadge status={objective.status} />
         </div>
 
         {objective.description && (
-          <div className="mt-4 bg-gray-50 rounded-lg">
-            <p className="text-gray-700 whitespace-pre-line">
-              {objective.description}
-            </p>
+          <div className="mt-4 text-sm text-gray-600">
+            {objective.description}
           </div>
         )}
 
-        <div className="mt-6">
-          <div className="flex justify-between items-center mb-2">
-            <span className="font-medium">
-              Overall Progress: {objective.progress}%
-            </span>
-          </div>
-          <Progress value={objective.progress} className="h-3" />
+        <div className="mt-4 flex items-center gap-2">
+          <span className="text-xs text-gray-500">Progress:</span>
+          <span className="text-sm font-medium text-gray-900">{objective.progress}%</span>
         </div>
       </div>
 
-      <div className="border-t pt-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-medium">Key Results</h2>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-sm font-medium text-gray-900">Key Results</h2>
+            <p className="text-xs text-gray-500 mt-0.5">Track your progress</p>
+          </div>
           <KeyResultFormModal
             objectiveId={objective.id}
             objectiveTitle={objective.title}
@@ -69,24 +71,20 @@ export function ObjectiveDetail() {
         </div>
 
         {objective.keyResults && objective.keyResults.length > 0 ? (
-          <div className="grid gap-4">
+          <div className="space-y-4">
             {objective.keyResults.map((keyResult) => (
               <div
                 key={keyResult.id}
-                className="border rounded-lg p-4 bg-white"
+                className="group relative"
               >
+                <div className="absolute -left-3 top-0 bottom-0 w-px bg-gray-100 group-hover:bg-gray-200 transition-colors" />
                 <KeyResultProgressUpdate keyResult={keyResult} />
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center p-8 border rounded-lg bg-gray-50">
-            <p className="text-gray-500 mb-4">No key results found</p>
-            <KeyResultFormModal
-              objectiveId={objective.id}
-              objectiveTitle={objective.title}
-              trigger={<Button>Add Your First Key Result</Button>}
-            />
+          <div className="text-center py-6">
+            <p className="text-xs text-gray-500">No key results</p>
           </div>
         )}
       </div>
