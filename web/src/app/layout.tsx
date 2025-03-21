@@ -8,11 +8,17 @@ import NetworkStatus from '@/components/NetworkStatus';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'OKR App',
+  title: 'OKR',
   description: 'A modern OKR management application',
   icons: {
-    icon: '/app/favicon.ico',
-    apple: '/app/favicon.ico',
+    icon: [
+      { url: '/app/favicon.png', sizes: '32x32', type: 'image/png' },
+      { url: '/app/favicon.svg', type: 'image/svg+xml' }
+    ],
+    apple: [
+      { url: '/app/favicon-64.png', sizes: '64x64', type: 'image/png' }
+    ],
+    shortcut: '/app/favicon.png'
   },
 };
 

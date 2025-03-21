@@ -2,29 +2,26 @@ const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
 
-const sizes = [16, 32, 48];
+const sizes = [32, 64];
 const svgPath = path.join(__dirname, '../public/app/favicon.svg');
-const icoPath = path.join(__dirname, '../public/app/favicon.ico');
 
 async function generateFavicon() {
     try {
-        const images = await Promise.all(
-            sizes.map(size =>
-                sharp(svgPath)
-                    .resize(size, size)
-                    .toBuffer()
-            )
-        );
+        // Generate PNG favicon
+        await sharp(svgPath)
+            .resize(32, 32)
+            .png()
+            .toFile(path.join(__dirname, '../public/app/favicon.png'));
 
-        // Combine images into ICO
-        const icoBuffer = await sharp(images[0])
-            .toFormat('ico')
-            .toBuffer();
+        // Generate larger PNG for Apple devices
+        await sharp(svgPath)
+            .resize(64, 64)
+            .png()
+            .toFile(path.join(__dirname, '../public/app/favicon-64.png'));
 
-        fs.writeFileSync(icoPath, icoBuffer);
-        console.log('Favicon generated successfully!');
+        console.log('Favicons generated successfully!');
     } catch (error) {
-        console.error('Error generating favicon:', error);
+        console.error('Error generating favicons:', error);
     }
 }
 
