@@ -7,7 +7,9 @@
 
 # Design
 
-![image](./docs/okr-sync-localfirst.excalidraw.svg)
+![architecture](./docs/okr-sync-localfirst.excalidraw.svg)
+
+![activity](./docs/activity.excalidraw.svg)
 
 # Start
 
