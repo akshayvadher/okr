@@ -25,6 +25,7 @@ export const queries = {
           payload_string          text,
           client_id               varchar(32),
           session_id              varchar(32),
+          objective_id            varchar(32),
           created_at              timestamp (6) with time zone,
           server_sync_status      varchar(32)
       )`,

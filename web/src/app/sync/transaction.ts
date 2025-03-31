@@ -22,6 +22,7 @@ export interface TransactionEnriched extends Transaction {
   createdAt: Date;
   clientId?: string;
   sessionId?: string;
+  objectiveId?: string;
 }
 
 export interface TransactionServer {
@@ -33,6 +34,7 @@ export interface TransactionServer {
   serverCreatedAt: string;
   clientId: string;
   sessionId: string;
+  objectiveId: string;
 }
 
 export const serverToDomain = (s: TransactionServer): TransactionEnriched => ({

@@ -20,11 +20,12 @@ type UpdateProgressRequest struct {
 }
 
 type CreateTransactionRequest struct {
-	Id        string    `json:"id" binding:"required"`
-	Action    string    `json:"action" binding:"required"`
-	Entity    string    `json:"entity" binding:"required"`
-	Payload   string    `json:"payload" binding:"required"`
-	CreatedAt time.Time `json:"createdAt" binding:"required"`
-	ClientId  string    `json:"clientId" binding:"required"`
-	SessionId string    `json:"sessionId" binding:"required"`
+	Id          string    `json:"id" binding:"required"`
+	Action      string    `json:"action" binding:"required"`
+	Entity      string    `json:"entity" binding:"required"`
+	Payload     string    `json:"payload" binding:"required"`
+	CreatedAt   time.Time `json:"createdAt" binding:"required"`
+	ClientId    string    `json:"clientId" binding:"required"`
+	SessionId   string    `json:"sessionId" binding:"required"`
+	ObjectiveId string    `json:"objectiveId" binding:"required"`
 }

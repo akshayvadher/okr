@@ -56,6 +56,7 @@ type Transaction struct {
 	ClientId        string    `gorm:"type:varchar(255)" json:"clientId"`
 	SessionId       string    `gorm:"type:varchar(255)" json:"sessionId"`
 	Entity          string    `gorm:"type:string;not null" json:"entity"`
+	ObjectiveId     string    `gorm:"type:varchar(255)" json:"objectiveId"`
 	Action          string    `gorm:"type:string;not null" json:"action"`
 	Payload         string    `gorm:"type:json;not null" json:"payload"`
 }

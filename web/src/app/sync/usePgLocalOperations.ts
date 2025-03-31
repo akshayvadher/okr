@@ -81,6 +81,7 @@ const usePgLocalOperations = () => {
         action: transaction.action,
         clientId: transaction.clientId,
         sessionId: transaction.sessionId,
+        objectiveId: transaction.objectiveId!,
         createdAt: transaction.createdAt,
         payloadString: JSON.stringify(transaction.payload),
         serverSyncStatus: 'pending',

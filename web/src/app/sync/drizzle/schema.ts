@@ -37,6 +37,7 @@ export const transactionTable = pgTable(tableNames.transaction, {
   payloadString: text().notNull(),
   clientId: varchar({ length: 32 }).notNull(),
   sessionId: varchar({ length: 32 }).notNull(),
+  objectiveId: varchar({ length: 32 }).notNull(),
   createdAt: timestamp({ precision: 6, withTimezone: true }).notNull(),
   serverSyncStatus: varchar({ length: 32 }).notNull(),
 });

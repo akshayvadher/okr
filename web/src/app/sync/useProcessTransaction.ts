@@ -10,6 +10,10 @@ import {
 } from '@/sync/transaction';
 import { useEnqueue } from '@/sync/transaction-sync-forward-queue';
 import useSetLastSync from '@/sync/useSetLastSync';
+import {
+  CreateKeyResultRequestWithObjective,
+  UpdateProgressRequestWithKeyResult,
+} from '@/types';
 
 const useProcessTransaction = () => {
   const { transactionLocalDbProcessor } = usePgLocalTransactionProcess();
@@ -56,6 +60,37 @@ const useProcessTransaction = () => {
       if (!transaction.clientId || !transaction.sessionId) {
         transaction.clientId = clientId;
         transaction.sessionId = sessionId;
+      }
+      switch (transaction.entity) {
+        case 'OBJECTIVE':
+          switch (transaction.action) {
+            case 'CREATE':
+              transaction.objectiveId = transaction.id;
+              break;
+            default:
+              throw new Error(`Unknown action: ${transaction.action}`);
+          }
+          break;
+        case 'KEY_RESULT':
+          switch (transaction.action) {
+            case 'CREATE': {
+              const request =
+                transaction.payload as CreateKeyResultRequestWithObjective;
+              transaction.objectiveId = request.objectiveId;
+              break;
+            }
+            case 'UPDATE_PROGRESS': {
+              const request =
+                transaction.payload as UpdateProgressRequestWithKeyResult;
+              transaction.objectiveId = request.objectiveId;
+              break;
+            }
+            default:
+              throw new Error(`Unknown action: ${transaction.action}`);
+          }
+          break;
+        default:
+          throw new Error(`Unknown entity: ${transaction.entity}`);
       }
       await transactionLocalInMemoryProcessor(transaction);
       await transactionLocalDbProcessor(transaction);

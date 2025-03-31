@@ -75,6 +75,7 @@ func (h *OKRHandler) AddTransaction(c *gin.Context) {
 		Payload:         req.Payload,
 		ClientId:        req.ClientId,
 		SessionId:       req.SessionId,
+		ObjectiveId:     req.ObjectiveId,
 	}
 
 	if err := h.service.AddTransaction(c.Request.Context(), t); err != nil {
