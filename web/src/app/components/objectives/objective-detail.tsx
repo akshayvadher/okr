@@ -4,6 +4,7 @@ import { StatusBadge } from '@/components/objectives/status-badge';
 import { Button } from '@/components/ui/button';
 import { KeyResultFormModal } from '@/components/key-results/key-result-form-modal';
 import { KeyResultProgressUpdate } from '@/components/key-results/progress-update';
+import { ObjectiveComments } from '@/components/objectives/objective-comments';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useObjectiveFromPool } from '@/sync/object-pool';
@@ -58,35 +59,44 @@ export function ObjectiveDetail() {
         </div>
       </div>
 
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-sm font-medium text-gray-900">Key Results</h2>
-            <p className="text-xs text-gray-500 mt-0.5">Track your progress</p>
+      <div className="space-y-8">
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-sm font-medium text-gray-900">Key Results</h2>
+              <p className="text-xs text-gray-500 mt-0.5">Track your progress</p>
+            </div>
+            <KeyResultFormModal
+              objectiveId={objective.id}
+              objectiveTitle={objective.title}
+            />
           </div>
-          <KeyResultFormModal
-            objectiveId={objective.id}
-            objectiveTitle={objective.title}
-          />
+
+          {objective.keyResults && objective.keyResults.length > 0 ? (
+            <div className="space-y-4">
+              {objective.keyResults.map((keyResult) => (
+                <div
+                  key={keyResult.id}
+                  className="group relative"
+                >
+                  <div className="absolute -left-3 top-0 bottom-0 w-px bg-gray-100 group-hover:bg-gray-200 transition-colors" />
+                  <KeyResultProgressUpdate keyResult={keyResult} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-6">
+              <p className="text-xs text-gray-500">No key results</p>
+            </div>
+          )}
         </div>
 
-        {objective.keyResults && objective.keyResults.length > 0 ? (
-          <div className="space-y-4">
-            {objective.keyResults.map((keyResult) => (
-              <div
-                key={keyResult.id}
-                className="group relative"
-              >
-                <div className="absolute -left-3 top-0 bottom-0 w-px bg-gray-100 group-hover:bg-gray-200 transition-colors" />
-                <KeyResultProgressUpdate keyResult={keyResult} />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-6">
-            <p className="text-xs text-gray-500">No key results</p>
-          </div>
-        )}
+        <div className="pt-8 border-t border-gray-100">
+          <ObjectiveComments
+            objectiveId={objective.id}
+            comments={objective.comments}
+          />
+        </div>
       </div>
     </div>
   );

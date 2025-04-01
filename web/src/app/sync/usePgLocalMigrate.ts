@@ -21,6 +21,11 @@ const usePgLocalMigrate = () => {
     `);
 
     await db.exec(`
+      CREATE TABLE IF NOT EXISTS ${tableNames.comment}
+      ${queries.comment}
+    `)
+
+    await db.exec(`
       CREATE TABLE IF NOT EXISTS ${tableNames.transaction}
       ${queries.transaction}
     `);

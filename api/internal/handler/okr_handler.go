@@ -125,7 +125,7 @@ func (h *OKRHandler) ListenEvents(c *gin.Context) {
 		// TODO check if this is working
 	}()
 
-	// Stream events to client
+	// Stream events to the clients
 	c.Stream(func(w io.Writer) bool {
 		if msg, ok := <-clientChan; ok {
 			data, err := json.Marshal(msg)

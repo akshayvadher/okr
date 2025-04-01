@@ -9,6 +9,7 @@ import { useQueueStats } from '@/sync/queue';
 import {
   keyResultTable,
   objectiveTable,
+  commentTable,
   syncTable,
   transactionTable,
 } from '@/sync/drizzle/schema';
@@ -54,6 +55,7 @@ export const QueueApp = () => {
     }
     await drizzleDb.delete(objectiveTable);
     await drizzleDb.delete(keyResultTable);
+    await drizzleDb.delete(commentTable);
     await drizzleDb.delete(transactionTable);
     await drizzleDb.delete(syncTable);
 

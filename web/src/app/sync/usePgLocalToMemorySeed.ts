@@ -4,6 +4,7 @@ import {
   useAddKeyResult,
   useAddObjective,
   useGetAllObjectsFromMemory,
+  useAddComment,
 } from '@/sync/object-pool';
 import useSetLastSync from '@/sync/useSetLastSync';
 import useServerToMemorySeed from '@/sync/useServerToMemorySeed';
@@ -22,6 +23,7 @@ const usePgLocalToMemorySeed = () => {
   const {
     getAllObjectives,
     getAllKeyResults,
+    getAllComments,
     getLastSync,
     getAllPendingSyncForwardTransactions,
   } = usePgLocalOperations();
@@ -29,6 +31,7 @@ const usePgLocalToMemorySeed = () => {
   const allObjectsFromMemoryPool = useGetAllObjectsFromMemory();
   const addObjective = useAddObjective();
   const addKeyResult = useAddKeyResult();
+  const addComment = useAddComment();
   const { setLastSync } = useSetLastSync();
 
   const queueSyncForwardTransaction = useEnqueue();
@@ -50,6 +53,9 @@ const usePgLocalToMemorySeed = () => {
     const allKeyResults = await getAllKeyResults();
     allKeyResults.forEach(addKeyResult);
 
+    const allComments = await getAllComments();
+    allComments.forEach(addComment);
+
     const allPendingSyncForwardTransactions =
       await getAllPendingSyncForwardTransactions();
     allPendingSyncForwardTransactions.forEach(queueSyncForwardTransaction);
@@ -69,11 +75,13 @@ const usePgLocalToMemorySeed = () => {
     }
     setPgLocalAndMemoryReady(true);
   }, [
+    addComment,
     addKeyResult,
     addObjective,
     allObjectsFromMemoryPool.length,
     clientAppStartTime,
     dbCreated,
+    getAllComments,
     getAllKeyResults,
     getAllObjectives,
     getAllPendingSyncForwardTransactions,

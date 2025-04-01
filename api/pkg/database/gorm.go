@@ -39,6 +39,7 @@ func NewGormDB(cfg *config.DatabaseConfig) (*gorm.DB, error) {
 		&domain.Objective{},
 		&domain.KeyResult{},
 		&domain.Transaction{},
+		&domain.Comment{},
 	); err != nil {
 		return nil, err
 	}

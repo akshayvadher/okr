@@ -7,8 +7,10 @@ import {
   objectiveTable,
   syncTable,
   transactionTable,
+  commentTable,
 } from '@/sync/drizzle/schema';
 import { asc, eq } from 'drizzle-orm/sql';
+import { CommentModal } from '@/types/modal';
 
 const usePgLocalOperations = () => {
   const { drizzleDb } = usePgLocal();
@@ -56,6 +58,13 @@ const usePgLocalOperations = () => {
     [drizzleDb],
   );
 
+  const addCommentPgLocal = useCallback(
+    async (comment: CommentModal) => {
+      if (!drizzleDb) throw new Error('db connection not available');
+      await drizzleDb.insert(commentTable).values(comment);
+    },
+    [drizzleDb],
+  );
   const doesTransactionExist = useCallback(
     async (txId: string) => {
       if (!drizzleDb) throw new Error('db connection not available');
@@ -124,6 +133,11 @@ const usePgLocalOperations = () => {
     return drizzleDb.select().from(keyResultTable);
   }, [drizzleDb]);
 
+  const getAllComments = useCallback(async () => {
+    if (!drizzleDb) throw new Error('db connection not available');
+    return drizzleDb.select().from(commentTable);
+  }, [drizzleDb]);
+
   const getLastSync = useCallback(async () => {
     if (!drizzleDb) throw new Error('db connection not available');
     const lastSync = await drizzleDb.select().from(syncTable);
@@ -137,10 +151,12 @@ const usePgLocalOperations = () => {
     addObjectivePgLocal,
     addKeyResultPgLocal,
     updateKeyResultProgressPgLocal,
+    addCommentPgLocal,
     registerTransactionLocalDb,
     doesTransactionExist,
     getAllObjectives,
     getAllKeyResults,
+    getAllComments,
     getLastSync,
     getAllPendingSyncForwardTransactions,
     markSyncForwardTransactionDone,

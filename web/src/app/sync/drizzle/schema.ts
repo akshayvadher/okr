@@ -27,7 +27,15 @@ export const keyResultTable = pgTable(tableNames.keyResult, {
   updatedAt: timestamp({ precision: 6, withTimezone: true }).notNull(),
 });
 
-export const entityEnum = pgEnum('entity', ['OBJECTIVE', 'KEY_RESULT']);
+export const commentTable = pgTable(tableNames.comment, {
+  id: varchar({ length: 32 }).primaryKey(),
+  objectiveId: varchar({ length: 32 }).notNull(),
+  keyResultId: varchar({ length: 32 }),
+  content: text().notNull(),
+  createdAt: timestamp({ precision: 6, withTimezone: true }).notNull(),
+});
+
+export const entityEnum = pgEnum('entity', ['OBJECTIVE', 'KEY_RESULT', 'COMMENT']);
 export const actionEnum = pgEnum('action', ['CREATE', 'UPDATE_PROGRESS']);
 
 export const transactionTable = pgTable(tableNames.transaction, {

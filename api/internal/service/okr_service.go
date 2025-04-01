@@ -127,6 +127,29 @@ func (s *OKRService) AddTransaction(ctx context.Context, t *domain.Transaction) 
 				return err
 			}
 		}
+	case "COMMENT":
+		switch t.Action {
+		case "CREATE":
+			var createCommentRequest dto.CreateCommentRequest
+			err := json.Unmarshal([]byte(t.Payload), &createCommentRequest)
+			if err != nil {
+				return err
+			}
+			comment := &domain.Comment{
+				Base: domain.Base{
+					ID:        t.ID,
+					CreatedAt: t.CreatedAt,
+					UpdatedAt: t.CreatedAt,
+				},
+				ObjectiveID: createCommentRequest.ObjectiveId,
+				KeyResultID: createCommentRequest.KeyResultId,
+				Content:     createCommentRequest.Content,
+			}
+			err = s.CreateComment(ctx, comment)
+			if err != nil {
+				return err
+			}
+		}
 	}
 	return nil
 }
@@ -137,4 +160,17 @@ func (s *OKRService) GetTransactions(c context.Context, entity, action, from str
 
 func (s *OKRService) DeleteAll(c *gin.Context) {
 	s.repo.DeleteAll(c)
+}
+
+func (s *OKRService) CreateComment(ctx context.Context, comment *domain.Comment) error {
+	if comment.Content == "" {
+		return errors.New("comment content cannot be empty")
+	}
+
+	_, err := s.repo.GetObjective(ctx, comment.ObjectiveID)
+	if err != nil {
+		return err
+	}
+
+	return s.repo.CreateComment(ctx, comment)
 }

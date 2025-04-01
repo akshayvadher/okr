@@ -32,16 +32,22 @@ bun run build && bun start
 - [x] Offline tracker
 - [x] Offline support
 - [x] Better queue in web (remove delay)
-- [ ] Better event in server (remove polling)
 - [x] Using dynamic table name based on create query
-- [ ] Add loading per entity
 - [x] Separate session id and client id
+- [ ] Better event in server (remove polling)
 - [ ] Handle failed transaction (correctly failed and wrongly failed both)
+- [ ] Add loading per entity
+- [ ] Lazy loding for some entities
+- [ ] Get only my data (using multi tenancy)
+- [ ] How to not get all data (using yearly or quarterly OKR)
+- [ ] PWA
 
 ## OKR App
 
 - [ ] Workspace/multi-tenancy support
-- [ ] Comments
+- [x] Comments
+- [ ] Quarterly
+- [ ] Tasks
 - [ ] Todo inside objective
 
 ## Nice to have (not directly related to sync)

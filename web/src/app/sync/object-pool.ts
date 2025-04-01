@@ -1,10 +1,11 @@
 import { KeyResult, Objective, ObjectiveWithProgress } from '@/types';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { calculateObjectiveStatus } from '@/lib/utils';
+import { CommentModal } from '@/types/modal';
 
 export interface ObjectInPool {
-  object: Objective | KeyResult;
-  type: 'OBJECTIVE' | 'KEY_RESULT';
+  object: Objective | KeyResult | CommentModal;
+  type: 'OBJECTIVE' | 'KEY_RESULT' | 'COMMENT';
 }
 
 export const objectPool = atom<ObjectInPool[]>([]);
@@ -21,6 +22,12 @@ const objectives = atom<ObjectiveWithProgress[]>((get) =>
         .filter((k) => (k.object as KeyResult).objectiveId === o.id)
         .map((k) => k.object as KeyResult)
         .sort((a, b) => a.id.localeCompare(b.id)),
+      comments: get(objectPool)
+        .filter((c) => c.type === 'COMMENT')
+        .filter((c) => (c.object as CommentModal).objectiveId === o.id)
+        .filter((c) => !(c.object as CommentModal).keyResultId)
+        .map((c) => c.object as CommentModal)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
     }))
     .map((o) => ({
       ...o,
@@ -76,6 +83,7 @@ const addKeyResult = atom(null, (get, set, kr: KeyResult) => {
     },
   ]);
 });
+
 const updateKeyResultProgress = atom(
   null,
   (
@@ -101,12 +109,12 @@ const updateKeyResultProgress = atom(
       prev.map((item) =>
         item.object.id === id
           ? {
-              ...item,
-              object: {
-                ...item.object,
-                current: progress,
-              },
-            }
+            ...item,
+            object: {
+              ...item.object,
+              current: progress,
+            },
+          }
           : item,
       ),
     );
@@ -115,3 +123,16 @@ const updateKeyResultProgress = atom(
 export const useAddKeyResult = () => useSetAtom(addKeyResult);
 export const useUpdateKeyResultProgress = () =>
   useSetAtom(updateKeyResultProgress);
+
+const addComment = atom(null, (get, set, c: CommentModal) => {
+  const allObjects = get(objectPool);
+  const existingComment = allObjects.find(
+    (o) => o.type === 'COMMENT' && o.object.id === c.id,
+  );
+  if (existingComment) {
+    return;
+  }
+  set(objectPool, [...allObjects, { object: c, type: 'COMMENT' }]);
+});
+export const useAddComment = () => useSetAtom(addComment);
+

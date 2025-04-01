@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { TransactionEnriched } from '@/sync/transaction';
 import {
+  CreateCommentRequest,
   CreateKeyResultRequestWithObjective,
   CreateObjectiveRequest,
   UpdateProgressRequestWithKeyResult,
@@ -12,6 +13,7 @@ const usePgLocalTransactionProcess = () => {
     addKeyResultPgLocal,
     addObjectivePgLocal,
     updateKeyResultProgressPgLocal,
+    addCommentPgLocal,
   } = usePgLocalOperations();
 
   const transactionLocalDbProcessor = useCallback(
@@ -60,11 +62,28 @@ const usePgLocalTransactionProcess = () => {
               throw new Error(`Unknown action: ${transaction.action}`);
           }
           break;
+        case 'COMMENT':
+          switch (transaction.action) {
+            case 'CREATE':
+              const request = transaction.payload as CreateCommentRequest;
+              await addCommentPgLocal({
+                ...request,
+                id: transaction.id,
+                createdAt: transaction.createdAt,
+              });
+              break;
+          }
+          break;
         default:
           throw new Error(`Unknown entity: ${transaction.entity}`);
       }
     },
-    [addKeyResultPgLocal, addObjectivePgLocal, updateKeyResultProgressPgLocal],
+    [
+      addCommentPgLocal,
+      addKeyResultPgLocal,
+      addObjectivePgLocal,
+      updateKeyResultProgressPgLocal,
+    ],
   );
 
   return { transactionLocalDbProcessor };

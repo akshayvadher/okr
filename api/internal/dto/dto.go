@@ -29,3 +29,9 @@ type CreateTransactionRequest struct {
 	SessionId   string    `json:"sessionId" binding:"required"`
 	ObjectiveId string    `json:"objectiveId" binding:"required"`
 }
+
+type CreateCommentRequest struct {
+	Content     string  `json:"content" binding:"required"`
+	ObjectiveId string  `json:"objectiveId" binding:"required"`
+	KeyResultId *string `json:"keyResultId,omitempty"`
+}

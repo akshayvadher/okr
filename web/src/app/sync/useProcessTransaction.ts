@@ -11,6 +11,7 @@ import {
 import { useEnqueue } from '@/sync/transaction-sync-forward-queue';
 import useSetLastSync from '@/sync/useSetLastSync';
 import {
+  CreateCommentRequest,
   CreateKeyResultRequestWithObjective,
   UpdateProgressRequestWithKeyResult,
 } from '@/types';
@@ -87,6 +88,15 @@ const useProcessTransaction = () => {
             }
             default:
               throw new Error(`Unknown action: ${transaction.action}`);
+          }
+          break;
+        case 'COMMENT':
+          switch (transaction.action) {
+            case 'CREATE':
+              const request =
+                transaction.payload as CreateCommentRequest;
+              transaction.objectiveId = request.objectiveId;
+              break;
           }
           break;
         default:

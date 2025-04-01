@@ -2,10 +2,11 @@ import {
   CreateKeyResultRequestWithObjective,
   CreateObjectiveRequest,
   UpdateProgressRequestWithKeyResult,
+  CreateCommentRequest,
 } from '@/types';
 import { p } from '@/sync/date/format';
 
-export type entity = 'OBJECTIVE' | 'KEY_RESULT';
+export type entity = 'OBJECTIVE' | 'KEY_RESULT' | 'COMMENT';
 export type action = 'CREATE' | 'UPDATE_PROGRESS';
 
 export interface Transaction {
@@ -14,7 +15,8 @@ export interface Transaction {
   payload:
     | CreateObjectiveRequest
     | CreateKeyResultRequestWithObjective
-    | UpdateProgressRequestWithKeyResult;
+    | UpdateProgressRequestWithKeyResult
+    | CreateCommentRequest;
 }
 
 export interface TransactionEnriched extends Transaction {

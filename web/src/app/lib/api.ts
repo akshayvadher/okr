@@ -30,11 +30,17 @@ const serverToDtoMapping = (o: ServerObjective) => {
     ...o,
     createdAt: p(o.createdAt),
     updatedAt: p(o.updatedAt),
-    keyResults: o.keyResults?.map((k) => {
+    keyResults: o.keyResults.map((k) => {
       return {
         ...k,
         createdAt: p(k.createdAt),
         updatedAt: p(k.updatedAt),
+      };
+    }),
+    comments: o.comments.map((c) => {
+      return {
+        ...c,
+        createdAt: p(c.createdAt),
       };
     }),
   } as Objective;

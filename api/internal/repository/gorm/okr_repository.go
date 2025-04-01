@@ -35,7 +35,7 @@ func (r *OKRRepository) GetObjective(ctx context.Context, id string) (*domain.Ob
 
 func (r *OKRRepository) ListObjectives(ctx context.Context) ([]*domain.Objective, error) {
 	var objectives []*domain.Objective
-	if err := r.db.WithContext(ctx).Preload("KeyResults").Order("created_at desc").Find(&objectives).Error; err != nil {
+	if err := r.db.WithContext(ctx).Preload("KeyResults").Preload("Comments").Order("created_at desc").Find(&objectives).Error; err != nil {
 		return nil, err
 	}
 
@@ -104,5 +104,10 @@ func (r *OKRRepository) GetTransactions(ctx context.Context, entity, action, fro
 func (r *OKRRepository) DeleteAll(ctx context.Context) {
 	r.db.WithContext(ctx).Unscoped().Where("1 = 1").Delete(&domain.Transaction{})
 	r.db.WithContext(ctx).Unscoped().Where("1 = 1").Delete(&domain.KeyResult{})
+	r.db.WithContext(ctx).Unscoped().Where("1 = 1").Delete(&domain.Comment{})
 	r.db.WithContext(ctx).Unscoped().Where("1 = 1").Delete(&domain.Objective{})
+}
+
+func (r *OKRRepository) CreateComment(ctx context.Context, comment *domain.Comment) error {
+	return r.db.WithContext(ctx).Create(comment).Error
 }

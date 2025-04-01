@@ -18,6 +18,14 @@ export const queries = {
           created_at    timestamp (6) with time zone,
           updated_at    timestamp (6) with time zone
       )`,
+  comment: `(
+          id            varchar(32) PRIMARY KEY,
+          objective_id  varchar(32),
+          key_result_id varchar(32),
+          content       text,
+          created_at    timestamp (6) with time zone,
+          updated_at    timestamp (6) with time zone
+      )`,
   transaction: `(
           id                      varchar(32) PRIMARY KEY,
           entity                  varchar(32),
@@ -41,6 +49,7 @@ export const queries = {
 export const tableNames = {
   objective: 'objective_' + md5(queries.objective),
   keyResult: 'key_result_' + md5(queries.keyResult),
+  comment: 'comment_' + md5(queries.comment),
   transaction: 'transaction_' + md5(queries.transaction),
   sync: 'sync_' + md5(queries.sync),
 };

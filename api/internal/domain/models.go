@@ -26,7 +26,8 @@ type Objective struct {
 	Base
 	Title       string      `gorm:"type:varchar(255);not null" json:"title"`
 	Description string      `gorm:"type:text" json:"description"`
-	KeyResults  []KeyResult `gorm:"foreignKey:ObjectiveID" json:"keyResults,omitempty"`
+	KeyResults  []KeyResult `gorm:"foreignKey:ObjectiveID" json:"keyResults"`
+	Comments    []Comment   `gorm:"foreignKey:ObjectiveID" json:"comments"`
 }
 
 // TableName overrides the table name
@@ -47,6 +48,19 @@ type KeyResult struct {
 // TableName overrides the table name
 func (KeyResult) TableName() string {
 	return "key_results"
+}
+
+// Comment represents a comment on an objective or key result
+type Comment struct {
+	Base
+	Content     string  `gorm:"type:text;not null" json:"content"`
+	ObjectiveID string  `gorm:"type:varchar(255);not null" json:"objectiveId"`
+	KeyResultID *string `gorm:"type:varchar(255)" json:"keyResultId,omitempty"`
+}
+
+// TableName overrides the table name
+func (Comment) TableName() string {
+	return "comments"
 }
 
 type Transaction struct {
