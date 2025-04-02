@@ -1,12 +1,9 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { CommentModal } from '@/types/modal';
-import useComments from '@/hooks/useComments';
 import { MessageSquare } from 'lucide-react';
 import { formatDateTime, formatRelativeTime } from '@/sync/date/format';
+import { CommentForm } from './comment-form';
 
 interface ObjectiveCommentsProps {
   objectiveId: string;
@@ -14,20 +11,6 @@ interface ObjectiveCommentsProps {
 }
 
 export function ObjectiveComments({ objectiveId, comments = [] }: ObjectiveCommentsProps) {
-  const { createComment } = useComments();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<{ content: string }>();
-
-  const handleFormSubmit = (data: { content: string }) => {
-    createComment(objectiveId, data.content);
-    reset();
-  };
-
   return (
     <div className="space-y-8">
       <div className="flex items-center gap-2">
@@ -38,26 +21,7 @@ export function ObjectiveComments({ objectiveId, comments = [] }: ObjectiveComme
         </div>
       </div>
 
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-        <div className="space-y-2">
-          <Textarea
-            placeholder="Write a comment..."
-            className="h-10 min-h-[40px] max-h-[200px] resize-none text-sm border-gray-200 focus:border-gray-300 focus:ring-gray-300 transition-all duration-200 focus:min-h-[100px]"
-            {...register('content', { required: 'Comment is required' })}
-          />
-          {errors.content && (
-            <p className="text-xs text-red-500">{errors.content.message}</p>
-          )}
-        </div>
-        <div className="flex justify-end">
-          <Button
-            type="submit"
-            className="bg-gray-900/90 hover:bg-gray-900 text-sm font-medium px-3 h-8 rounded-md transition-all duration-200 hover:scale-105"
-          >
-            Add Comment
-          </Button>
-        </div>
-      </form>
+      <CommentForm objectiveId={objectiveId} />
 
       <div className="space-y-4">
         {comments.length > 0 ? (
@@ -72,7 +36,7 @@ export function ObjectiveComments({ objectiveId, comments = [] }: ObjectiveComme
                     <MessageSquare className="h-4 w-4 text-gray-400 transition-colors duration-200 group-hover/comment:text-gray-500" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-900 leading-relaxed transition-colors duration-200 group-hover/comment:text-gray-800">{comment.content}</p>
+                    <p className="text-sm text-gray-900 leading-relaxed transition-colors duration-200 group-hover/comment:text-gray-800 whitespace-pre-wrap">{comment.content}</p>
                     <div className="relative h-4">
                       <p className="absolute inset-0 text-xs text-gray-400 transition-colors duration-200 group-hover/comment:text-gray-500">
                         <span className="group-hover/comment:hidden">
