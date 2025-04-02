@@ -36,7 +36,7 @@ export const commentTable = pgTable(tableNames.comment, {
 });
 
 export const entityEnum = pgEnum('entity', ['OBJECTIVE', 'KEY_RESULT', 'COMMENT']);
-export const actionEnum = pgEnum('action', ['CREATE', 'UPDATE_PROGRESS']);
+export const actionEnum = pgEnum('action', ['CREATE', 'UPDATE_PROGRESS', 'UPDATE']);
 
 export const transactionTable = pgTable(tableNames.transaction, {
   id: varchar({ length: 32 }).primaryKey(),

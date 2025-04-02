@@ -35,3 +35,9 @@ type CreateCommentRequest struct {
 	ObjectiveId string  `json:"objectiveId" binding:"required"`
 	KeyResultId *string `json:"keyResultId,omitempty"`
 }
+
+type UpdateObjectiveRequest struct {
+	ID          string  `json:"id" binding:"required"`
+	Title       *string `json:"title,omitempty"`
+	Description *string `json:"description,omitempty"`
+}

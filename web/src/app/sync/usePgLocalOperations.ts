@@ -1,6 +1,6 @@
 import { usePgLocal } from '@/sync/usePgLocal';
 import { useCallback } from 'react';
-import { KeyResult, Objective } from '@/types';
+import { KeyResult, Objective, UpdateObjectiveRequest } from '@/types';
 import { TransactionEnriched } from '@/sync/transaction';
 import {
   keyResultTable,
@@ -27,6 +27,18 @@ const usePgLocalOperations = () => {
         return;
       }
       await drizzleDb.insert(objectiveTable).values(objective);
+    },
+    [drizzleDb],
+  );
+
+  const updateObjectivePgLocal = useCallback(
+    async (objective: UpdateObjectiveRequest) => {
+      if (!drizzleDb) throw new Error('db connection not available');
+      console.log('Updating objective', objective);
+      await drizzleDb
+        .update(objectiveTable)
+        .set(objective)
+        .where(eq(objectiveTable.id, objective.id));
     },
     [drizzleDb],
   );
@@ -149,6 +161,7 @@ const usePgLocalOperations = () => {
 
   return {
     addObjectivePgLocal,
+    updateObjectivePgLocal,
     addKeyResultPgLocal,
     updateKeyResultProgressPgLocal,
     addCommentPgLocal,

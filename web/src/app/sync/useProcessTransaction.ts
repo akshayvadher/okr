@@ -14,6 +14,7 @@ import {
   CreateCommentRequest,
   CreateKeyResultRequestWithObjective,
   UpdateProgressRequestWithKeyResult,
+  UpdateObjectiveRequest,
 } from '@/types';
 
 const useProcessTransaction = () => {
@@ -67,6 +68,10 @@ const useProcessTransaction = () => {
           switch (transaction.action) {
             case 'CREATE':
               transaction.objectiveId = transaction.id;
+              break;
+            case 'UPDATE':
+              const request = transaction.payload as UpdateObjectiveRequest;
+              transaction.objectiveId = request.id;
               break;
             default:
               throw new Error(`Unknown action: ${transaction.action}`);

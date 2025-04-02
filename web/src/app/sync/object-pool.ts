@@ -27,7 +27,10 @@ const objectives = atom<ObjectiveWithProgress[]>((get) =>
         .filter((c) => (c.object as CommentModal).objectiveId === o.id)
         .filter((c) => !(c.object as CommentModal).keyResultId)
         .map((c) => c.object as CommentModal)
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        ),
     }))
     .map((o) => ({
       ...o,
@@ -109,12 +112,12 @@ const updateKeyResultProgress = atom(
       prev.map((item) =>
         item.object.id === id
           ? {
-            ...item,
-            object: {
-              ...item.object,
-              current: progress,
-            },
-          }
+              ...item,
+              object: {
+                ...item.object,
+                current: progress,
+              },
+            }
           : item,
       ),
     );
@@ -136,3 +139,30 @@ const addComment = atom(null, (get, set, c: CommentModal) => {
 });
 export const useAddComment = () => useSetAtom(addComment);
 
+const updateObjective = atom(
+  null,
+  (get, set, update: Partial<Objective> & { id: string }) => {
+    const allObjects = get(objectPool);
+    const existingObjective = allObjects.find(
+      (o) => o.type === 'OBJECTIVE' && o.object.id === update.id,
+    )?.object as Objective;
+    if (!existingObjective) {
+      throw new Error(`Objective with id ${update.id} not found`);
+    }
+    set(objectPool, (prev) =>
+      prev.map((item) =>
+        item.type === 'OBJECTIVE' && item.object.id === update.id
+          ? {
+              ...item,
+              object: {
+                ...existingObjective,
+                ...update,
+              },
+            }
+          : item,
+      ),
+    );
+  },
+);
+
+export const useUpdateObjective = () => useSetAtom(updateObjective);

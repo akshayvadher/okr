@@ -76,3 +76,9 @@ export interface ObjectiveWithProgress extends Objective {
   progress: number;
   status: 'on-track' | 'at-risk' | 'behind';
 }
+
+export interface UpdateObjectiveRequest {
+  id: string;
+  title?: string;
+  description?: string;
+}

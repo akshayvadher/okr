@@ -4,6 +4,7 @@ import {
   CreateCommentRequest,
   CreateKeyResultRequestWithObjective,
   CreateObjectiveRequest,
+  UpdateObjectiveRequest,
   UpdateProgressRequestWithKeyResult,
 } from '@/types';
 import usePgLocalOperations from '@/sync/usePgLocalOperations';
@@ -14,6 +15,7 @@ const usePgLocalTransactionProcess = () => {
     addObjectivePgLocal,
     updateKeyResultProgressPgLocal,
     addCommentPgLocal,
+    updateObjectivePgLocal,
   } = usePgLocalOperations();
 
   const transactionLocalDbProcessor = useCallback(
@@ -21,7 +23,7 @@ const usePgLocalTransactionProcess = () => {
       switch (transaction.entity) {
         case 'OBJECTIVE':
           switch (transaction.action) {
-            case 'CREATE':
+            case 'CREATE': {
               const request = transaction.payload as CreateObjectiveRequest;
               await addObjectivePgLocal({
                 ...request,
@@ -31,6 +33,12 @@ const usePgLocalTransactionProcess = () => {
                 keyResults: [],
               });
               break;
+            }
+            case 'UPDATE': {
+              const request = transaction.payload as UpdateObjectiveRequest;
+              await updateObjectivePgLocal(request);
+              break;
+            }
             default:
               throw new Error(`Unknown action: ${transaction.action}`);
           }
@@ -83,6 +91,7 @@ const usePgLocalTransactionProcess = () => {
       addKeyResultPgLocal,
       addObjectivePgLocal,
       updateKeyResultProgressPgLocal,
+      updateObjectivePgLocal,
     ],
   );
 

@@ -4,6 +4,7 @@ import {
   CreateCommentRequest,
   CreateKeyResultRequestWithObjective,
   CreateObjectiveRequest,
+  UpdateObjectiveRequest,
   UpdateProgressRequestWithKeyResult,
 } from '@/types';
 import {
@@ -11,10 +12,12 @@ import {
   useAddObjective,
   useUpdateKeyResultProgress,
   useAddComment,
+  useUpdateObjective,
 } from '@/sync/object-pool';
 
 const useMemoryLocalTransactionProcess = () => {
   const addObjectiveLocal = useAddObjective();
+  const updateObjectiveLocal = useUpdateObjective();
   const addKeyResultLocal = useAddKeyResult();
   const updateKeyResultProgressLocal = useUpdateKeyResultProgress();
   const addCommentLocal = useAddComment();
@@ -24,7 +27,7 @@ const useMemoryLocalTransactionProcess = () => {
       switch (transaction.entity) {
         case 'OBJECTIVE':
           switch (transaction.action) {
-            case 'CREATE':
+            case 'CREATE': {
               const request = transaction.payload as CreateObjectiveRequest;
               addObjectiveLocal({
                 ...request,
@@ -34,6 +37,16 @@ const useMemoryLocalTransactionProcess = () => {
                 keyResults: [],
               });
               break;
+            }
+            case 'UPDATE': {
+              const request = transaction.payload as UpdateObjectiveRequest;
+              updateObjectiveLocal({
+                ...request,
+                id: request.id,
+                updatedAt: new Date(),
+              });
+              break;
+            }
             default:
               throw new Error(`Unknown action: ${transaction.action}`);
           }
@@ -81,7 +94,13 @@ const useMemoryLocalTransactionProcess = () => {
           throw new Error(`Unknown entity: ${transaction.entity}`);
       }
     },
-    [addKeyResultLocal, addObjectiveLocal, updateKeyResultProgressLocal, addCommentLocal],
+    [
+      addObjectiveLocal,
+      updateObjectiveLocal,
+      addKeyResultLocal,
+      updateKeyResultProgressLocal,
+      addCommentLocal,
+    ],
   );
 
   return { transactionLocalInMemoryProcessor };

@@ -63,6 +63,7 @@ const usePgLocalToMemorySeed = () => {
     console.log('Seeding from local', {
       allObjectives,
       allKeyResults,
+      allComments,
       allPendingSyncForwardTransactions,
     });
 

@@ -111,3 +111,7 @@ func (r *OKRRepository) DeleteAll(ctx context.Context) {
 func (r *OKRRepository) CreateComment(ctx context.Context, comment *domain.Comment) error {
 	return r.db.WithContext(ctx).Create(comment).Error
 }
+
+func (r *OKRRepository) UpdateObjective(ctx context.Context, obj *domain.Objective) error {
+	return r.db.WithContext(ctx).Save(obj).Error
+}

@@ -91,6 +91,16 @@ func (s *OKRService) AddTransaction(ctx context.Context, t *domain.Transaction) 
 			if err != nil {
 				return err
 			}
+		case "UPDATE":
+			var updateObjectiveRequest dto.UpdateObjectiveRequest
+			err := json.Unmarshal([]byte(t.Payload), &updateObjectiveRequest)
+			if err != nil {
+				return err
+			}
+			err = s.UpdateObjective(ctx, &updateObjectiveRequest)
+			if err != nil {
+				return err
+			}
 		}
 	case "KEY_RESULT":
 		switch t.Action {
@@ -173,4 +183,21 @@ func (s *OKRService) CreateComment(ctx context.Context, comment *domain.Comment)
 	}
 
 	return s.repo.CreateComment(ctx, comment)
+}
+
+func (s *OKRService) UpdateObjective(ctx context.Context, request *dto.UpdateObjectiveRequest) error {
+	existing, err := s.repo.GetObjective(ctx, request.ID)
+	if err != nil {
+		return err
+	}
+
+	// Only update fields that are provided
+	if request.Title != nil {
+		existing.Title = *request.Title
+	}
+	if request.Description != nil {
+		existing.Description = *request.Description
+	}
+
+	return s.repo.UpdateObjective(ctx, existing)
 }

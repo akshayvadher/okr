@@ -1,10 +1,10 @@
 'use client';
 
-import { StatusBadge } from '@/components/objectives/status-badge';
 import { Button } from '@/components/ui/button';
 import { KeyResultFormModal } from '@/components/key-results/key-result-form-modal';
 import { KeyResultProgressUpdate } from '@/components/key-results/progress-update';
 import { ObjectiveComments } from '@/components/objectives/objective-comments';
+import { ObjectiveHeader } from '@/components/objectives/objective-header';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useObjectiveFromPool } from '@/sync/object-pool';
@@ -16,10 +16,16 @@ export function ObjectiveDetail() {
     return (
       <div className="text-center py-12">
         <div className="max-w-sm mx-auto">
-          <h3 className="text-sm font-medium text-gray-900 mb-1">Objective not found</h3>
-          <p className="text-xs text-gray-500 mb-4">The objective you&apos;re looking for doesn&apos;t exist</p>
+          <h3 className="text-sm font-medium text-gray-900 mb-1">
+            Objective not found
+          </h3>
+          <p className="text-xs text-gray-500 mb-4">
+            The objective you&apos;re looking for doesn&apos;t exist
+          </p>
           <Link href="/objectives">
-            <Button size="sm" className="bg-gray-900 hover:bg-gray-800">Back to objectives</Button>
+            <Button size="sm" className="bg-gray-900 hover:bg-gray-800">
+              Back to objectives
+            </Button>
           </Link>
         </div>
       </div>
@@ -37,25 +43,13 @@ export function ObjectiveDetail() {
           Back to objectives
         </Link>
 
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <h1 className="text-lg font-medium text-gray-900">{objective.title}</h1>
-            <div className="mt-1 flex items-center gap-2">
-              <StatusBadge status={objective.status} />
-              <span className="text-xs text-gray-500">Created {new Date(objective.createdAt).toLocaleDateString()}</span>
-            </div>
-          </div>
-        </div>
-
-        {objective.description && (
-          <div className="mt-4 text-sm text-gray-600">
-            {objective.description}
-          </div>
-        )}
+        <ObjectiveHeader objective={objective} />
 
         <div className="mt-4 flex items-center gap-2">
           <span className="text-xs text-gray-500">Progress:</span>
-          <span className="text-sm font-medium text-gray-900">{objective.progress}%</span>
+          <span className="text-sm font-medium text-gray-900">
+            {objective.progress}%
+          </span>
         </div>
       </div>
 
@@ -64,7 +58,9 @@ export function ObjectiveDetail() {
           <div className="flex justify-between items-center">
             <div>
               <h2 className="text-sm font-medium text-gray-900">Key Results</h2>
-              <p className="text-xs text-gray-500 mt-0.5">Track your progress</p>
+              <p className="text-xs text-gray-500 mt-0.5">
+                Track your progress
+              </p>
             </div>
             <KeyResultFormModal
               objectiveId={objective.id}
@@ -75,10 +71,7 @@ export function ObjectiveDetail() {
           {objective.keyResults && objective.keyResults.length > 0 ? (
             <div className="space-y-4">
               {objective.keyResults.map((keyResult) => (
-                <div
-                  key={keyResult.id}
-                  className="group relative"
-                >
+                <div key={keyResult.id} className="group relative">
                   <div className="absolute -left-3 top-0 bottom-0 w-px bg-gray-100 group-hover:bg-gray-200 transition-colors" />
                   <KeyResultProgressUpdate keyResult={keyResult} />
                 </div>
