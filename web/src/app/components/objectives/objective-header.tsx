@@ -1,8 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import MdEditor from 'react-markdown-editor-lite';
+import 'react-markdown-editor-lite/lib/index.css';
+import MarkdownPreview from '@uiw/react-markdown-preview';
 import useObjectives from '@/hooks/useObjectives';
 import { Objective } from '@/types';
 
@@ -24,12 +27,24 @@ export function ObjectiveHeader({ objective }: ObjectiveHeaderProps) {
     setIsEditingTitle(false);
   };
 
-  const handleDescriptionSubmit = () => {
+  const handleDescriptionSubmit = useCallback(() => {
     if (description.trim() !== objective.description) {
       patchObjective(objective.id, { description: description.trim() });
     }
     setIsEditingDescription(false);
-  };
+  }, [description, objective.description, objective.id, patchObjective]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isEditingDescription && (e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        handleDescriptionSubmit();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isEditingDescription, handleDescriptionSubmit]);
 
   return (
     <div className="space-y-4">
@@ -57,21 +72,58 @@ export function ObjectiveHeader({ objective }: ObjectiveHeaderProps) {
       )}
 
       {isEditingDescription ? (
-        <Textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          onBlur={handleDescriptionSubmit}
-          className="min-h-[100px] resize-none text-sm border-gray-200 focus:border-gray-300 focus:ring-gray-300"
-          placeholder="Add a description..."
-          autoFocus
-        />
+        <div className="space-y-2">
+          <div className="min-h-[200px]">
+            <MdEditor
+              value={description}
+              onChange={({ text }) => setDescription(text)}
+              style={{ height: '200px' }}
+              renderHTML={(text) => <MarkdownPreview source={text} />}
+              config={{
+                view: {
+                  menu: true,
+                  md: true,
+                  html: false,
+                },
+                canView: {
+                  menu: true,
+                  md: true,
+                  html: false,
+                  fullScreen: false,
+                  hideMenu: false,
+                },
+              }}
+            />
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsEditingDescription(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              size="sm"
+              onClick={handleDescriptionSubmit}
+            >
+              Save
+            </Button>
+          </div>
+        </div>
       ) : (
-        <p
-          className="text-sm text-gray-500 cursor-pointer hover:text-gray-700 transition-colors whitespace-pre-wrap"
+        <div
+          className="prose prose-sm max-w-none text-gray-500 cursor-pointer hover:text-gray-700 transition-colors"
           onClick={() => setIsEditingDescription(true)}
         >
-          {objective.description || 'Add a description...'}
-        </p>
+          {objective.description ? (
+            <div className="[&>ul]:!list-disc [&>ul]:!list-inside [&>ol]:!list-decimal [&>ol]:!list-inside [&>ul]:!list-style-disc [&>ol]:!list-style-decimal">
+              <MarkdownPreview source={objective.description} />
+            </div>
+          ) : (
+            <p>Add a description...</p>
+          )}
+        </div>
       )}
     </div>
   );

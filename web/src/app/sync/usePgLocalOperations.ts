@@ -34,7 +34,6 @@ const usePgLocalOperations = () => {
   const updateObjectivePgLocal = useCallback(
     async (objective: UpdateObjectiveRequest) => {
       if (!drizzleDb) throw new Error('db connection not available');
-      console.log('Updating objective', objective);
       await drizzleDb
         .update(objectiveTable)
         .set(objective)
