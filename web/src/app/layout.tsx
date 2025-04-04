@@ -4,6 +4,8 @@ import './globals.css';
 import { AppProviders } from '@/components/app-providers';
 import Logo from './components/Logo';
 import NetworkStatus from '@/components/NetworkStatus';
+import { Github } from 'lucide-react';
+import Link from 'next/link';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -49,7 +51,17 @@ export default function RootLayout({
             <header className="fixed top-0 left-0 right-0 h-20 border-b bg-white/80 backdrop-blur-sm z-40">
               <div className="h-full max-w-7xl mx-auto px-4 flex items-center justify-between">
                 <Logo />
-                <NetworkStatus />
+                <div className="flex items-center gap-4">
+                  <Link
+                    href="https://github.com/akshayvadher/okr"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-500 hover:text-gray-900 transition-colors"
+                  >
+                    <Github className="h-5 w-5" />
+                  </Link>
+                  <NetworkStatus />
+                </div>
               </div>
             </header>
             <main className="pt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -53,7 +53,7 @@ export function CommentForm({ objectiveId, placeholder = 'Add a comment...' }: C
           <MdEditor
             value={content}
             onChange={({ text }) => setContent(text)}
-            style={{ height: '300px' }}
+            style={{ height: '200px' }}
             renderHTML={(text) => <MarkdownPreview source={text} />}
             config={{
               view: {
