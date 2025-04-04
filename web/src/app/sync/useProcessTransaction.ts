@@ -15,7 +15,7 @@ import {
   CreateKeyResultRequestWithObjective,
   UpdateProgressRequestWithKeyResult,
   UpdateObjectiveRequest,
-} from '@/types';
+} from '@/types/dto/request';
 
 const useProcessTransaction = () => {
   const { transactionLocalDbProcessor } = usePgLocalTransactionProcess();
@@ -98,8 +98,7 @@ const useProcessTransaction = () => {
         case 'COMMENT':
           switch (transaction.action) {
             case 'CREATE':
-              const request =
-                transaction.payload as CreateCommentRequest;
+              const request = transaction.payload as CreateCommentRequest;
               transaction.objectiveId = request.objectiveId;
               break;
           }

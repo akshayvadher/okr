@@ -1,22 +1,22 @@
 import { usePgLocal } from '@/sync/usePgLocal';
 import { useCallback } from 'react';
-import { KeyResult, Objective, UpdateObjectiveRequest } from '@/types';
 import { TransactionEnriched } from '@/sync/transaction';
 import {
+  commentTable,
   keyResultTable,
   objectiveTable,
   syncTable,
   transactionTable,
-  commentTable,
 } from '@/sync/drizzle/schema';
 import { asc, eq } from 'drizzle-orm/sql';
-import { CommentModal } from '@/types/modal';
+import { CommentModel, KeyResultModel, ObjectiveModel } from '@/types/model';
+import { UpdateObjectiveRequest } from '@/types/dto/request';
 
 const usePgLocalOperations = () => {
   const { drizzleDb } = usePgLocal();
 
   const addObjectivePgLocal = useCallback(
-    async (objective: Objective) => {
+    async (objective: ObjectiveModel) => {
       if (!drizzleDb) throw new Error('db connection not available');
       const existing = await drizzleDb
         .select()
@@ -43,7 +43,7 @@ const usePgLocalOperations = () => {
   );
 
   const addKeyResultPgLocal = useCallback(
-    async (keyResult: KeyResult) => {
+    async (keyResult: KeyResultModel) => {
       if (!drizzleDb) throw new Error('db connection not available');
       const existing = await drizzleDb
         .select()
@@ -70,7 +70,7 @@ const usePgLocalOperations = () => {
   );
 
   const addCommentPgLocal = useCallback(
-    async (comment: CommentModal) => {
+    async (comment: CommentModel) => {
       if (!drizzleDb) throw new Error('db connection not available');
       await drizzleDb.insert(commentTable).values(comment);
     },

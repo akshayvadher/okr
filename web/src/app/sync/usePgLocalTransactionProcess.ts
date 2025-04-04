@@ -6,7 +6,7 @@ import {
   CreateObjectiveRequest,
   UpdateObjectiveRequest,
   UpdateProgressRequestWithKeyResult,
-} from '@/types';
+} from '@/types/dto/request';
 import usePgLocalOperations from '@/sync/usePgLocalOperations';
 
 const usePgLocalTransactionProcess = () => {
@@ -30,7 +30,6 @@ const usePgLocalTransactionProcess = () => {
                 id: transaction.id,
                 createdAt: transaction.createdAt,
                 updatedAt: transaction.createdAt,
-                keyResults: [],
               });
               break;
             }

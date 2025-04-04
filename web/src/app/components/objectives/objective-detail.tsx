@@ -68,7 +68,7 @@ export function ObjectiveDetail() {
             />
           </div>
 
-          {objective.keyResults && objective.keyResults.length > 0 ? (
+          {objective.keyResults.length > 0 ? (
             <div className="space-y-4">
               {objective.keyResults.map((keyResult) => (
                 <div key={keyResult.id} className="group relative">

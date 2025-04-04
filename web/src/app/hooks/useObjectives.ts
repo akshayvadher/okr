@@ -1,6 +1,9 @@
 import { useObjectivesFromPool } from '@/sync/object-pool';
 import { useEnqueue } from '@/sync/queue';
-import { CreateObjectiveRequest, UpdateObjectiveRequest } from '@/types';
+import {
+  CreateObjectiveRequest,
+  UpdateObjectiveRequest,
+} from '@/types/dto/request';
 import { useCallback } from 'react';
 
 const useObjectives = () => {

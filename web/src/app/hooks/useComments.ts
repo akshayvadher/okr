@@ -1,6 +1,6 @@
 import { useEnqueue } from '@/sync/queue';
+import { CreateCommentRequest } from '@/types/dto/request';
 import { useCallback } from 'react';
-import { CreateCommentRequest } from '@/types';
 
 const useComments = () => {
   const enqueue = useEnqueue();

@@ -1,15 +1,15 @@
 'use client';
 
-import { KeyResult } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Minus, Plus } from 'lucide-react';
 import useKeyResults from '@/hooks/useKeyResults';
 import { ChangeEvent } from 'react';
+import { KeyResultModel } from '@/types/model';
 
 interface KeyResultProgressUpdateProps {
-  keyResult: KeyResult;
+  keyResult: KeyResultModel;
 }
 
 export function KeyResultProgressUpdate({

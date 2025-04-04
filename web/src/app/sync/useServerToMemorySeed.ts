@@ -7,6 +7,7 @@ import {
 } from '@/sync/object-pool';
 import { api } from '@/lib/api';
 import usePgLocalOperations from '@/sync/usePgLocalOperations';
+import { objectiveDtoToModel } from '@/types/transform';
 
 const useServerToMemorySeed = () => {
   const [serverSeedDone, setServerSeedDone] = useState(false);
@@ -15,7 +16,8 @@ const useServerToMemorySeed = () => {
   const addObjective = useAddObjective();
   const addKeyResult = useAddKeyResult();
   const addComment = useAddComment();
-  const { addObjectivePgLocal, addKeyResultPgLocal, addCommentPgLocal } = usePgLocalOperations();
+  const { addObjectivePgLocal, addKeyResultPgLocal, addCommentPgLocal } =
+    usePgLocalOperations();
 
   const serverSeed = useCallback(async () => {
     if (serverSeedDone) {
@@ -29,15 +31,9 @@ const useServerToMemorySeed = () => {
       return;
     }
     const getObjectsFromServer = async () => {
-      const objectives = (await api.getObjectives()).sort((a, b) =>
-        a.id.localeCompare(b.id),
-      );
-      const keyResults = objectives
-        .flatMap((o) => o.keyResults ?? [])
-        .sort((a, b) => a.id.localeCompare(b.id));
-      const comments = objectives
-        .flatMap((o) => o.comments ?? [])
-        .sort((a, b) => a.id.localeCompare(b.id));
+      const objectivesDto = await api.getObjectives();
+      const { objectives, keyResults, comments } =
+        objectiveDtoToModel(objectivesDto);
 
       console.log('Seeding from server', { objectives, keyResults, comments });
       objectives.forEach(addObjective);

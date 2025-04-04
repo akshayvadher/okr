@@ -6,7 +6,7 @@ import {
   CreateObjectiveRequest,
   UpdateObjectiveRequest,
   UpdateProgressRequestWithKeyResult,
-} from '@/types';
+} from '@/types/dto/request';
 import {
   useAddKeyResult,
   useAddObjective,
@@ -34,7 +34,6 @@ const useMemoryLocalTransactionProcess = () => {
                 id: transaction.id,
                 createdAt: transaction.createdAt,
                 updatedAt: transaction.createdAt,
-                keyResults: [],
               });
               break;
             }

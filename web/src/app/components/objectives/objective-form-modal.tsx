@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { CreateObjectiveRequest } from '@/types';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -15,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { CreateObjectiveRequest } from '@/types/dto/request';
 
 interface ObjectiveFormModalProps {
   onSubmit: (data: CreateObjectiveRequest) => void;
@@ -44,16 +44,27 @@ export function ObjectiveFormModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {trigger || <Button className="bg-gray-900/90 hover:bg-gray-900 text-sm font-medium px-3 h-8 rounded-md transition-all duration-200 hover:scale-105">New Objective</Button>}
+        {trigger || (
+          <Button className="bg-gray-900/90 hover:bg-gray-900 text-sm font-medium px-3 h-8 rounded-md transition-all duration-200 hover:scale-105">
+            New Objective
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden">
         <DialogHeader className="px-6 pt-6 pb-4 border-b border-gray-100">
-          <DialogTitle className="text-base font-medium text-gray-900">Create New Objective</DialogTitle>
+          <DialogTitle className="text-base font-medium text-gray-900">
+            Create New Objective
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(handleFormSubmit)}>
           <div className="grid gap-4 px-6 py-4">
             <div className="grid gap-1.5">
-              <Label htmlFor="title" className="text-xs font-medium text-gray-700">Title</Label>
+              <Label
+                htmlFor="title"
+                className="text-xs font-medium text-gray-700"
+              >
+                Title
+              </Label>
               <Input
                 id="title"
                 placeholder="Enter objective title"
@@ -65,7 +76,12 @@ export function ObjectiveFormModal({
               )}
             </div>
             <div className="grid gap-1.5">
-              <Label htmlFor="description" className="text-xs font-medium text-gray-700">Description</Label>
+              <Label
+                htmlFor="description"
+                className="text-xs font-medium text-gray-700"
+              >
+                Description
+              </Label>
               <Textarea
                 id="description"
                 placeholder="Enter objective description"
@@ -83,8 +99,8 @@ export function ObjectiveFormModal({
             >
               Cancel
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isSubmitting}
               className="bg-gray-900/90 hover:bg-gray-900 text-sm font-medium px-3 h-8 rounded-md transition-all duration-200 hover:scale-105"
             >

@@ -4,7 +4,7 @@ import {
   UpdateProgressRequestWithKeyResult,
   CreateCommentRequest,
   UpdateObjectiveRequest,
-} from '@/types';
+} from '@/types/dto/request';
 import { p } from '@/sync/date/format';
 
 export type entity = 'OBJECTIVE' | 'KEY_RESULT' | 'COMMENT';

@@ -7,10 +7,10 @@ import MdEditor from 'react-markdown-editor-lite';
 import 'react-markdown-editor-lite/lib/index.css';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import useObjectives from '@/hooks/useObjectives';
-import { Objective } from '@/types';
+import { ObjectiveModel } from '@/types/model';
 
 interface ObjectiveHeaderProps {
-  objective: Objective;
+  objective: ObjectiveModel;
 }
 
 export function ObjectiveHeader({ objective }: ObjectiveHeaderProps) {
@@ -103,10 +103,7 @@ export function ObjectiveHeader({ objective }: ObjectiveHeaderProps) {
             >
               Cancel
             </Button>
-            <Button
-              size="sm"
-              onClick={handleDescriptionSubmit}
-            >
+            <Button size="sm" onClick={handleDescriptionSubmit}>
               Save
             </Button>
           </div>
@@ -127,4 +124,4 @@ export function ObjectiveHeader({ objective }: ObjectiveHeaderProps) {
       )}
     </div>
   );
-} 
+}

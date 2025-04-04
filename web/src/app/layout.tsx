@@ -30,6 +30,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/*Uncomment for checking re-rendering*/}
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        {/*<script*/}
+        {/*    crossOrigin="anonymous"*/}
+        {/*    src="//unpkg.com/react-scan/dist/auto.global.js"*/}
+        {/*/>*/}
         <script
           src="https://cdn.jsdelivr.net/npm/@electric-sql/pglite-repl/dist-webcomponent/Repl.js"
           type="module"

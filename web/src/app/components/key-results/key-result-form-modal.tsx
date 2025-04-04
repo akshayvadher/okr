@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { CreateKeyResultRequest } from '@/types';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -15,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import useKeyResults from '@/hooks/useKeyResults';
+import { CreateKeyResultRequest } from '@/types/dto/request';
 
 interface KeyResultFormModalProps {
   objectiveId: string;
@@ -53,7 +53,9 @@ export function KeyResultFormModal({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button className="bg-gray-900/90 hover:bg-gray-900 text-sm font-medium px-3 h-8 rounded-md transition-all duration-200 hover:scale-105">Add Key Result</Button>
+          <Button className="bg-gray-900/90 hover:bg-gray-900 text-sm font-medium px-3 h-8 rounded-md transition-all duration-200 hover:scale-105">
+            Add Key Result
+          </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden">
@@ -65,7 +67,12 @@ export function KeyResultFormModal({
         <form onSubmit={handleSubmit(handleFormSubmit)}>
           <div className="grid gap-4 px-6 py-4">
             <div className="grid gap-1.5">
-              <Label htmlFor="title" className="text-xs font-medium text-gray-700">Key Result</Label>
+              <Label
+                htmlFor="title"
+                className="text-xs font-medium text-gray-700"
+              >
+                Key Result
+              </Label>
               <Input
                 id="title"
                 placeholder="Enter key result title"
@@ -86,8 +93,8 @@ export function KeyResultFormModal({
             >
               Cancel
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isSubmitting}
               className="bg-gray-900/90 hover:bg-gray-900 text-sm font-medium px-3 h-8 rounded-md transition-all duration-200 hover:scale-105"
             >

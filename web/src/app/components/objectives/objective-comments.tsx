@@ -1,23 +1,28 @@
 'use client';
 
-import { CommentModal } from '@/types/modal';
 import { MessageSquare } from 'lucide-react';
 import { formatDateTime, formatRelativeTime } from '@/sync/date/format';
 import { CommentForm } from './comment-form';
+import { CommentModel } from '@/types/model';
 
 interface ObjectiveCommentsProps {
   objectiveId: string;
-  comments?: CommentModal[];
+  comments?: CommentModel[];
 }
 
-export function ObjectiveComments({ objectiveId, comments = [] }: ObjectiveCommentsProps) {
+export function ObjectiveComments({
+  objectiveId,
+  comments = [],
+}: ObjectiveCommentsProps) {
   return (
     <div className="space-y-8">
       <div className="flex items-center gap-2">
         <MessageSquare className="h-4 w-4 text-gray-400" />
         <div>
           <h2 className="text-sm font-medium text-gray-900">Comments</h2>
-          <p className="text-xs text-gray-500 mt-0.5">Add your thoughts and feedback</p>
+          <p className="text-xs text-gray-500 mt-0.5">
+            Add your thoughts and feedback
+          </p>
         </div>
       </div>
 
@@ -36,7 +41,9 @@ export function ObjectiveComments({ objectiveId, comments = [] }: ObjectiveComme
                     <MessageSquare className="h-4 w-4 text-gray-400 transition-colors duration-200 group-hover/comment:text-gray-500" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-900 leading-relaxed transition-colors duration-200 group-hover/comment:text-gray-800 whitespace-pre-wrap">{comment.content}</p>
+                    <p className="text-sm text-gray-900 leading-relaxed transition-colors duration-200 group-hover/comment:text-gray-800 whitespace-pre-wrap">
+                      {comment.content}
+                    </p>
                     <div className="relative h-4">
                       <p className="absolute inset-0 text-xs text-gray-400 transition-colors duration-200 group-hover/comment:text-gray-500">
                         <span className="group-hover/comment:hidden">
@@ -61,4 +68,4 @@ export function ObjectiveComments({ objectiveId, comments = [] }: ObjectiveComme
       </div>
     </div>
   );
-} 
+}

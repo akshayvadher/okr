@@ -1,9 +1,7 @@
-import { Objective, ServerObjective } from '@/types';
 import { TransactionEnriched } from '@/sync/transaction';
-import { p } from '@/sync/date/format';
+import { ObjectiveDto } from '@/types/dto';
 
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8086/api/v1';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'THROW_ERROR';
 
 async function fetchWithError<T>(
   url: string,
@@ -25,32 +23,9 @@ async function fetchWithError<T>(
   return response.json() as Promise<T>;
 }
 
-const serverToDtoMapping = (o: ServerObjective) => {
-  return {
-    ...o,
-    createdAt: p(o.createdAt),
-    updatedAt: p(o.updatedAt),
-    keyResults: o.keyResults.map((k) => {
-      return {
-        ...k,
-        createdAt: p(k.createdAt),
-        updatedAt: p(k.updatedAt),
-      };
-    }),
-    comments: o.comments.map((c) => {
-      return {
-        ...c,
-        createdAt: p(c.createdAt),
-      };
-    }),
-  } as Objective;
-};
-
 export const api = {
   getObjectives: () =>
-    fetchWithError<ServerObjective[]>(`${API_BASE_URL}/objectives/`).then(
-      (response: ServerObjective[]) => response.map(serverToDtoMapping),
-    ),
+    fetchWithError<ObjectiveDto[]>(`${API_BASE_URL}/objectives/`),
 
   addTransaction: (data: TransactionEnriched) =>
     fetchWithError<TransactionEnriched>(`${API_BASE_URL}/transactions/`, {

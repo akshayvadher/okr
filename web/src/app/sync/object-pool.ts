@@ -1,46 +1,44 @@
-import { KeyResult, Objective, ObjectiveWithProgress } from '@/types';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { calculateObjectiveStatus } from '@/lib/utils';
-import { CommentModal } from '@/types/modal';
+import { CommentModel, KeyResultModel, ObjectiveModel } from '@/types/model';
+import { ObjectiveView } from '@/types/view';
 
 export interface ObjectInPool {
-  object: Objective | KeyResult | CommentModal;
+  object: ObjectiveModel | KeyResultModel | CommentModel;
   type: 'OBJECTIVE' | 'KEY_RESULT' | 'COMMENT';
 }
 
 export const objectPool = atom<ObjectInPool[]>([]);
 export const useGetAllObjectsFromMemory = () => useAtomValue(objectPool);
 
-const objectives = atom<ObjectiveWithProgress[]>((get) =>
+const objectives = atom<ObjectiveView[]>((get) =>
   get(objectPool)
     .filter((o) => o.type === 'OBJECTIVE')
-    .map((o) => o.object as Objective)
+    .map((o) => o.object as ObjectiveModel)
     .map((o) => ({
       ...o,
       keyResults: get(objectPool)
         .filter((k) => k.type === 'KEY_RESULT')
-        .filter((k) => (k.object as KeyResult).objectiveId === o.id)
-        .map((k) => k.object as KeyResult)
+        .filter((k) => (k.object as KeyResultModel).objectiveId === o.id)
+        .map((k) => k.object as KeyResultModel)
         .sort((a, b) => a.id.localeCompare(b.id)),
       comments: get(objectPool)
         .filter((c) => c.type === 'COMMENT')
-        .filter((c) => (c.object as CommentModal).objectiveId === o.id)
-        .filter((c) => !(c.object as CommentModal).keyResultId)
-        .map((c) => c.object as CommentModal)
-        .sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-        ),
+        .map((c) => c.object as CommentModel)
+        .filter((c) => c.objectiveId === o.id)
+        .filter((c) => !c.keyResultId)
+        .sort((a, b) => a.id.localeCompare(b.id)),
     }))
     .map((o) => ({
       ...o,
       ...calculateObjectiveStatus(o),
-    })),
+    }))
+    .sort((a, b) => a.id.localeCompare(b.id)),
 );
 
 const selectedObjectiveId = atom<string>();
 export const useSelectObjectiveId = () => useSetAtom(selectedObjectiveId);
-const objective = atom<ObjectiveWithProgress | undefined>((get) => {
+const objective = atom<ObjectiveView | undefined>((get) => {
   const objectiveId = get(selectedObjectiveId);
   if (!objective) {
     return;
@@ -48,7 +46,7 @@ const objective = atom<ObjectiveWithProgress | undefined>((get) => {
   return get(objectives).find((o) => o.id === objectiveId);
 });
 
-const addObjective = atom(null, (get, set, o: Objective) => {
+const addObjective = atom(null, (get, set, o: ObjectiveModel) => {
   const allObjects = get(objectPool);
   const existingObjective = allObjects.find(
     (objectInPool) =>
@@ -70,7 +68,7 @@ export const useObjectivesFromPool = () => useAtomValue(objectives);
 export const useObjectiveFromPool = () => useAtomValue(objective);
 export const useAddObjective = () => useSetAtom(addObjective);
 
-const addKeyResult = atom(null, (get, set, kr: KeyResult) => {
+const addKeyResult = atom(null, (get, set, kr: KeyResultModel) => {
   const allObjects = get(objectPool);
   const existingKeyResult = allObjects.find(
     (o) => o.type === 'KEY_RESULT' && o.object.id === kr.id,
@@ -127,7 +125,7 @@ export const useAddKeyResult = () => useSetAtom(addKeyResult);
 export const useUpdateKeyResultProgress = () =>
   useSetAtom(updateKeyResultProgress);
 
-const addComment = atom(null, (get, set, c: CommentModal) => {
+const addComment = atom(null, (get, set, c: CommentModel) => {
   const allObjects = get(objectPool);
   const existingComment = allObjects.find(
     (o) => o.type === 'COMMENT' && o.object.id === c.id,
@@ -141,11 +139,11 @@ export const useAddComment = () => useSetAtom(addComment);
 
 const updateObjective = atom(
   null,
-  (get, set, update: Partial<Objective> & { id: string }) => {
+  (get, set, update: Partial<ObjectiveModel> & { id: string }) => {
     const allObjects = get(objectPool);
     const existingObjective = allObjects.find(
       (o) => o.type === 'OBJECTIVE' && o.object.id === update.id,
-    )?.object as Objective;
+    )?.object as ObjectiveModel;
     if (!existingObjective) {
       throw new Error(`Objective with id ${update.id} not found`);
     }

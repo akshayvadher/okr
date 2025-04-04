@@ -7,9 +7,7 @@ import AppLoading from './AppLoading';
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <Provider>
-      <AppLoading>
-        {children}
-      </AppLoading>
+      <AppLoading>{children}</AppLoading>
     </Provider>
   );
 }

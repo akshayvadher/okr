@@ -1,6 +1,7 @@
 import { useEnqueue } from '@/sync/queue';
-import { CreateKeyResultRequest, KeyResult } from '@/types';
 import { useCallback } from 'react';
+import { CreateKeyResultRequest } from '@/types/dto/request';
+import { KeyResultModel } from '@/types/model';
 
 const parseInput = (input: string) => {
   try {
@@ -44,7 +45,7 @@ const useKeyResults = () => {
   );
 
   const updateProgress = useCallback(
-    (keyResult: KeyResult, progress: number) => {
+    (keyResult: KeyResultModel, progress: number) => {
       enqueue({
         entity: 'KEY_RESULT',
         action: 'UPDATE_PROGRESS',

@@ -1,12 +1,17 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { Objective } from '@/types';
+import { CommentModel, KeyResultModel, ObjectiveModel } from '@/types/model';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function calculateObjectiveStatus(objective: Objective): {
+export function calculateObjectiveStatus(
+  objective: ObjectiveModel & {
+    keyResults: KeyResultModel[];
+    comments: CommentModel[];
+  },
+): {
   progress: number;
   status: 'on-track' | 'at-risk' | 'behind';
 } {

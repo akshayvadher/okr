@@ -1,14 +1,14 @@
 'use client';
 
-import { KeyResult } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Minus, Plus } from 'lucide-react';
 import { useIsDebugModeOn } from '@/contex/debug';
 import useKeyResults from '@/hooks/useKeyResults';
+import { KeyResultModel } from '@/types/model';
 
 interface KeyResultQuickUpdateProps {
-  keyResult: KeyResult;
+  keyResult: KeyResultModel;
 }
 
 export function KeyResultQuickUpdate({ keyResult }: KeyResultQuickUpdateProps) {
@@ -37,16 +37,18 @@ export function KeyResultQuickUpdate({ keyResult }: KeyResultQuickUpdateProps) {
             {keyResult.title} {isDebugModeOn && `ℹ️ ${keyResult.id}`}
           </h4>
           <div className="flex items-center gap-1.5 text-xs text-gray-500 transition-all duration-200 group-hover:text-gray-700">
-            <span className="font-medium text-gray-900 transition-all duration-200">{progress}</span>
+            <span className="font-medium text-gray-900 transition-all duration-200">
+              {progress}
+            </span>
             <span>/</span>
             <span>{keyResult.target}</span>
             <span className="text-gray-400">{keyResult.metrics || '%'}</span>
           </div>
         </div>
         <div className="mt-2">
-          <Progress 
-            value={progressPercentage} 
-            className="h-1 bg-gray-100 rounded-full transition-all duration-500 ease-out" 
+          <Progress
+            value={progressPercentage}
+            className="h-1 bg-gray-100 rounded-full transition-all duration-500 ease-out"
           />
         </div>
       </div>
