@@ -114,7 +114,7 @@ export function ObjectiveHeader({ objective }: ObjectiveHeaderProps) {
           onClick={() => setIsEditingDescription(true)}
         >
           {objective.description ? (
-            <div className="[&>ul]:!list-disc [&>ul]:!list-inside [&>ol]:!list-decimal [&>ol]:!list-inside [&>ul]:!list-style-disc [&>ol]:!list-style-decimal">
+            <div className="[&_ul]:list-disc [&_ul]:list-inside [&_ol]:list-decimal [&_ol]:list-inside [&_ul]:!list-style-disc [&_ol]:!list-style-decimal [&_ul_li]:ml-4 [&_ol_li]:ml-4">
               <MarkdownPreview source={objective.description} />
             </div>
           ) : (
