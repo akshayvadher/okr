@@ -1,6 +1,11 @@
 import { useEnqueue } from '@/sync/queue';
 import { CreateCommentRequest } from '@/types/dto/request';
 import { useCallback } from 'react';
+import { useSetAtom } from 'jotai/index';
+import { addObjectOfEntity } from '@/sync/object-pool';
+
+const addComment = addObjectOfEntity('COMMENT');
+export const useAddComment = () => useSetAtom(addComment);
 
 const useComments = () => {
   const enqueue = useEnqueue();

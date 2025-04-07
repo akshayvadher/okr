@@ -2,7 +2,7 @@
 
 import { ObjectiveDetail } from '@/components/objectives/objective-detail';
 import { use } from 'react';
-import { useSelectObjectiveId } from '@/sync/object-pool';
+import { useSelectObjectiveId } from '@/hooks/useObjectives';
 
 export default function ObjectiveDetailPage({
   params,

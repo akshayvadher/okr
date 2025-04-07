@@ -1,17 +1,15 @@
 import usePgLocalMigrate from '@/sync/usePgLocalMigrate';
 import { useCallback, useEffect, useState } from 'react';
-import {
-  useAddKeyResult,
-  useAddObjective,
-  useGetAllObjectsFromMemory,
-  useAddComment,
-} from '@/sync/object-pool';
+import { useGetAllObjectsFromMemory } from '@/sync/object-pool';
 import useSetLastSync from '@/sync/useSetLastSync';
 import useServerToMemorySeed from '@/sync/useServerToMemorySeed';
 import { useClientMetadata } from '@/sync/client-metadata-memory';
 import usePgLocalOperations from '@/sync/usePgLocalOperations';
 import { useEnqueue } from '@/sync/transaction-sync-forward-queue';
 import { f } from './date/format';
+import { useAddObjective } from '@/hooks/useObjectives';
+import { useAddKeyResult } from '@/hooks/useKeyResults';
+import { useAddComment } from '@/hooks/useComments';
 
 const usePgLocalToMemorySeed = () => {
   const [seeded, setSeeded] = useState(false);

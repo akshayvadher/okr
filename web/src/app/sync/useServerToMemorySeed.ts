@@ -1,17 +1,14 @@
 import { useCallback, useState } from 'react';
-import {
-  useAddKeyResult,
-  useAddObjective,
-  useObjectivesFromPool,
-  useAddComment,
-} from '@/sync/object-pool';
 import { api } from '@/lib/api';
 import usePgLocalOperations from '@/sync/usePgLocalOperations';
 import { objectiveDtoToModel } from '@/types/transform';
+import useObjectives, { useAddObjective } from '@/hooks/useObjectives';
+import { useAddKeyResult } from '@/hooks/useKeyResults';
+import { useAddComment } from '@/hooks/useComments';
 
 const useServerToMemorySeed = () => {
   const [serverSeedDone, setServerSeedDone] = useState(false);
-  const objectivesInMemory = useObjectivesFromPool();
+  const { objectives: objectivesInMemory } = useObjectives();
 
   const addObjective = useAddObjective();
   const addKeyResult = useAddKeyResult();

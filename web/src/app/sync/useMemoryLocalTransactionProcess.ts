@@ -8,12 +8,12 @@ import {
   UpdateProgressRequestWithKeyResult,
 } from '@/types/dto/request';
 import {
-  useAddKeyResult,
-  useAddObjective,
   useUpdateKeyResultProgress,
-  useAddComment,
   useUpdateObjective,
 } from '@/sync/object-pool';
+import { useAddObjective } from '@/hooks/useObjectives';
+import { useAddKeyResult } from '@/hooks/useKeyResults';
+import { useAddComment } from '@/hooks/useComments';
 
 const useMemoryLocalTransactionProcess = () => {
   const addObjectiveLocal = useAddObjective();

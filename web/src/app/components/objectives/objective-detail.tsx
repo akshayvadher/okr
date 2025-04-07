@@ -7,7 +7,7 @@ import { ObjectiveComments } from '@/components/objectives/objective-comments';
 import { ObjectiveHeader } from '@/components/objectives/objective-header';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { useObjectiveFromPool } from '@/sync/object-pool';
+import { useObjectiveFromPool } from '@/hooks/useObjectives';
 
 export function ObjectiveDetail() {
   const objective = useObjectiveFromPool();

@@ -2,6 +2,8 @@ import { useEnqueue } from '@/sync/queue';
 import { useCallback } from 'react';
 import { CreateKeyResultRequest } from '@/types/dto/request';
 import { KeyResultModel } from '@/types/model';
+import {addObjectOfEntity} from "@/sync/object-pool";
+import {useSetAtom} from "jotai/index";
 
 const parseInput = (input: string) => {
   try {
@@ -25,6 +27,9 @@ const parseInput = (input: string) => {
     return { title: input, target: 100, metrics: '%' };
   }
 };
+
+const addKeyResult = addObjectOfEntity('KEY_RESULT');
+export const useAddKeyResult = () => useSetAtom(addKeyResult);
 
 const useKeyResults = () => {
   const enqueue = useEnqueue();
