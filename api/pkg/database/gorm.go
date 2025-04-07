@@ -7,7 +7,6 @@ import (
 	"gorm.io/gorm/logger"
 	"log"
 	"okr/config"
-	"okr/internal/domain"
 	"os"
 	"time"
 )
@@ -32,15 +31,6 @@ func NewGormDB(cfg *config.DatabaseConfig) (*gorm.DB, error) {
 		Logger: newLogger,
 	})
 	if err != nil {
-		return nil, err
-	}
-
-	if err = db.AutoMigrate(
-		&domain.Objective{},
-		&domain.KeyResult{},
-		&domain.Transaction{},
-		&domain.Comment{},
-	); err != nil {
 		return nil, err
 	}
 

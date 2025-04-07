@@ -57,7 +57,7 @@ bun run build && bun start
 - [x] Remove dead code
 - [ ] Backend to be transactional
 - [x] Consistency in naming (key_results vs keyResults)
-- [ ] Use go migrations instead of gorm auto
+- [x] Use go migrations instead of gorm auto
 - [ ] Default exampand to be on
 - [x] Use Drizzle
 - [ ] Better doc

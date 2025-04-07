@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"log"
 	"okr/config"
 	"okr/internal/broadcast"
@@ -11,6 +9,9 @@ import (
 	"okr/internal/repository/gorm"
 	"okr/internal/service"
 	"okr/pkg/database"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -20,13 +21,15 @@ func main() {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
-	// Connect to database
 	db, err := database.NewGormDB(&cfg.Database)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
-	// GetClientManager the underlying SQL DB and ensure it's closed
+	if err := database.RunMigrations(db); err != nil {
+		log.Fatalf("Failed to run migrations: %v", err)
+	}
+
 	sqlDB, err := db.DB()
 	if err != nil {
 		log.Fatalf("Failed to get SQL DB: %v", err)
