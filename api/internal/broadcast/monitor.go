@@ -1,54 +1,79 @@
 package broadcast
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 	"log"
+	"okr/config"
 	"okr/internal/domain"
 	"time"
 )
 
-func MonitorTransactions(db *gorm.DB, manager *ClientManager) {
-	var lastTimestamp time.Time
+func MonitorTransactions(cfg *config.DatabaseConfig, db *gorm.DB, manager *ClientManager) {
+	dsn := fmt.Sprintf(
+		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
+		cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.DBName, cfg.SSLMode,
+	)
 
-	var latestTransaction domain.Transaction
-	result := db.Model(&domain.Transaction{}).Order("server_created_at DESC").First(&latestTransaction)
-
-	if result.Error != nil {
-		if result.Error.Error() == "record not found" {
-			// No transactions in the database yet
-			lastTimestamp = time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
-			log.Printf("No existing transactions found. Starting with default timestamp")
-		} else {
-			log.Printf("Error getting last timestamp: %v", result.Error)
-			lastTimestamp = time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
+	listener := pq.NewListener(dsn, 10*time.Second, time.Minute, func(ev pq.ListenerEventType, err error) {
+		if err != nil {
+			log.Printf("Error in listener: %v", err)
 		}
-	} else {
-		lastTimestamp = latestTransaction.ServerCreatedAt
+	})
+	defer listener.Close()
+
+	err := listener.Listen("new_transaction")
+	if err != nil {
+		log.Fatalf("Failed to listen on channel: %v", err)
 	}
 
-	log.Printf("Starting monitoring from timestamp: %v", lastTimestamp)
+	log.Println("Started listening for new transactions via PostgreSQL NOTIFY")
 
-	ticker := time.NewTicker(100 * time.Millisecond)
-	defer ticker.Stop()
+	fallbackTicker := time.NewTicker(30 * time.Second)
+	defer fallbackTicker.Stop()
 
-	for range ticker.C {
-		var newTransactions []domain.Transaction
-		result := db.Model(&domain.Transaction{}).
-			Where("server_created_at > ?", lastTimestamp).
-			Order("server_created_at ASC").
-			Find(&newTransactions)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-		if result.Error != nil {
-			log.Printf("Error querying for new transactions: %v", result.Error)
-			continue
-		}
+	go func() {
+		for {
+			select {
+			case notification := <-listener.Notify:
+				if notification == nil {
+					continue
+				}
 
-		if len(newTransactions) > 0 {
-			lastTimestamp = newTransactions[len(newTransactions)-1].ServerCreatedAt
+				var transactionObject map[string]interface{}
+				err := json.Unmarshal([]byte(notification.Extra), &transactionObject)
+				if err != nil {
+					log.Printf("Error parsing notification payload: %v", err)
+					continue
+				}
 
-			for _, transaction := range newTransactions {
+				var transaction domain.Transaction
+				result := db.First(&transaction, "id = ?", transactionObject["id"])
+				if result.Error != nil {
+					log.Printf("Error fetching transaction %s: %v", transactionObject, result.Error)
+					continue
+				}
+
 				manager.Broadcast <- Event{Type: "new", Data: transaction}
+
+			case <-fallbackTicker.C:
+				checkForMissedTransactions(db, manager)
+
+			case <-ctx.Done():
+				return
 			}
 		}
-	}
+	}()
+
+	<-ctx.Done()
+}
+
+func checkForMissedTransactions(_db *gorm.DB, _manager *ClientManager) {
+	// TODO Do we need this?
 }

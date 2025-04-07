@@ -41,7 +41,7 @@ func main() {
 
 	clientManager.Start()
 
-	go broadcast.MonitorTransactions(db, clientManager)
+	go broadcast.MonitorTransactions(&cfg.Database, db, clientManager)
 
 	// Setup router
 	r := gin.New()

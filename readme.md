@@ -34,7 +34,7 @@ bun run build && bun start
 - [x] Better queue in web (remove delay)
 - [x] Using dynamic table name based on create query
 - [x] Separate session id and client id
-- [ ] Better event in server (remove polling)
+- [x] Better event in server (remove polling)
 - [ ] Handle failed transaction (correctly failed and wrongly failed both)
 - [ ] Add loading per entity
 - [ ] Lazy loding for some entities

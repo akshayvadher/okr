@@ -5,6 +5,7 @@ go 1.24.0
 require (
 	github.com/gin-contrib/cors v1.7.3
 	github.com/gin-gonic/gin v1.10.0
+	github.com/lib/pq v1.10.9
 	github.com/spf13/viper v1.19.0
 	gorm.io/driver/postgres v1.5.11
 	gorm.io/gorm v1.25.12
