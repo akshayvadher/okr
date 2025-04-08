@@ -41,3 +41,20 @@ type UpdateObjectiveRequest struct {
 	Title       *string `json:"title,omitempty"`
 	Description *string `json:"description,omitempty"`
 }
+
+type CreateTaskRequest struct {
+	Title       string  `json:"title" binding:"required"`
+	Status      string  `json:"status" binding:"required,oneof=todo doing done cancelled"`
+	ObjectiveID *string `json:"objectiveId" binding:"required"`
+	KeyResultID *string `json:"keyResultId" binding:"required"`
+}
+
+type UpdateTaskRequest struct {
+	ID    string  `json:"id" binding:"required"`
+	Title *string `json:"title" binding:"required"`
+}
+
+type UpdateTaskStatusRequest struct {
+	ID     string `json:"id" binding:"required"`
+	Status string `json:"status" binding:"required,oneof=todo doing done cancelled"`
+}

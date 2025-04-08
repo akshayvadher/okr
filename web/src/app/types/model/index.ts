@@ -1,9 +1,21 @@
+export type TaskStatus = 'todo' | 'doing' | 'done' | 'cancelled';
+
 export interface CommentModel {
   id: string;
   content: string;
   createdAt: Date;
   objectiveId: string;
   keyResultId?: string | null;
+}
+
+export interface TaskModel {
+  id: string;
+  title: string;
+  status: TaskStatus;
+  objectiveId: string;
+  keyResultId?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface ObjectiveModel {

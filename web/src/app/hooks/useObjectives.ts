@@ -5,7 +5,7 @@ import {
   UpdateObjectiveRequest,
 } from '@/types/dto/request';
 import { useCallback } from 'react';
-import { CommentModel, KeyResultModel, ObjectiveModel } from '@/types/model';
+import { CommentModel, KeyResultModel, ObjectiveModel, TaskModel } from '@/types/model';
 import { atom, useAtomValue } from 'jotai';
 import { calculateObjectiveStatus } from '@/lib/utils';
 import { useSetAtom } from 'jotai/index';
@@ -14,6 +14,7 @@ import { ObjectiveView } from '@/types/view';
 const objectivesAtom = objectsOfEntity('OBJECTIVE');
 const keyResultsAtom = objectsOfEntity('KEY_RESULT');
 const commentsAtom = objectsOfEntity('COMMENT');
+const tasksAtom = objectsOfEntity('TASK');
 
 const objectivesWithView = atom((get) =>
   get(objectivesAtom)
@@ -27,6 +28,10 @@ const objectivesWithView = atom((get) =>
       comments: get(commentsAtom)
         .map((c) => c as CommentModel)
         .filter((c) => c.objectiveId === o.id && !c.keyResultId)
+        .sort((a, b) => a.id.localeCompare(b.id)),
+      tasks: get(tasksAtom)
+        .map((t) => t as TaskModel)
+        .filter((t) => t.objectiveId === o.id)
         .sort((a, b) => a.id.localeCompare(b.id)),
     }))
     .map((o) => ({

@@ -1,9 +1,9 @@
 import { atom, useAtomValue, useSetAtom } from 'jotai';
-import { CommentModel, KeyResultModel, ObjectiveModel } from '@/types/model';
+import { CommentModel, KeyResultModel, ObjectiveModel, TaskModel } from '@/types/model';
 import { atomFamily } from 'jotai/utils';
 
-export type ObjectModels = ObjectiveModel | KeyResultModel | CommentModel;
-export type ObjectType = 'OBJECTIVE' | 'KEY_RESULT' | 'COMMENT';
+export type ObjectModels = ObjectiveModel | KeyResultModel | CommentModel | TaskModel;
+export type ObjectType = 'OBJECTIVE' | 'KEY_RESULT' | 'COMMENT' | 'TASK';
 
 export interface ObjectInPool {
   object: ObjectModels;
@@ -106,3 +106,58 @@ const updateObjective = atom(
 );
 
 export const useUpdateObjective = () => useSetAtom(updateObjective);
+
+const updateTask = atom(
+  null,
+  (get, set, update: Partial<TaskModel> & { id: string; objectiveId: string }) => {
+    const allObjects = get(objectPool);
+    const existingTask = allObjects.find(
+      (o) => o.type === 'TASK' && o.object.id === update.id,
+    )?.object as TaskModel;
+    if (!existingTask) {
+      throw new Error(`Task with id ${update.id} not found`);
+    }
+    set(objectPool, (prev) =>
+      prev.map((item) =>
+        item.type === 'TASK' && item.object.id === update.id
+          ? {
+              ...item,
+              object: {
+                ...existingTask,
+                ...update,
+              },
+            }
+          : item,
+      ),
+    );
+  },
+);
+export const useUpdateTask = () => useSetAtom(updateTask);
+
+const updateTaskStatus = atom(
+  null,
+  (get, set, update: { id: string; status: string; updatedAt: Date; objectiveId: string }) => {
+    const allObjects = get(objectPool);
+    const existingTask = allObjects.find(
+      (o) => o.type === 'TASK' && o.object.id === update.id,
+    )?.object as TaskModel;
+    if (!existingTask) {
+      throw new Error(`Task with id ${update.id} not found`);
+    }
+    set(objectPool, (prev) =>
+      prev.map((item) =>
+        item.type === 'TASK' && item.object.id === update.id
+          ? {
+              ...item,
+              object: {
+                ...existingTask,
+                status: update.status,
+                updatedAt: update.updatedAt,
+              },
+            }
+          : item,
+      ),
+    );
+  },
+);
+export const useUpdateTaskStatus = () => useSetAtom(updateTaskStatus);

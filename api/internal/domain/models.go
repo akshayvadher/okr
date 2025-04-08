@@ -28,6 +28,7 @@ type Objective struct {
 	Description string      `gorm:"type:text" json:"description"`
 	KeyResults  []KeyResult `gorm:"foreignKey:ObjectiveID" json:"keyResults"`
 	Comments    []Comment   `gorm:"foreignKey:ObjectiveID" json:"comments"`
+	Tasks       []Task      `gorm:"foreignKey:ObjectiveID" json:"tasks"`
 }
 
 // TableName overrides the table name
@@ -48,6 +49,20 @@ type KeyResult struct {
 // TableName overrides the table name
 func (KeyResult) TableName() string {
 	return "key_results"
+}
+
+// Task represents a task associated with an objective or key result
+type Task struct {
+	Base
+	Title       string  `gorm:"type:varchar(255);not null" json:"title"`
+	Status      string  `gorm:"type:varchar(20);not null;default:'todo'" json:"status"` // todo, in-progress, done, not-doing
+	ObjectiveID *string `gorm:"type:varchar(255)" json:"objectiveId"`
+	KeyResultID *string `gorm:"type:varchar(255)" json:"keyResultId"`
+}
+
+// TableName overrides the table name
+func (Task) TableName() string {
+	return "tasks"
 }
 
 // Comment represents a comment on an objective or key result

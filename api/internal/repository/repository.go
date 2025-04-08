@@ -17,4 +17,7 @@ type OKRRepository interface {
 	GetTransactions(ctx context.Context, entity, action, from string) ([]*domain.Transaction, error)
 	DeleteAll(ctx context.Context)
 	CreateComment(ctx context.Context, comment *domain.Comment) error
+	CreateTask(ctx context.Context, task *domain.Task) error
+	UpdateTask(ctx context.Context, task *domain.Task) error
+	GetTask(ctx context.Context, id string) (*domain.Task, error)
 }

@@ -35,7 +35,7 @@ func (r *OKRRepository) GetObjective(ctx context.Context, id string) (*domain.Ob
 
 func (r *OKRRepository) ListObjectives(ctx context.Context) ([]*domain.Objective, error) {
 	var objectives []*domain.Objective
-	if err := r.db.WithContext(ctx).Preload("KeyResults").Preload("Comments").Order("created_at desc").Find(&objectives).Error; err != nil {
+	if err := r.db.WithContext(ctx).Preload("KeyResults").Preload("Comments").Preload("Tasks").Order("created_at desc").Find(&objectives).Error; err != nil {
 		return nil, err
 	}
 
@@ -114,4 +114,24 @@ func (r *OKRRepository) CreateComment(ctx context.Context, comment *domain.Comme
 
 func (r *OKRRepository) UpdateObjective(ctx context.Context, obj *domain.Objective) error {
 	return r.db.WithContext(ctx).Save(obj).Error
+}
+
+func (r *OKRRepository) CreateTask(ctx context.Context, task *domain.Task) error {
+	return r.db.WithContext(ctx).Create(task).Error
+}
+
+func (r *OKRRepository) UpdateTask(ctx context.Context, task *domain.Task) error {
+	return r.db.WithContext(ctx).Save(task).Error
+}
+
+func (r *OKRRepository) GetTask(ctx context.Context, id string) (*domain.Task, error) {
+	var task domain.Task
+	if err := r.db.WithContext(ctx).First(&task, "id = ?", id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("task not found")
+		}
+		return nil, err
+	}
+
+	return &task, nil
 }

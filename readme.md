@@ -47,7 +47,7 @@ bun run build && bun start
 - [ ] Workspace/multi-tenancy support
 - [x] Comments
 - [ ] Quarterly
-- [ ] Tasks
+- [x] Tasks
 - [ ] Todo inside objective
 
 ## Nice to have (not directly related to sync)

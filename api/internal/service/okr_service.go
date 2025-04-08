@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"okr/internal/domain"
 	"okr/internal/dto"
@@ -160,6 +162,50 @@ func (s *OKRService) AddTransaction(ctx context.Context, t *domain.Transaction) 
 				return err
 			}
 		}
+	case "TASK":
+		switch t.Action {
+		case "CREATE":
+			var createTaskRequest dto.CreateTaskRequest
+			err := json.Unmarshal([]byte(t.Payload), &createTaskRequest)
+			if err != nil {
+				return err
+			}
+			task := &domain.Task{
+				Base: domain.Base{
+					ID:        t.ID,
+					CreatedAt: t.CreatedAt,
+					UpdatedAt: t.CreatedAt,
+				},
+				Title:       createTaskRequest.Title,
+				Status:      createTaskRequest.Status,
+				ObjectiveID: createTaskRequest.ObjectiveID,
+				KeyResultID: createTaskRequest.KeyResultID,
+			}
+			err = s.CreateTask(ctx, task)
+			if err != nil {
+				return err
+			}
+		case "UPDATE":
+			var updateTaskRequest dto.UpdateTaskRequest
+			err := json.Unmarshal([]byte(t.Payload), &updateTaskRequest)
+			if err != nil {
+				return err
+			}
+			err = s.UpdateTask(ctx, &updateTaskRequest)
+			if err != nil {
+				return err
+			}
+		case "UPDATE_STATUS":
+			var updateTaskStatusRequest dto.UpdateTaskStatusRequest
+			err := json.Unmarshal([]byte(t.Payload), &updateTaskStatusRequest)
+			if err != nil {
+				return err
+			}
+			err = s.UpdateTaskStatus(ctx, &updateTaskStatusRequest)
+			if err != nil {
+				return err
+			}
+		}
 	}
 	return nil
 }
@@ -200,4 +246,61 @@ func (s *OKRService) UpdateObjective(ctx context.Context, request *dto.UpdateObj
 	}
 
 	return s.repo.UpdateObjective(ctx, existing)
+}
+
+func (s *OKRService) CreateTask(ctx context.Context, task *domain.Task) error {
+	if task.Title == "" {
+		return errors.New("task title cannot be empty")
+	}
+
+	if task.ObjectiveID == nil || *task.ObjectiveID == "" {
+		return errors.New("objective ID is required")
+	}
+
+	_, err := s.repo.GetObjective(ctx, *task.ObjectiveID)
+	if err != nil {
+		return err
+	}
+
+	if task.KeyResultID != nil && *task.KeyResultID != "" {
+		// TODO later
+	}
+
+	return s.repo.CreateTask(ctx, task)
+}
+
+func (s *OKRService) UpdateTask(ctx context.Context, request *dto.UpdateTaskRequest) error {
+	task, err := s.repo.GetTask(ctx, request.ID)
+	if err != nil {
+		return err
+	}
+
+	if request.Title != nil {
+		task.Title = *request.Title
+	}
+	task.UpdatedAt = time.Now()
+
+	return s.repo.UpdateTask(ctx, task)
+}
+
+func (s *OKRService) UpdateTaskStatus(ctx context.Context, request *dto.UpdateTaskStatusRequest) error {
+	validStatuses := map[string]bool{
+		"todo":      true,
+		"doing":     true,
+		"done":      true,
+		"cancelled": true,
+	}
+
+	if !validStatuses[request.Status] {
+		return errors.New("invalid status value")
+	}
+
+	task, err := s.repo.GetTask(ctx, request.ID)
+	if err != nil {
+		return err
+	}
+
+	task.Status = request.Status
+
+	return s.repo.UpdateTask(ctx, task)
 }

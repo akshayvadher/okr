@@ -1,6 +1,6 @@
 import { ObjectiveDto } from '@/types/dto';
 import { p } from '@/sync/date/format';
-import { ObjectiveModel } from '@/types/model';
+import { ObjectiveModel, TaskStatus } from '@/types/model';
 
 const serverToModelMapping = (o: ObjectiveDto) => {
   return {
@@ -35,9 +35,23 @@ export const objectiveDtoToModel = (objectives: ObjectiveDto[]) => {
       })
       .sort((a, b) => a.id.localeCompare(b.id)),
   );
+
+  const tasksModel = objectives.flatMap((o) =>
+    o.tasks
+      .map((t) => {
+        return {
+          ...t,
+          createdAt: p(t.createdAt),
+          updatedAt: p(t.updatedAt),
+          status: t.status as TaskStatus,
+        };
+      })
+      .sort((a, b) => a.id.localeCompare(b.id)),
+  );
   return {
     objectives: objectivesModel,
     keyResults: keyResultsModel,
     comments: commentsModel,
+    tasks: tasksModel,
   };
 };

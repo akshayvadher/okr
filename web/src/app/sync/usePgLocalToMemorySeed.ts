@@ -10,6 +10,7 @@ import { f } from './date/format';
 import { useAddObjective } from '@/hooks/useObjectives';
 import { useAddKeyResult } from '@/hooks/useKeyResults';
 import { useAddComment } from '@/hooks/useComments';
+import { useAddTask } from '@/hooks/useTasks';
 
 const usePgLocalToMemorySeed = () => {
   const [seeded, setSeeded] = useState(false);
@@ -22,6 +23,7 @@ const usePgLocalToMemorySeed = () => {
     getAllObjectives,
     getAllKeyResults,
     getAllComments,
+    getAllTasks,
     getLastSync,
     getAllPendingSyncForwardTransactions,
   } = usePgLocalOperations();
@@ -30,6 +32,7 @@ const usePgLocalToMemorySeed = () => {
   const addObjective = useAddObjective();
   const addKeyResult = useAddKeyResult();
   const addComment = useAddComment();
+  const addTask = useAddTask();
   const { setLastSync } = useSetLastSync();
 
   const queueSyncForwardTransaction = useEnqueue();
@@ -54,6 +57,9 @@ const usePgLocalToMemorySeed = () => {
     const allComments = await getAllComments();
     allComments.forEach(addComment);
 
+    const allTasks = await getAllTasks();
+    allTasks.forEach(addTask);
+
     const allPendingSyncForwardTransactions =
       await getAllPendingSyncForwardTransactions();
     allPendingSyncForwardTransactions.forEach(queueSyncForwardTransaction);
@@ -62,6 +68,7 @@ const usePgLocalToMemorySeed = () => {
       allObjectives,
       allKeyResults,
       allComments,
+      allTasks,
       allPendingSyncForwardTransactions,
     });
 
@@ -75,12 +82,14 @@ const usePgLocalToMemorySeed = () => {
     setPgLocalAndMemoryReady(true);
   }, [
     addComment,
+    addTask,
     addKeyResult,
     addObjective,
     allObjectsFromMemoryPool.length,
     clientAppStartTime,
     dbCreated,
     getAllComments,
+    getAllTasks,
     getAllKeyResults,
     getAllObjectives,
     getAllPendingSyncForwardTransactions,

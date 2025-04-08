@@ -1,3 +1,5 @@
+import { TaskStatus } from '@/types/model';
+
 export interface CreateObjectiveRequest {
   title: string;
   description: string;
@@ -34,4 +36,22 @@ export interface UpdateObjectiveRequest {
   id: string;
   title?: string;
   description?: string;
+}
+
+export interface CreateTaskRequest {
+  title: string;
+  objectiveId: string;
+  keyResultId?: string;
+}
+
+export interface UpdateTaskRequest {
+  id: string;
+  title: string;
+  objectiveId: string;
+}
+
+export interface UpdateTaskStatusRequest {
+  id: string;
+  status: TaskStatus;
+  objectiveId: string;
 }

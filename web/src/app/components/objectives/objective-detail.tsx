@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { KeyResultFormModal } from '@/components/key-results/key-result-form-modal';
 import { KeyResultProgressUpdate } from '@/components/key-results/progress-update';
 import { ObjectiveComments } from '@/components/objectives/objective-comments';
+import { ObjectiveTasks } from '@/components/objectives/objective-tasks';
 import { ObjectiveHeader } from '@/components/objectives/objective-header';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -85,10 +86,20 @@ export function ObjectiveDetail() {
         </div>
 
         <div className="pt-8 border-t border-gray-100">
-          <ObjectiveComments
-            objectiveId={objective.id}
-            comments={objective.comments}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-6">
+              <ObjectiveComments
+                objectiveId={objective.id}
+                comments={objective.comments}
+              />
+            </div>
+            <div className="space-y-6">
+              <ObjectiveTasks
+                objectiveId={objective.id}
+                tasks={objective.tasks || []}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>

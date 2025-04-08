@@ -4,11 +4,14 @@ import {
   UpdateProgressRequestWithKeyResult,
   CreateCommentRequest,
   UpdateObjectiveRequest,
+  CreateTaskRequest,
+  UpdateTaskRequest,
+  UpdateTaskStatusRequest,
 } from '@/types/dto/request';
 import { p } from '@/sync/date/format';
 
-export type entity = 'OBJECTIVE' | 'KEY_RESULT' | 'COMMENT';
-export type action = 'CREATE' | 'UPDATE_PROGRESS' | 'UPDATE';
+export type entity = 'OBJECTIVE' | 'KEY_RESULT' | 'COMMENT' | 'TASK';
+export type action = 'CREATE' | 'UPDATE_PROGRESS' | 'UPDATE' | 'UPDATE_STATUS';
 
 export interface Transaction {
   entity: entity;
@@ -18,7 +21,10 @@ export interface Transaction {
     | CreateKeyResultRequestWithObjective
     | UpdateProgressRequestWithKeyResult
     | CreateCommentRequest
-    | UpdateObjectiveRequest;
+    | UpdateObjectiveRequest
+    | CreateTaskRequest
+    | UpdateTaskRequest
+    | UpdateTaskStatusRequest;
 }
 
 export interface TransactionEnriched extends Transaction {

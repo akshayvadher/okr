@@ -9,6 +9,7 @@ export interface ObjectiveDto extends Base {
   description?: string | null;
   keyResults: KeyResultDto[];
   comments: CommentDto[];
+  tasks: TaskDto[];
 }
 
 export interface KeyResultDto extends Base {
@@ -23,6 +24,16 @@ export interface CommentDto {
   id: string;
   content: string;
   createdAt: string;
+  objectiveId: string;
+  keyResultId?: string;
+}
+
+export interface TaskDto {
+  id: string;
+  title: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
   objectiveId: string;
   keyResultId?: string;
 }

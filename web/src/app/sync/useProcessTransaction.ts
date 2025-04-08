@@ -13,8 +13,11 @@ import useSetLastSync from '@/sync/useSetLastSync';
 import {
   CreateCommentRequest,
   CreateKeyResultRequestWithObjective,
-  UpdateProgressRequestWithKeyResult,
+  CreateTaskRequest,
   UpdateObjectiveRequest,
+  UpdateProgressRequestWithKeyResult,
+  UpdateTaskRequest,
+  UpdateTaskStatusRequest,
 } from '@/types/dto/request';
 
 const useProcessTransaction = () => {
@@ -101,6 +104,27 @@ const useProcessTransaction = () => {
               const request = transaction.payload as CreateCommentRequest;
               transaction.objectiveId = request.objectiveId;
               break;
+          }
+          break;
+        case 'TASK':
+          switch (transaction.action) {
+            case 'CREATE': {
+              const request = transaction.payload as CreateTaskRequest;
+              transaction.objectiveId = request.objectiveId;
+              break;
+            }
+            case 'UPDATE': {
+              const request = transaction.payload as UpdateTaskRequest;
+              transaction.objectiveId = request.objectiveId;
+              break;
+            }
+            case 'UPDATE_STATUS': {
+              const request = transaction.payload as UpdateTaskStatusRequest;
+              transaction.objectiveId = request.objectiveId;
+              break;
+            }
+            default:
+              throw new Error(`Unknown action: ${transaction.action}`);
           }
           break;
         default:

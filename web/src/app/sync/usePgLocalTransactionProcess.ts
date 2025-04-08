@@ -1,11 +1,15 @@
 import { useCallback } from 'react';
 import { TransactionEnriched } from '@/sync/transaction';
+import { TaskStatus } from '@/types/model';
 import {
   CreateCommentRequest,
   CreateKeyResultRequestWithObjective,
   CreateObjectiveRequest,
+  CreateTaskRequest,
   UpdateObjectiveRequest,
   UpdateProgressRequestWithKeyResult,
+  UpdateTaskRequest,
+  UpdateTaskStatusRequest,
 } from '@/types/dto/request';
 import usePgLocalOperations from '@/sync/usePgLocalOperations';
 
@@ -16,6 +20,9 @@ const usePgLocalTransactionProcess = () => {
     updateKeyResultProgressPgLocal,
     addCommentPgLocal,
     updateObjectivePgLocal,
+    addTaskPgLocal,
+    updateTaskPgLocal,
+    updateTaskStatusPgLocal,
   } = usePgLocalOperations();
 
   const transactionLocalDbProcessor = useCallback(
@@ -81,6 +88,41 @@ const usePgLocalTransactionProcess = () => {
               break;
           }
           break;
+        case 'TASK':
+          switch (transaction.action) {
+            case 'CREATE': {
+              const request = transaction.payload as CreateTaskRequest;
+              await addTaskPgLocal({
+                ...request,
+                id: transaction.id,
+                status: 'todo' as TaskStatus,
+                createdAt: transaction.createdAt,
+                updatedAt: transaction.createdAt,
+              });
+              break;
+            }
+            case 'UPDATE': {
+              const request = transaction.payload as UpdateTaskRequest;
+              await updateTaskPgLocal({
+                id: request.id,
+                title: request.title,
+                updatedAt: new Date(),
+              });
+              break;
+            }
+            case 'UPDATE_STATUS': {
+              const request = transaction.payload as UpdateTaskStatusRequest;
+              await updateTaskStatusPgLocal({
+                id: request.id,
+                status: request.status,
+                updatedAt: new Date(),
+              });
+              break;
+            }
+            default:
+              throw new Error(`Unknown action: ${transaction.action}`);
+          }
+          break;
         default:
           throw new Error(`Unknown entity: ${transaction.entity}`);
       }
@@ -91,6 +133,9 @@ const usePgLocalTransactionProcess = () => {
       addObjectivePgLocal,
       updateKeyResultProgressPgLocal,
       updateObjectivePgLocal,
+      addTaskPgLocal,
+      updateTaskPgLocal,
+      updateTaskStatusPgLocal,
     ],
   );
 

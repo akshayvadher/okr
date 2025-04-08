@@ -6,10 +6,11 @@ import {
   keyResultTable,
   objectiveTable,
   syncTable,
+  taskTable,
   transactionTable,
 } from '@/sync/drizzle/schema';
 import { asc, eq } from 'drizzle-orm/sql';
-import { CommentModel, KeyResultModel, ObjectiveModel } from '@/types/model';
+import { CommentModel, KeyResultModel, ObjectiveModel, TaskModel } from '@/types/model';
 import { UpdateObjectiveRequest } from '@/types/dto/request';
 
 const usePgLocalOperations = () => {
@@ -73,6 +74,44 @@ const usePgLocalOperations = () => {
     async (comment: CommentModel) => {
       if (!drizzleDb) throw new Error('db connection not available');
       await drizzleDb.insert(commentTable).values(comment);
+    },
+    [drizzleDb],
+  );
+
+  const addTaskPgLocal = useCallback(
+    async (task: TaskModel) => {
+      if (!drizzleDb) throw new Error('db connection not available');
+      const existing = await drizzleDb
+        .select()
+        .from(taskTable)
+        .where(eq(taskTable.id, task.id));
+      if (existing.length > 0) {
+        console.log('Task already exists in the database');
+        return;
+      }
+      await drizzleDb.insert(taskTable).values(task);
+    },
+    [drizzleDb],
+  );
+
+  const updateTaskPgLocal = useCallback(
+    async ({ id, title, updatedAt }: { id: string; title: string; updatedAt: Date }) => {
+      if (!drizzleDb) throw new Error('db connection not available');
+      await drizzleDb
+        .update(taskTable)
+        .set({ title, updatedAt })
+        .where(eq(taskTable.id, id));
+    },
+    [drizzleDb],
+  );
+
+  const updateTaskStatusPgLocal = useCallback(
+    async ({ id, status, updatedAt }: { id: string; status: string; updatedAt: Date }) => {
+      if (!drizzleDb) throw new Error('db connection not available');
+      await drizzleDb
+        .update(taskTable)
+        .set({ status, updatedAt })
+        .where(eq(taskTable.id, id));
     },
     [drizzleDb],
   );
@@ -149,6 +188,11 @@ const usePgLocalOperations = () => {
     return drizzleDb.select().from(commentTable);
   }, [drizzleDb]);
 
+  const getAllTasks = useCallback(async () => {
+    if (!drizzleDb) throw new Error('db connection not available');
+    return drizzleDb.select().from(taskTable);
+  }, [drizzleDb]);
+
   const getLastSync = useCallback(async () => {
     if (!drizzleDb) throw new Error('db connection not available');
     const lastSync = await drizzleDb.select().from(syncTable);
@@ -164,11 +208,15 @@ const usePgLocalOperations = () => {
     addKeyResultPgLocal,
     updateKeyResultProgressPgLocal,
     addCommentPgLocal,
+    addTaskPgLocal,
+    updateTaskPgLocal,
+    updateTaskStatusPgLocal,
     registerTransactionLocalDb,
     doesTransactionExist,
     getAllObjectives,
     getAllKeyResults,
     getAllComments,
+    getAllTasks,
     getLastSync,
     getAllPendingSyncForwardTransactions,
     markSyncForwardTransactionDone,
